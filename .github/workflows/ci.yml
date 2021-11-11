@@ -3,18 +3,18 @@ name: Build Auritia
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
-  strategy:
-    fail-fast: false
-    matrix:
-      targetPlatform: 
-        - x86_64
-        - i686
-        - aarch64
-        - mips
-        - mipsel
   build-linux:
     name: "🐧 Compile for Linux"
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        targetPlatform: 
+          - x86_64
+          - i686
+          - aarch64
+          - mips
+          - mipsel
     steps:
 
     - name: 🛎 Checkout
