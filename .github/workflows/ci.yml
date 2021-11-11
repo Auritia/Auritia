@@ -46,3 +46,6 @@ jobs:
       with:
         name: auritia_compiled_linux_${{matrix.targetPlatform}}
         path: src-tauri/target/release/auritia
+
+    - name: 🧼 Cleanup
+      run: "sudo apt autoremove"
