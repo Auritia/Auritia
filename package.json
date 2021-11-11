@@ -6,6 +6,7 @@
   "homepage": "https://auritia.app",
   "scripts": {
     "dev": "vite",
+    "gen:icon": "npm run tauri icon --icon ./src/assets/logo.png",
     "bump": "npm version patch --force",
     "compile": "npm run tauri build --release",
     "build": "vue-tsc --noEmit && vite build",
