@@ -1,21 +1,35 @@
 {
   "name": "auritia",
-  "version": "0.0.0",
+  "version": "0.0.8",
+  "description": "A web DAW designed to have feature parity with Ableton",
+  "repository": "https://github.com/Auritia/Auritia",
+  "homepage": "https://auritia.app",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "serve": "vite preview",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "prettify": "npx prettier --write \"./**/*.ts\" && npx prettier --write \"./**/*.json\" && npx prettier --write \"./**/*.vue\""
   },
   "dependencies": {
     "@tauri-apps/api": "^1.0.0-beta.8",
-    "vue": "^3.2.16"
+    "@vueuse/core": "^6.8.0",
+    "r": "^0.0.5",
+    "vue": "^3.2.16",
+    "vue-router": "^4.0.11"
   },
   "devDependencies": {
+    "@iconify/json": "^1.1.424",
     "@tauri-apps/cli": "^1.0.0-beta.10",
     "@vitejs/plugin-vue": "^1.9.3",
     "typescript": "^4.4.3",
+    "unplugin-icons": "^0.12.18",
+    "unplugin-vue-components": "^0.17.1",
     "vite": "^2.6.4",
-    "vue-tsc": "^0.3.0"
+    "vite-plugin-fonts": "^0.2.2",
+    "vite-plugin-tauri": "^0.1.6",
+    "vite-plugin-windicss": "^1.5.1",
+    "vue-tsc": "^0.3.0",
+    "windicss": "^3.2.1"
   }
 }
