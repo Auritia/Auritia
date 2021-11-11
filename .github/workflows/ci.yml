@@ -15,7 +15,7 @@ jobs:
     - name: Build 🛠
       run: npm run compile
 
-    - name: Upload artifact 🔼
+    - name: Upload artifact 🗳
       uses: actions/upload-artifact@v1
       with:
         name: auritia_compiled_linux
