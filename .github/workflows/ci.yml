@@ -4,7 +4,7 @@ on: [push, pull_request, workflow_dispatch]
 
 jobs:
   build-linux:
-    name: "Compile for Linux"
+    name: "🐧 Compile for Linux"
     runs-on: ubuntu-latest
     steps:
 
