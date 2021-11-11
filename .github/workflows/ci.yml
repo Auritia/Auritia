@@ -5,7 +5,7 @@ on: [push, pull_request, workflow_dispatch]
 jobs:
   build-linux:
     name: "🐧 Compile for Linux"
-    runs-on: [self-hosted, linux, Geoxor]
+    runs-on: self-hosted
     strategy:
       fail-fast: false
       matrix:
