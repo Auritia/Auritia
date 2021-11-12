@@ -28,6 +28,14 @@ jobs:
       with:
         node-version: '17.1.0'
 
+    - name: ⚙ Setup Cargo
+      uses: actions-rs/cargo@v1
+
+    - name: ⚙ Setup Cargo Toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+
     - name: ⚡ Install linker (multilib)
       run: "sudo apt install gcc-multilib -y"
 
