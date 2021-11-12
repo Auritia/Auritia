@@ -19,7 +19,7 @@ jobs:
     steps: 
 
     - name: 🧪 Environment Info
-      run: "npx env-info"
+      run: "npx envinfo"
 
     - name: 🛎 Checkout
       uses: actions/checkout@v2
