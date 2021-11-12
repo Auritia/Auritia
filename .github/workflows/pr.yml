@@ -1,11 +1,11 @@
 name: Build Auritia
 
-on: [push]
+on: [pull_request]
 
 jobs:
   build-linux:
     name: "🐧 Compile for Linux"
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps: 
 
     - name: 🧪 Environment Info
