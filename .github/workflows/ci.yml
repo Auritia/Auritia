@@ -7,15 +7,6 @@ jobs:
     name: "🐧 Compile for Linux"
     # runs-on: ubuntu-latest
     runs-on: self-hosted
-    strategy:
-      fail-fast: false
-      matrix:
-        targetPlatform: 
-          - x86_64
-          - i686
-          - aarch64
-          - mips
-          - mipsel
     steps: 
 
     - name: 🧪 Environment Info
@@ -49,12 +40,8 @@ jobs:
     - name: ⚡ Install NPM Dependancies
       run: "npm i"
 
-    - name: 🛠 Add Rust Target
-      run: rustup target add ${{matrix.targetPlatform}}-unknown-linux-gnu
-
     - name: 🛠 Build 
-      run: npm run tauri build --verbose -- --target ${{matrix.targetPlatform}}-unknown-linux-gnu
-
+      run: npm run compile
 
     - name: 🗳 Upload artifact 
       uses: actions/upload-artifact@v1
