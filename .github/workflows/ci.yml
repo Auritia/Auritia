@@ -5,7 +5,8 @@ on: [push, pull_request, workflow_dispatch]
 jobs:
   build-linux:
     name: "🐧 Compile for Linux"
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
+    # runs-on: self-hosted
     strategy:
       fail-fast: false
       matrix:
@@ -36,17 +37,8 @@ jobs:
     - name: ⚡ Install Tauri CLI 
       run : cargo install tauri-cli --version ^1.0.0-beta
 
-    - name: ⚡ Install linker (multilib)
-      run: "sudo apt install gcc-multilib -y"
-
-    - name: ⚡ Install linker (mips)
-      run: "sudo apt install gcc-mips-linux-gnu -y"
-      
-    - name: ⚡ Install linker (mipsel)
-      run: "sudo apt install gcc-mipsel-linux-gnu -y"
-
-    - name: ⚡ Install linker (aarch64)
-      run: "sudo apt install gcc-aarch64-linux-gnu -y"
+    - name: ⚡ Install linkers
+      run: "sudo apt install -y gcc-multilib gcc-mips-linux-gnu gcc-mipsel-linux-gnu gcc-aarch64-linux-gnu"
 
     - name: ⚡ Install NPM Dependancies
       run: "npm i"
