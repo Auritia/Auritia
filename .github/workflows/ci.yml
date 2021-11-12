@@ -18,8 +18,8 @@ jobs:
           - mipsel
     steps: 
 
-    - name: Fix Cargo
-      run: "source $HOME/.cargo/env"
+    - name: 🧪 Environment Info
+      run: "npx env-info"
 
     - name: 🛎 Checkout
       uses: actions/checkout@v2
