@@ -5,8 +5,8 @@ on: [push, pull_request, workflow_dispatch]
 jobs:
   build-linux:
     name: "🐧 Compile for Linux"
-    runs-on: ubuntu-latest
-    # runs-on: self-hosted
+    # runs-on: ubuntu-latest
+    runs-on: self-hosted
     strategy:
       fail-fast: false
       matrix:
