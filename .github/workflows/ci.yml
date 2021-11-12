@@ -16,7 +16,7 @@ jobs:
           - aarch64
           - mips
           - mipsel
-    steps:
+    steps: 
 
     - name: 🛎 Checkout
       uses: actions/checkout@v2
