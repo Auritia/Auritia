@@ -45,8 +45,8 @@ jobs:
     # - name: ⚡ Install linker (aarch64)
     #   run: "sudo apt install gcc-aarch64-linux-gnu -y"
 
-    # - name: ⚡ Install NPM Dependancies
-    #   run: "npm i"
+    - name: ⚡ Install NPM Dependancies
+      run: "npm i"
 
     - name: 🛠 Build 
       run: npm run compile
