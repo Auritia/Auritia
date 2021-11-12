@@ -24,6 +24,10 @@ jobs:
     - name: 🛎 Checkout
       uses: actions/checkout@v2
 
+    # These are preinstalled in our self-hosted Auritia runners
+    # So I will leave them commented out for now, but for anyone
+    # Else who needs to run actions uncomment this and it should work for you
+
     # - name: ⚡ Install System Dependancies 
     #   run: "sudo apt update && sudo apt install -y libwebkit2gtk-4.0-dev build-essential curl wget libssl-dev libgtk-3-dev libappindicator3-dev patchelf librsvg2-dev"
 
@@ -39,12 +43,11 @@ jobs:
     # - name: ⚡ Install linker (aarch64)
     #   run: "sudo apt install gcc-aarch64-linux-gnu -y"
 
+    # - name: ⚡ Test Tauri
+    #   run: "npm run tauri"
+
     - name: ⚡ Install NPM Dependancies
       run: "npm i"
-
-
-    - name: ⚡ Test Tauri
-      run: "npm run tauri"
 
     - name: 🛠 Build 
       run: npm run compile
