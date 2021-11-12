@@ -49,8 +49,12 @@ jobs:
     - name: ⚡ Install NPM Dependancies
       run: "npm i"
 
+    - name: 🛠 Add Rust Target
+      run: rustup target add ${{matrix.targetPlatform}}-unknown-linux-gnu
+
     - name: 🛠 Build 
-      run: npm run compile
+      run: npm run tauri build --verbose -- --target ${{matrix.targetPlatform}}-unknown-linux-gnu
+
 
     - name: 🗳 Upload artifact 
       uses: actions/upload-artifact@v1
