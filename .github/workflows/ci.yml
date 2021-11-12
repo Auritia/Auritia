@@ -18,6 +18,9 @@ jobs:
           - mipsel
     steps: 
 
+    - name: Fix Cargo
+      run: "source $HOME/.cargo/env"
+
     - name: 🛎 Checkout
       uses: actions/checkout@v2
 
