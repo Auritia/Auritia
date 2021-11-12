@@ -39,8 +39,9 @@ jobs:
     - name: ⚡ Install NPM Dependancies
       run: "npm i"
 
-    - name: Chown
-      run: "chown -R docker /home/docker/actions-runner/_work/auritia-app/auritia-app/node_modules/@tauri-apps/cli/bin"
+
+    - name: ⚡ Test Tauri
+      run: "npm run tauri"
 
     - name: 🛠 Build 
       run: npm run compile
