@@ -20,8 +20,8 @@ jobs:
     - name: 🛎 Checkout
       uses: actions/checkout@v2
 
-    # - name: ⚡ Install System Dependancies 
-    #   run: "sudo apt update && sudo apt install -y libwebkit2gtk-4.0-dev build-essential curl wget libssl-dev libgtk-3-dev libappindicator3-dev patchelf librsvg2-dev"
+    - name: ⚡ Install System Dependancies 
+      run: "sudo apt update && sudo apt install -y libwebkit2gtk-4.0-dev build-essential curl wget libssl-dev libgtk-3-dev libappindicator3-dev patchelf librsvg2-dev"
 
     - name: ⚡ Setup Node 17.1.0
       uses: actions/setup-node@v2
@@ -33,17 +33,17 @@ jobs:
     #   with:
     #     toolchain: stable
 
-    # - name: ⚡ Install linker (multilib)
-    #   run: "sudo apt install gcc-multilib -y"
+    - name: ⚡ Install linker (multilib)
+      run: "sudo apt install gcc-multilib -y"
 
-    # - name: ⚡ Install linker (mips)
-    #   run: "sudo apt install gcc-mips-linux-gnu -y"
+    - name: ⚡ Install linker (mips)
+      run: "sudo apt install gcc-mips-linux-gnu -y"
       
-    # - name: ⚡ Install linker (mipsel)
-    #   run: "sudo apt install gcc-mipsel-linux-gnu -y"
+    - name: ⚡ Install linker (mipsel)
+      run: "sudo apt install gcc-mipsel-linux-gnu -y"
 
-    # - name: ⚡ Install linker (aarch64)
-    #   run: "sudo apt install gcc-aarch64-linux-gnu -y"
+    - name: ⚡ Install linker (aarch64)
+      run: "sudo apt install gcc-aarch64-linux-gnu -y"
 
     - name: ⚡ Install NPM Dependancies
       run: "npm i"
