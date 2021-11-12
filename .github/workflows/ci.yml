@@ -28,10 +28,13 @@ jobs:
       with:
         node-version: '17.1.0'
 
-    # - name: ⚡ Setup Cargo
-    #   uses: actions-rs/toolchain@v1
-    #   with:
-    #     toolchain: stable
+    - name: ⚡ Setup Cargo
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+
+    - name: ⚡ Install Tauri CLI 
+      run : cargo install tauri-cli --version ^1.0.0-beta
 
     - name: ⚡ Install linker (multilib)
       run: "sudo apt install gcc-multilib -y"
