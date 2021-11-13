@@ -3,6 +3,7 @@
   windows_subsystem = "windows"
 )]
 
+mod engine;
 mod interface;
 
 // the payload type must implement `Serialize`.
@@ -23,6 +24,7 @@ fn main() {
       });
     })
     .menu(interface::create_menus())
+    .invoke_handler(tauri::generate_handler![engine::beep])
     .on_menu_event(move |event| match event.menu_item_id() {
       "open" => {
         event.window().emit("open", &empty_payload).unwrap();

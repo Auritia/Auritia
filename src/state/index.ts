@@ -1,6 +1,10 @@
 import { emit, listen } from "@tauri-apps/api/event";
 import { open, save } from "@tauri-apps/api/dialog";
+// With the Tauri API npm package:
+import { invoke } from "@tauri-apps/api/tauri";
 
+// Invoke the command
+invoke("my_custom_command");
 import { AURITIA_FILE_FILTER } from "~/constants";
 import { reactive } from "vue";
 
@@ -50,6 +54,8 @@ export class State extends Store<IAppState> {
 
   public play() {
     this.state.isPlaying = true;
+    invoke("beep");
+
     console.log("now playing");
 
     emit(
