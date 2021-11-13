@@ -3,10 +3,19 @@ import Header from "./components/Header.vue";
 </script>
 
 <template>
-  <div>
+  <div class="flex flex-col h-full w-full">
     <Header />
-    <div class="flex flex-col items-center justify-center w-full h-full">
-      <!-- <img src="./assets/full_logo.svg" class="w-96" alt="" /> -->
+    <div
+      class="
+        flex flex-col
+        bg-theme-100
+        items-center
+        justify-center
+        w-full
+        h-full
+      "
+    >
+      <img src="./assets/full_logo.svg" class="w-96" alt="" />
     </div>
   </div>
 </template>
@@ -36,6 +45,7 @@ svg {
 }
 
 * {
+  @apply !outline-none;
   scrollbar-width: thin;
 }
 *::selection {
