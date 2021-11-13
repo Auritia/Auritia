@@ -5,7 +5,7 @@
 
 mod interface;
 
-use tauri::{Manager, Window};
+use tauri::Manager;
 
 // the payload type must implement `Serialize`.
 // for global events, it also must implement `Clone`.
