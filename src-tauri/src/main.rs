@@ -15,6 +15,8 @@ struct Payload {
 }
 
 fn main() {
+  let empty_payload = Payload { message: "".into() };
+
   tauri::Builder::default()
     .setup(|app| {
       // listen to the `event-name` (emitted on any window)
@@ -43,54 +45,33 @@ fn main() {
       });
     })
     .menu(interface::create_menus())
-    .on_menu_event(|event| match event.menu_item_id() {
+    .on_menu_event(move |event| match event.menu_item_id() {
       "open" => {
-        event
-          .window()
-          .emit("open", Payload { message: "".into() })
-          .unwrap();
+        event.window().emit("open", &empty_payload).unwrap();
         println!("open clicked!")
       }
       "save" => {
-        event
-          .window()
-          .emit("save", Payload { message: "".into() })
-          .unwrap();
+        event.window().emit("save", &empty_payload).unwrap();
         println!("save Clicked!")
       }
       "save_as" => {
-        event
-          .window()
-          .emit("save_as", Payload { message: "".into() })
-          .unwrap();
+        event.window().emit("save_as", &empty_payload).unwrap();
         println!("save_as Clicked!")
       }
       "render" => {
-        event
-          .window()
-          .emit("render", Payload { message: "".into() })
-          .unwrap();
+        event.window().emit("render", &empty_payload).unwrap();
         println!("render Clicked!")
       }
       "project_info" => {
-        event
-          .window()
-          .emit("project_info", Payload { message: "".into() })
-          .unwrap();
+        event.window().emit("project_info", &empty_payload).unwrap();
         println!("project_info Clicked!")
       }
       "preferences" => {
-        event
-          .window()
-          .emit("preferences", Payload { message: "".into() })
-          .unwrap();
+        event.window().emit("preferences", &empty_payload).unwrap();
         println!("preferences Clicked!")
       }
       "docs" => {
-        event
-          .window()
-          .emit("docs", Payload { message: "".into() })
-          .unwrap();
+        event.window().emit("docs", &empty_payload).unwrap();
         println!("docs Clicked!")
       }
       _ => {}
