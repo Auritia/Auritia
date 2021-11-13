@@ -32,6 +32,24 @@ fn main() {
       });
     })
     .menu(menu)
+    .on_menu_event(|event| match event.menu_item_id() {
+      "open" => {
+        println!("open clicked!");
+      }
+      "save" => {
+        println!("save Clicked!")
+      }
+      "save_as" => {
+        println!("save_as Clicked!")
+      }
+      "render" => {
+        println!("render Clicked!")
+      }
+      "project_info" => {
+        println!("project_info Clicked!")
+      }
+      _ => {}
+    })
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }
