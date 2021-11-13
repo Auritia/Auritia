@@ -26,31 +26,24 @@ fn main() {
     .on_menu_event(move |event| match event.menu_item_id() {
       "open" => {
         event.window().emit("open", &empty_payload).unwrap();
-        println!("open clicked!")
       }
       "save" => {
         event.window().emit("save", &empty_payload).unwrap();
-        println!("save Clicked!")
       }
       "save_as" => {
         event.window().emit("save_as", &empty_payload).unwrap();
-        println!("save_as Clicked!")
       }
       "render" => {
         event.window().emit("render", &empty_payload).unwrap();
-        println!("render Clicked!")
       }
       "project_info" => {
         event.window().emit("project_info", &empty_payload).unwrap();
-        println!("project_info Clicked!")
       }
       "preferences" => {
         event.window().emit("preferences", &empty_payload).unwrap();
-        println!("preferences Clicked!")
       }
       "docs" => {
         event.window().emit("docs", &empty_payload).unwrap();
-        println!("docs Clicked!")
       }
       _ => {}
     })
