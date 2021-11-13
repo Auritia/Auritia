@@ -12,7 +12,7 @@ const AURITIA_FILE_FILTER = {
 
 await listen("open", async (event) => {
   console.log("open");
-  const files = await open();
+  const files = await open(AURITIA_FILE_FILTER);
   console.log(files);
 });
 await listen("save", async (event) => {
