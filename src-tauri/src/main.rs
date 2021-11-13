@@ -30,6 +30,12 @@ fn main() {
       "project_info" => {
         println!("project_info Clicked!")
       }
+      "preferences" => {
+        println!("preferences Clicked!")
+      }
+      "docs" => {
+        println!("docs Clicked!")
+      }
       _ => {}
     })
     .run(tauri::generate_context!())
