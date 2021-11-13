@@ -5,7 +5,7 @@ import Header from "./components/Header.vue";
 <template>
   <div class="flex flex-col items-center justify-center w-full h-full">
     <Header />
-    <img src="./assets/logo.png" class="w-64" alt="" />
+    <img src="./assets/full_logo.svg" class="w-96" alt="" />
   </div>
 </template>
 
