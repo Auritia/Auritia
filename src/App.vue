@@ -15,7 +15,7 @@ import Header from "./components/Header.vue";
 #app,
 body,
 html {
-  @apply h-full w-full text-white bg-theme-100;
+  @apply h-full w-full select-none text-white bg-theme-100;
 }
 
 :root {
@@ -30,6 +30,11 @@ html {
   --theme-800: #9e9e9e;
   --theme-900: #b6b6b6;
 }
+
+svg {
+  fill: currentColor;
+}
+
 * {
   scrollbar-width: thin;
 }

@@ -20,7 +20,6 @@ export default defineConfig({
       resolvers: [
         IconsResolver({
           customCollections: ["fluency"],
-          componentPrefix: "",
         }),
       ],
     }),

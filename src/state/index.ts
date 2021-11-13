@@ -50,6 +50,8 @@ export class State extends Store<IAppState> {
 
   public play() {
     this.state.isPlaying = true;
+    console.log("now playing");
+
     emit(
       "play",
       JSON.stringify({
