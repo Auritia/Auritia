@@ -8,7 +8,7 @@ import Header from "./components/Header.vue";
     <div
       class="
         flex flex-col
-        bg-theme-100
+        bg-theme-200
         items-center
         justify-center
         w-full

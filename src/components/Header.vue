@@ -25,46 +25,32 @@
     </div>
     <div class="flex">
       <button
-        class="
-          h-full
-          flex
-          items-center
-          justify-center
-          hover:bg-theme-200
-          py-1
-          px-4
-          text-base text-white
-        "
+        @click="appWindow.minimize()"
+        class="controlButton hover:bg-theme-200"
       >
-        <i-fluency-minimize @click="appWindow.minimize()" />
+        <i-fluency-minimize />
       </button>
+
       <button
-        class="
-          h-full
-          flex
-          items-center
-          justify-center
-          hover:bg-theme-200
-          py-1
-          px-4
-          text-base text-white
+        @click="
+          appWindow
+            .isFullscreen()
+            .then((isFullscreen) => appWindow.setFullscreen(!isFullscreen))
         "
+        class="controlButton hover:bg-theme-200"
       >
-        <i-fluency-maximize @click="appWindow.toggleMaximize()" />
+        <i-fluency-fullscreen />
       </button>
+
       <button
-        class="
-          h-full
-          flex
-          items-center
-          justify-center
-          hover:bg-red-500
-          py-1
-          px-4
-          text-base text-white
-        "
+        @click="appWindow.toggleMaximize()"
+        class="controlButton hover:bg-theme-200"
       >
-        <i-fluency-x @click="appWindow.close()" />
+        <i-fluency-maximize />
+      </button>
+
+      <button @click="appWindow.close()" class="controlButton hover:bg-red-500">
+        <i-fluency-x />
       </button>
     </div>
   </div>
@@ -75,3 +61,9 @@ import { useState } from "~/state";
 import { appWindow } from "@tauri-apps/api/window";
 const { state, play, stop, pause } = useState();
 </script>
+
+<style lang="postcss">
+.controlButton {
+  @apply h-full flex items-center justify-center py-1.5 px-4 text-sm text-white;
+}
+</style>
