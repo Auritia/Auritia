@@ -17,38 +17,19 @@ fn main() {
   let empty_payload = Payload { message: "".into() };
 
   tauri::Builder::default()
-    .on_page_load(|window, _payload| {
-      let label = window.label().to_string();
-      window.listen("clicked".to_string(), move |_payload| {
-        println!("got 'clicked' event on window '{}'", label);
-      });
-    })
+    // Register the menu ribbon
     .menu(interface::create_menus())
+    // Register Rust function to Vue
     .invoke_handler(tauri::generate_handler![engine::beep])
-    .on_menu_event(move |event| match event.menu_item_id() {
-      "open" => {
-        event.window().emit("open", &empty_payload).unwrap();
-      }
-      "save" => {
-        event.window().emit("save", &empty_payload).unwrap();
-      }
-      "save_as" => {
-        event.window().emit("save_as", &empty_payload).unwrap();
-      }
-      "render" => {
-        event.window().emit("render", &empty_payload).unwrap();
-      }
-      "project_info" => {
-        event.window().emit("project_info", &empty_payload).unwrap();
-      }
-      "preferences" => {
-        event.window().emit("preferences", &empty_payload).unwrap();
-      }
-      "docs" => {
-        event.window().emit("docs", &empty_payload).unwrap();
-      }
-      _ => {}
+    // Pass the events to Vue
+    .on_menu_event(move |event| {
+      event
+        .window()
+        .emit(event.menu_item_id(), &empty_payload)
+        .unwrap()
     })
+    // Run the app
     .run(tauri::generate_context!())
+    // Catch errors
     .expect("error while running tauri application");
 }
