@@ -2,6 +2,7 @@ import { emit, listen } from "@tauri-apps/api/event";
 import { open, save } from "@tauri-apps/api/dialog";
 
 import { AURITIA_FILE_FILTER } from "~/constants";
+import { reactive } from "vue";
 
 listen("open", async (event) => {
   const files = await open(AURITIA_FILE_FILTER);
@@ -27,3 +28,70 @@ listen("preferences", async (event) => {
 listen("docs", async (event) => {
   console.log("docs");
 });
+
+/**
+ * Le abstract class that holds the attribute state
+ * @author Goxer & N1kO23
+ */
+export class Store<T extends Object> {
+  public state: T;
+
+  public constructor(data: T) {
+    this.state = reactive(data) as T;
+  }
+}
+
+export type AppEvents = "stopSound";
+export class State extends Store<IAppState> {
+  constructor(state: IAppState) {
+    super(state);
+    window.addEventListener("keydown", (e: KeyboardEvent) => {});
+  }
+
+  public play() {
+    this.state.isPlaying = true;
+    emit(
+      "play",
+      JSON.stringify({
+        pos: 0,
+      })
+    );
+  }
+  public pause() {
+    this.state.isPlaying = false;
+  }
+  public stop() {
+    this.state.isPlaying = false;
+    this.state.playheadPosition = 0;
+  }
+}
+
+export class Project {
+  name: string;
+
+  constructor(name: string = "New Project") {
+    this.name = name;
+  }
+}
+
+export type TimeSignature = [number, number];
+
+export interface IAppState {
+  project: Project;
+  isMetronomeEnabled: boolean;
+  tempo: number;
+  isPlaying: boolean;
+  playheadPosition: number;
+  timeSignature: TimeSignature;
+}
+
+const globalState = new State({
+  project: new Project(),
+  isMetronomeEnabled: false,
+  playheadPosition: 0,
+  tempo: 128,
+  isPlaying: false,
+  timeSignature: [4, 4],
+});
+
+export const useState = () => globalState;

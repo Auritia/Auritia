@@ -3,9 +3,11 @@ import Header from "./components/Header.vue";
 </script>
 
 <template>
-  <div class="flex flex-col items-center justify-center w-full h-full">
+  <div>
     <Header />
-    <img src="./assets/full_logo.svg" class="w-96" alt="" />
+    <div class="flex flex-col items-center justify-center w-full h-full">
+      <!-- <img src="./assets/full_logo.svg" class="w-96" alt="" /> -->
+    </div>
   </div>
 </template>
 
@@ -13,7 +15,7 @@ import Header from "./components/Header.vue";
 #app,
 body,
 html {
-  @apply h-full w-full bg-theme-100;
+  @apply h-full w-full text-white bg-theme-100;
 }
 
 :root {
