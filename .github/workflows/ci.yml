@@ -14,6 +14,9 @@ jobs:
     - name: 🛎 Checkout
       uses: actions/checkout@v2
 
+    - name: ⚡ Install ALSA
+      run: sudo apt install alsa-utils
+
     - name: ⚡ Install NPM Dependancies
       run: "npm i"
 
