@@ -25,26 +25,26 @@
     </div>
     <div class="flex">
       <button
-        @click="appWindow.minimize()"
-        class="controlButton hover:bg-theme-200"
-      >
-        <i-fluency-minimize />
-      </button>
-
-      <button
         @click="
           appWindow
             .isFullscreen()
             .then((isFullscreen) => appWindow.setFullscreen(!isFullscreen))
         "
-        class="controlButton hover:bg-theme-200"
+        class="controlButton hover:bg-theme-400"
       >
         <i-fluency-fullscreen />
       </button>
 
       <button
+        @click="appWindow.minimize()"
+        class="controlButton hover:bg-theme-400"
+      >
+        <i-fluency-minimize />
+      </button>
+
+      <button
         @click="appWindow.toggleMaximize()"
-        class="controlButton hover:bg-theme-200"
+        class="controlButton hover:bg-theme-400"
       >
         <i-fluency-maximize />
       </button>
