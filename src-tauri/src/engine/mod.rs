@@ -1,8 +1,6 @@
 use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
 use cpal::Stream;
 
-pub struct Handle(Stream);
-
 #[tauri::command]
 pub fn beep() {
   let host = cpal::default_host();
