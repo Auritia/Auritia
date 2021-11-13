@@ -65,17 +65,17 @@ input[type="range"]::-webkit-slider-runnable-track {
 input[type="range"]::-webkit-slider-thumb {
   @apply -mt-1;
 }
-*.scrollable {
+.scrollable {
   overflow-y: overlay;
   overflow-x: initial;
 }
-*.animated {
+.animated {
   @apply duration-100 transition-all;
 }
-*.clicky {
-  @apply animated transform cursor-pointer hover:scale-105 active:scale-95;
+.clicky {
+  @apply cursor-pointer;
 }
-*.fullscreen {
+.fullscreen {
   @apply absolute z-30 top-0 left-0 w-full h-full;
 }
 </style>
