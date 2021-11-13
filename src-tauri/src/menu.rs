@@ -4,16 +4,16 @@ pub fn create_menus() -> tauri::Menu {
   let file_menu = Submenu::new(
     "File",
     Menu::new()
-      .add_item(CustomMenuItem::new("open".to_string(), "Open"))
+      .add_item(CustomMenuItem::new("open".to_string(), "Open..."))
       .add_item(CustomMenuItem::new("save".to_string(), "Save Project"))
       .add_item(CustomMenuItem::new(
         "save_as".to_string(),
         "Save Project As...",
       ))
-      .add_item(CustomMenuItem::new("render".to_string(), "Render Audio"))
+      .add_item(CustomMenuItem::new("render".to_string(), "Render Audio..."))
       .add_item(CustomMenuItem::new(
         "project_info".to_string(),
-        "Project Info",
+        "Project Info...",
       )),
   );
   let settings_menu = Submenu::new(
