@@ -14,8 +14,8 @@ jobs:
     - name: 🛎 Checkout
       uses: actions/checkout@v2
 
-    - name: ⚡ Install ALSA
-      run: sudo apt install -y alsa-utils libasound2-dev
+    # - name: ⚡ Install ALSA
+    #   run: sudo apt install -y alsa-utils libasound2-dev
 
     - name: ⚡ Install NPM Dependancies
       run: "npm i"
