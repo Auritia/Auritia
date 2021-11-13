@@ -1,62 +1,25 @@
 import { defineConfig } from "vite-plugin-windicss";
 import typography from "windicss/plugin/typography";
-
-function cssVarRgbHelper(cssVariable: string) {
-  return ({
-    opacityVariable,
-    opacityValue,
-  }: {
-    opacityVariable: string;
-    opacityValue: number;
-  }) => {
-    if (opacityValue !== undefined) {
-      return `rgba(var(--${cssVariable}), ${opacityValue})`;
-    }
-    if (opacityVariable !== undefined) {
-      return `rgba(var(--${cssVariable}), var(${opacityVariable}, 1))`;
-    }
-    return `rgb(var(--${cssVariable}))`;
-  };
-}
+import colors from "windicss/colors";
 
 export default defineConfig({
   darkMode: "class",
   plugins: [typography()],
   theme: {
     extend: {
+      ...colors,
       colors: {
-        primary: {
-          100: cssVarRgbHelper("primary-100"),
-          200: cssVarRgbHelper("primary-200"),
-          300: cssVarRgbHelper("primary-300"),
-          400: cssVarRgbHelper("primary-400"),
-          500: cssVarRgbHelper("primary-500"),
-          600: cssVarRgbHelper("primary-600"),
-          700: cssVarRgbHelper("primary-700"),
-          800: cssVarRgbHelper("primary-800"),
-          900: cssVarRgbHelper("primary-900"),
-        },
-        secondary: {
-          100: cssVarRgbHelper("secondary-100"),
-          200: cssVarRgbHelper("secondary-200"),
-          300: cssVarRgbHelper("secondary-300"),
-          400: cssVarRgbHelper("secondary-400"),
-          500: cssVarRgbHelper("secondary-500"),
-          600: cssVarRgbHelper("secondary-600"),
-          700: cssVarRgbHelper("secondary-700"),
-          800: cssVarRgbHelper("secondary-800"),
-          900: cssVarRgbHelper("secondary-900"),
-        },
-        surface: {
-          100: cssVarRgbHelper("surface-100"),
-          200: cssVarRgbHelper("surface-200"),
-          300: cssVarRgbHelper("surface-300"),
-          400: cssVarRgbHelper("surface-400"),
-          500: cssVarRgbHelper("surface-500"),
-          600: cssVarRgbHelper("surface-600"),
-          700: cssVarRgbHelper("surface-700"),
-          800: cssVarRgbHelper("surface-800"),
-          900: cssVarRgbHelper("surface-900"),
+        accent: "var(--accent-color)",
+        theme: {
+          100: "var(--theme-100)",
+          200: "var(--theme-200)",
+          300: "var(--theme-300)",
+          400: "var(--theme-400)",
+          500: "var(--theme-500)",
+          600: "var(--theme-600)",
+          700: "var(--theme-700)",
+          800: "var(--theme-800)",
+          900: "var(--theme-900)",
         },
       },
     },
