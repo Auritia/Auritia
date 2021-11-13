@@ -33,7 +33,7 @@ listen("docs", async (event) => {
  * Le abstract class that holds the attribute state
  * @author Goxer & N1kO23
  */
-export class Store<T extends Object> {
+export abstract class Store<T extends Object> {
   public state: T;
 
   public constructor(data: T) {
