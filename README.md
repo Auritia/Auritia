@@ -1,4 +1,4 @@
-# Vue 3 + Typescript + Vite + Rust + Tauri
+Vue 3 + Typescript + Vite + Rust + Tauri (Vuittar Stack)
 
 ## Steps
 
