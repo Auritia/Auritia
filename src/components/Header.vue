@@ -30,26 +30,23 @@
             .isFullscreen()
             .then((isFullscreen) => appWindow.setFullscreen(!isFullscreen))
         "
-        class="controlButton hover:bg-theme-400"
+        class="controlButton"
       >
         <i-fluency-fullscreen />
       </button>
 
-      <button
-        @click="appWindow.minimize()"
-        class="controlButton hover:bg-theme-400"
-      >
+      <button @click="appWindow.minimize()" class="controlButton">
         <i-fluency-minimize />
       </button>
 
-      <button
-        @click="appWindow.toggleMaximize()"
-        class="controlButton hover:bg-theme-400"
-      >
+      <button @click="appWindow.toggleMaximize()" class="controlButton">
         <i-fluency-maximize />
       </button>
 
-      <button @click="appWindow.close()" class="controlButton hover:bg-red-500">
+      <button
+        @click="appWindow.close()"
+        class="controlButton hover:bg-red-500 active:bg-red-400"
+      >
         <i-fluency-x />
       </button>
     </div>
@@ -64,6 +61,6 @@ const { state, play, stop, pause } = useState();
 
 <style lang="postcss">
 .controlButton {
-  @apply h-full flex items-center justify-center py-1.5 px-4 text-sm text-white;
+  @apply hover:bg-theme-400 active:bg-theme-500 h-full flex items-center justify-center py-1.5 px-4 text-sm text-white;
 }
 </style>
