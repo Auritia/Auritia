@@ -1,37 +1,15 @@
 import { emit, listen } from "@tauri-apps/api/event";
 import { open, save } from "@tauri-apps/api/dialog";
-// With the Tauri API npm package:
 import { invoke } from "@tauri-apps/api/tauri";
-
-// Invoke the command
-invoke("my_custom_command");
 import { AURITIA_FILE_FILTER } from "~/constants";
 import { reactive } from "vue";
 
-listen("open", async (event) => {
-  const files = await open(AURITIA_FILE_FILTER);
-  console.log(files);
-});
-listen("save", async (event) => {
-  const savePath = await save(AURITIA_FILE_FILTER);
-  console.log(savePath);
-});
-listen("save_as", async (event) => {
-  const savePath = await save(AURITIA_FILE_FILTER);
-  console.log(savePath);
-});
-listen("render", async (event) => {
-  console.log("render");
-});
-listen("project_info", async (event) => {
-  console.log("project_info");
-});
-listen("preferences", async (event) => {
+const preferences = () => {
   console.log("preferences");
-});
-listen("docs", async (event) => {
+};
+const docs = () => {
   console.log("docs");
-});
+};
 
 /**
  * Le abstract class that holds the attribute state
@@ -79,6 +57,25 @@ export class Project {
 
   constructor(name: string = "New Project") {
     this.name = name;
+  }
+
+  public async open() {
+    const files = await open(AURITIA_FILE_FILTER);
+    console.log(files);
+  }
+  public async save() {
+    const savePath = await save(AURITIA_FILE_FILTER);
+    console.log(savePath);
+  }
+  public async saveAs() {
+    const savePath = await save(AURITIA_FILE_FILTER);
+    console.log(savePath);
+  }
+  public render() {
+    console.log("render");
+  }
+  public info() {
+    console.log("project_info");
   }
 }
 

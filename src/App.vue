@@ -5,17 +5,8 @@ import Header from "./components/Header.vue";
 <template>
   <div class="flex flex-col h-full w-full">
     <Header />
-    <div
-      class="
-        flex flex-col
-        bg-theme-200
-        items-center
-        justify-center
-        w-full
-        h-full
-      "
-    >
-      <img src="./assets/full_logo.svg" class="w-96" alt="" />
+    <div class="flex flex-col bg-theme-200 items-center justify-center w-full h-full">
+      <!-- <img src="./assets/full_logo.svg" class="w-96" alt="" /> -->
     </div>
   </div>
 </template>
@@ -25,6 +16,7 @@ import Header from "./components/Header.vue";
 body,
 html {
   @apply h-full w-full select-none text-white bg-theme-100;
+  font-family: "Roboto";
 }
 
 :root {
@@ -36,8 +28,8 @@ html {
   --theme-500: #2a2d34;
   --theme-600: #3e4147;
   --theme-700: #6d6e72;
-  --theme-800: #9e9e9e;
-  --theme-900: #b6b6b6;
+  --theme-800: #a0a0a0;
+  --theme-900: #b9b9b9;
 }
 
 svg {
@@ -80,12 +72,12 @@ input[type="range"]::-webkit-slider-thumb {
   overflow-x: initial;
 }
 .animated {
-  @apply duration-100 transition-all;
+  @apply duration-50 transition-all;
 }
 .clicky {
   @apply cursor-pointer;
 }
 .fullscreen {
-  @apply absolute z-30 top-0 left-0 w-full h-full;
+  @apply absolute top-0 left-0 w-full h-full;
 }
 </style>

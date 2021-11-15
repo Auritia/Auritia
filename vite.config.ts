@@ -7,6 +7,7 @@ import Components from "unplugin-vue-components/vite";
 import { FileSystemIconLoader } from "unplugin-icons/loaders";
 import ViteFonts from "vite-plugin-fonts";
 import path from "path";
+import loadVersion from "vite-plugin-package-version";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -16,6 +17,7 @@ export default defineConfig({
     },
   },
   plugins: [
+    loadVersion(),
     Components({
       resolvers: [
         IconsResolver({
