@@ -13,7 +13,7 @@ import Header from "./components/Header.vue";
       <Navigation />
       <div class="w-full"></div>
     </div>
-    <div class="flex h-96"></div>
+    <!-- <div class="flex h-96"></div> -->
   </div>
 </template>
 

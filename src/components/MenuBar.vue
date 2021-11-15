@@ -1,5 +1,5 @@
 <template>
-  <div data-tauri-drag-region class="bg-theme-100 text-xs flex text-light-50 justify-between items-center">
+  <div data-tauri-drag-region class="bg-theme-100 text-xs flex text-theme-700 justify-between items-center">
     <div class="flex gap-4 h-full items-center">
       <img src="../assets/horizontal_logo.svg" class="ml-2" alt="" />
 
@@ -22,11 +22,7 @@
     </div>
 
     <p>v{{ version }} | {{ state.project.name }}</p>
-    <!-- <div class="text-sm flex gap-1">
-      <i-fluency-play @click="play()" :class="state.isPlaying && 'text-green-400'" class="clicky" />
-      <i-fluency-stop @click="stop()" class="clicky" />
-      <i-fluency-pause @click="pause()" class="clicky" />
-    </div> -->
+
     <ControlButtons />
   </div>
 </template>
