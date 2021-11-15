@@ -4,4 +4,33 @@ Vue 3 + Typescript + Vite + Rust + Tauri (Vuittar Stack)
 
 1.  Install [WebView](https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/b97b52c3-9a66-419c-9ef0-90e3a3f72c5c/MicrosoftEdgeWebview2Setup.exe) if you're not on Windows 11
 2.  Install Node deps `npm i`
-3.  To run the dev server to `npm run tauri dev`
+3.  To run the dev server do `npm run tauri dev`
+
+# Compiling
+
+## Linux
+
+1. You will need to install Tauri's dependancies
+```
+sudo apt update && sudo apt install -y libwebkit2gtk-4.0-dev \
+    build-essential \
+    curl \
+    wget \
+    libssl-dev \
+    libgtk-3-dev \
+    libappindicator3-dev \
+    patchelf \
+    librsvg2-dev
+```
+2. Install ALSA audio drivers
+```
+sudo apt install -y alsa-utils libasound2-dev
+```
+3. Install NPM Dependancies
+```
+npm i
+```
+4. Compile with
+```
+npm run compile
+```
