@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import Header from "./components/MenuBar.vue";
+import MenuBar from "./components/MenuBar.vue";
 import Navigation from "./components/Navigation.vue";
+import Header from "./components/Header.vue";
 </script>
 
 <template>
   <div class="flex flex-col h-full w-full">
+    <MenuBar />
     <Header />
     <div class="flex flex-col bg-theme-300 justify-center w-full overflow-scroll h-full">
       <!-- <img src="./assets/full_logo.svg" class="w-96" alt="" /> -->
