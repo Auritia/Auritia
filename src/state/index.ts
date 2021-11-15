@@ -42,9 +42,6 @@ export class State extends Store<IAppState> {
     this.state.isPlaying = false;
     this.state.playheadPosition = 0;
   }
-  public toggleMetronome() {
-    this.state.isMetronomeEnabled = !this.state.isMetronomeEnabled;
-  }
 }
 
 /**
@@ -59,6 +56,13 @@ export class Project {
     this.name = name;
     this.tempo = tempo;
     this.timeSignature = timeSignature;
+  }
+
+  /**
+   * Creates a new project
+   */
+  public async new() {
+    this.constructor();
   }
 
   /**

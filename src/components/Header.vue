@@ -2,7 +2,7 @@
   <div data-tauri-drag-region class="flex justify-between gap-2 text-xs p-1">
     <!-- {{ state.project.tempo }} -->
     <!-- {{ state.project.timeSignature }} -->
-    <Button @click="toggleMetronome()" :isActive="state.isMetronomeEnabled">
+    <Button @click="state.isMetronomeEnabled = !state.isMetronomeEnabled" :isActive="state.isMetronomeEnabled">
       <i-fluency-metronome />
     </Button>
     <div class="text-sm flex gap-1">
@@ -18,5 +18,5 @@
 import { useState } from "~/state";
 import Button from "./shared/Button.vue";
 
-const { state, play, stop, pause, toggleMetronome } = useState();
+const { state, play, stop, pause } = useState();
 </script>
