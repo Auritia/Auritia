@@ -5,7 +5,7 @@
       <slot />
     </div>
   </div>
-  <div :class="isShowing && 'bg-black pointer-events-auto'" class="pointer-events-none z-10 animated opacity-50 fullscreen" @click="isShowing = false"></div>
+  <div :class="isShowing && 'pointer-events-auto'" class="pointer-events-none z-10 animated opacity-50 fullscreen" @click="isShowing = false"></div>
 </template>
 
 <script lang="ts" setup>
