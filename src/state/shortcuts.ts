@@ -3,7 +3,7 @@ import { appWindow } from "@tauri-apps/api/window";
 import router from "~/router";
 import { useState } from ".";
 
-const { state, play, pause, stop } = useState();
+const { state } = useState();
 
 const shift = useKeyModifier("Shift");
 const crtl = useKeyModifier("Control");
