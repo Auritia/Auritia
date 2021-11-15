@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import Header from "./components/MenuBar.vue";
+import Navigation from "./components/Navigation.vue";
 </script>
 
 <template>
   <div class="flex flex-col h-full w-full">
     <Header />
-    <div class="flex flex-col bg-theme-200 items-center justify-center w-full h-full">
+    <div class="flex flex-col bg-theme-300 justify-center w-full overflow-scroll h-full">
       <!-- <img src="./assets/full_logo.svg" class="w-96" alt="" /> -->
+      <Navigation />
+      <div class="w-full"></div>
     </div>
+    <div class="flex h-96"></div>
   </div>
 </template>
 
@@ -38,7 +42,6 @@ svg {
 
 * {
   @apply !outline-none;
-  scrollbar-width: thin;
 }
 *::selection {
   background-color: var(--accent-color);
@@ -47,10 +50,6 @@ svg {
   width: 6px;
   display: none;
   left: -100px;
-}
-*:hover::-webkit-scrollbar {
-  display: initial;
-  overflow-y: overlay;
 }
 *::-webkit-scrollbar-track,
 *::-webkit-scrollbar-corner {
