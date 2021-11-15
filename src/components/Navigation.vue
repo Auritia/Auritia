@@ -33,9 +33,9 @@ fs.readDir("D:/New Geoxor Projects/04. kiss Project").then((content) => (files.v
 
 <style scoped lang="postcss">
 .tab {
-  @apply hover:text-accent p-2 border-transparent border-3 flex items-center cursor-pointer;
+  @apply hover:text-theme-900 p-2 border-transparent border-3 flex items-center cursor-pointer;
   &.active {
-    @apply border-l-accent;
+    @apply border-l-accent text-accent;
   }
 }
 </style>
