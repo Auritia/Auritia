@@ -1,8 +1,7 @@
 use cpal::traits::{DeviceTrait, HostTrait};
 use cpal::{Sample, SampleFormat};
 
-#[tauri::command]
-pub fn beep() {
+pub fn create() {
   // The default host for the current compilation target platform
   let host = cpal::default_host();
 
@@ -10,6 +9,8 @@ pub fn beep() {
   let device = host
     .default_output_device()
     .expect("no output device available");
+
+  println!("[DEBUG] Got device: {}", device.name().unwrap());
 
   // Get supported stream formats by the device
   let mut supported_configs_range = device
@@ -27,9 +28,11 @@ pub fn beep() {
 
   // Get configs
   let sample_format = supported_config.sample_format();
-  let config = supported_config.into();
+  let config: cpal::StreamConfig = supported_config.into();
 
-  println!("playing");
+  println!("[DEBUG] Device channels: {}", config.channels);
+  println!("[DEBUG] Device Sample Rrate: {}", config.sample_rate.0);
+  println!("[DEBUG] Device Buffer Size: {:?}", config.buffer_size);
 
   // Create a stream for the corresponding format
   match sample_format {

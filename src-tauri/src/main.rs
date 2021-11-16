@@ -14,9 +14,11 @@ struct Payload {
 }
 
 fn main() {
+  engine::create();
+
   tauri::Builder::default()
     // Register Rust function to Vue
-    .invoke_handler(tauri::generate_handler![engine::beep])
+    // .invoke_handler(tauri::generate_handler![engine::beep])
     // Run the app
     .run(tauri::generate_context!())
     // Catch errors
