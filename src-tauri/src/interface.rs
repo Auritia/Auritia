@@ -26,7 +26,6 @@ impl Terminal {
       for interface_message in rx {
         match interface_message {
           Message::Time(time) => {
-            print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
             if time.ticks_since_beat().to_integer() == 0 {
               // println!("BEAT");
             }
@@ -49,13 +48,14 @@ impl Terminal {
 }
 
 pub fn print_time(time: clock::Time) {
+  print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
   let ticks_since_beat = time.ticks_since_beat();
   println!("ticks since beat: {}", &ticks_since_beat);
   if ticks_since_beat.to_integer() == 0 {
     println!("BEAT");
   } else {
     for i in 0..ticks_since_beat.to_integer() {
-      println!("-");
+      print!("-");
     }
   }
 }
