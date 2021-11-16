@@ -138,11 +138,11 @@ fn main() {
   // let sample_format = supported_config.sample_format();
   // let config: cpal::StreamConfig = supported_config.into();
 
-  let mut metronome_sound = METRONOME_SOUND.read().unwrap()[0].clone();
   // The buffer to share samples
   let ring = RingBuffer::<f32>::new(1024);
   let (mut producer, mut consumer) = ring.split();
-
+  let mut metronome_sound_high = METRONOME_SOUND.read().unwrap()[0].clone();
+  let mut metronome_sound_low = METRONOME_SOUND.read().unwrap()[1].clone();
   spawn(move || {
     let (tx, rx) = channel();
     let clock_tx = clock::Clock::start(tx.clone());
@@ -177,10 +177,27 @@ fn main() {
           // If we are at the start of the beat play a metronome sound
           if time.ticks_since_beat().to_integer() == 0 {
             println!("BEAT");
-            for i in 0..metronome_sound.samples.len() {
-              if i < 1024 {
-                producer.push(metronome_sound.samples[i]).unwrap();
-                metronome_sound.current_sample += 1;
+
+            if *IS_PLAYING.read().unwrap() == true {
+              if *IS_METRONOME_ENABLED.read().unwrap() == true {
+                // High
+                if time.beats_since_bar().to_integer() == 0 {
+                  for i in 0..metronome_sound_high.samples.len() {
+                    if i < 1024 {
+                      producer.push(metronome_sound_high.samples[i]).unwrap();
+                      metronome_sound_high.current_sample += 1;
+                    }
+                  }
+                }
+                // Low
+                else {
+                  for i in 0..metronome_sound_low.samples.len() {
+                    if i < 1024 {
+                      producer.push(metronome_sound_low.samples[i]).unwrap();
+                      metronome_sound_low.current_sample += 1;
+                    }
+                  }
+                }
               }
             }
           }
@@ -206,21 +223,7 @@ fn main() {
         Some(s) => s,
         None => 0.0,
       };
-      // if metronome_sound.current_sample < metronome_sound.samples.len() {
-      //   producer
-      //     .push(metronome_sound.samples[metronome_sound.current_sample])
-      //     .unwrap();
-      //   metronome_sound.current_sample += 1;
     }
-
-    // let mut next_sample = 0.0;
-
-    // if metronome.current_sample < metronome.samples.len() {
-    //   next_sample += mix_waves(vec![metronome.samples[metronome.current_sample]]);
-    //   metronome.current_sample += 1;
-    // }
-
-    // producer.push(next_sample).unwrap();
   };
 
   // Update the sample rate with the device's default :trol:
