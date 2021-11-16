@@ -25,7 +25,7 @@ const displayValue = computed(() => {
 // Sets model to 0 if alt is held. Otherwise sets dragging to true.
 const onMouseDown = (e: MouseEvent) => {
   if (e.altKey) {
-    state.project.setTempo(props.default);
+    reactive.project.setTempo(props.default);
   } else {
     isDragging.value = true;
     startY = e.clientY;

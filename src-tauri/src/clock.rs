@@ -247,6 +247,71 @@ impl Clock {
     }
   }
 
+  pub fn start(metronome_tx: Sender<metronome::Message>) -> Sender<Message> {
+    let mut clock = Self::new();
+
+    let (tx, rx) = channel();
+
+    metronome_tx
+      .send(metronome::Message::Signature(Signature::default()))
+      .unwrap();
+    metronome_tx
+      .send(metronome::Message::Tempo(clock.tempo))
+      .unwrap();
+
+    spawn(move || {
+      loop {
+        // wait a tick
+        #[allow(unused_variables)]
+        let diff = clock.tick();
+
+        // handle any incoming messages
+        let mut is_empty = false;
+        while !is_empty {
+          let message_result = rx.try_recv();
+          match message_result {
+            Ok(Message::Reset) => {
+              clock.reset();
+            }
+            Ok(Message::Signature(signature)) => {
+              clock.set_signature(signature);
+            }
+            Ok(Message::Tap) => {
+              if let Some(new_tempo) = clock.tap() {
+                metronome_tx
+                  .send(metronome::Message::Tempo(new_tempo))
+                  .unwrap();
+              }
+            }
+            Ok(Message::NudgeTempo(nudge)) => {
+              let old_tempo = clock.tempo;
+              let new_tempo = old_tempo + nudge;
+              metronome_tx
+                .send(metronome::Message::Tempo(new_tempo))
+                .unwrap();
+            }
+            Ok(Message::Tempo(tempo)) => {
+              clock.tempo = tempo;
+            }
+            Err(TryRecvError::Empty) => {
+              is_empty = true;
+            }
+            Err(TryRecvError::Disconnected) => {
+              panic!("{:?}", TryRecvError::Disconnected);
+            }
+          }
+        }
+
+        // send clock time
+        metronome_tx
+          .send(metronome::Message::Time(clock.time()))
+          .unwrap();
+      }
+    });
+
+    tx
+  }
+
   pub fn reset(&mut self) {
     self.time = Time::new(self.signature);
     self.timer = Timer::new(self.signature);
