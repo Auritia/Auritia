@@ -284,15 +284,15 @@ impl Clock {
   }
 
   #[allow(dead_code)]
-  pub fn start(metronome_tx: Sender<Message>) -> Sender<Message> {
+  pub fn start(parent_tx: Sender<Message>) -> Sender<Message> {
     let mut clock = Self::new();
 
     let (tx, rx) = channel();
 
-    metronome_tx
+    parent_tx
       .send(Message::Signature(Signature::default()))
       .unwrap();
-    metronome_tx.send(Message::Tempo(clock.tempo)).unwrap();
+    parent_tx.send(Message::Tempo(clock.tempo)).unwrap();
 
     spawn(move || {
       loop {
@@ -313,13 +313,13 @@ impl Clock {
             }
             Ok(Message::Tap) => {
               if let Some(new_tempo) = clock.tap() {
-                metronome_tx.send(Message::Tempo(new_tempo)).unwrap();
+                parent_tx.send(Message::Tempo(new_tempo)).unwrap();
               }
             }
             Ok(Message::NudgeTempo(nudge)) => {
               let old_tempo = clock.tempo;
               let new_tempo = old_tempo + nudge;
-              metronome_tx.send(Message::Tempo(new_tempo)).unwrap();
+              parent_tx.send(Message::Tempo(new_tempo)).unwrap();
             }
             Ok(Message::Tempo(tempo)) => {
               clock.tempo = tempo;
@@ -335,7 +335,7 @@ impl Clock {
         }
 
         // send clock time
-        metronome_tx.send(Message::Time(clock.time())).unwrap();
+        parent_tx.send(Message::Time(clock.time())).unwrap();
       }
     });
 

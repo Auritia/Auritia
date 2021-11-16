@@ -102,8 +102,8 @@ fn main() {
   let (mut producer, mut consumer) = ring.split();
   let mut metronome_sound_high = METRONOME_SOUND.read().unwrap()[0].clone();
   let mut metronome_sound_low = METRONOME_SOUND.read().unwrap()[1].clone();
+  let (tx, rx) = channel();
   spawn(move || {
-    let (tx, rx) = channel();
     let clock_tx = clock::Clock::start(tx.clone());
     for control_message in rx {
       match control_message {
