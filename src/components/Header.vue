@@ -2,7 +2,8 @@
   <div data-tauri-drag-region class="flex justify-between gap-2 text-xs p-1">
     <!-- {{ state.project.tempo }} -->
     <!-- {{ state.project.timeSignature }} -->
-    <div class="flex gap-0.5">
+    <div class="flex gap-0.5 text-theme-900">
+      <Slider v-model="state.project.tempo" :min="10" :max="999" :step="1.0" :percent="false" :default="128" />
       <Button @click="state.isMetronomeEnabled = !state.isMetronomeEnabled" :isActive="state.isMetronomeEnabled">
         <i-fluency-metronome />
       </Button>
@@ -23,6 +24,7 @@
 <script setup lang="ts">
 import { useState } from "~/state";
 import Button from "./shared/Button.vue";
+import Slider from "./shared/Slider.vue";
 
 const { state, play, stop, pause } = useState();
 </script>
