@@ -1,67 +1,48 @@
-use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
-use cpal::Stream;
+use cpal::traits::{DeviceTrait, HostTrait};
+use cpal::{Sample, SampleFormat};
 
 #[tauri::command]
 pub fn beep() {
+  // The default host for the current compilation target platform
   let host = cpal::default_host();
 
+  // Get the default output audio device on the system
   let device = host
     .default_output_device()
-    .expect("failed to find output device");
+    .expect("no output device available");
 
-  let config = device.default_output_config().unwrap();
-  // println!("Default output config: {:?}", config);
+  // Get supported stream formats by the device
+  let mut supported_configs_range = device
+    .supported_output_configs()
+    .expect("error while querying configs");
 
-  println!("Playing beep");
-  // println!("{:?}", config);
+  // Get the supported config
+  let supported_config = supported_configs_range
+    .next()
+    .expect("no supported config?!")
+    .with_max_sample_rate();
 
-  match config.sample_format() {
-    cpal::SampleFormat::F32 => run::<f32>(&device, &config.into()),
-    cpal::SampleFormat::I16 => run::<i16>(&device, &config.into()),
-    cpal::SampleFormat::U16 => run::<u16>(&device, &config.into()),
-  };
+  // An error handler to handle write errors on stream
+  let err_fn = |err| eprintln!("an error occurred on the output audio stream: {}", err);
 
-  return;
+  // Get configs
+  let sample_format = supported_config.sample_format();
+  let config = supported_config.into();
+
+  println!("playing");
+
+  // Create a stream for the corresponding format
+  match sample_format {
+    SampleFormat::F32 => device.build_output_stream(&config, write_silence::<f32>, err_fn),
+    SampleFormat::I16 => device.build_output_stream(&config, write_silence::<i16>, err_fn),
+    SampleFormat::U16 => device.build_output_stream(&config, write_silence::<u16>, err_fn),
+  }
+  .unwrap();
 }
 
-fn run<T>(device: &cpal::Device, config: &cpal::StreamConfig) -> Stream
-where
-  T: cpal::Sample,
-{
-  let sample_rate = config.sample_rate.0 as f32;
-  let channels = config.channels as usize;
-
-  // Produce a sinusoid of maximum amplitude.
-  let mut sample_clock = 0f32;
-  let mut next_value = move || {
-    sample_clock = (sample_clock + 1.0) % sample_rate;
-    (sample_clock * 440.0 * 2.0 * 3.141592 / sample_rate).sin()
-  };
-
-  let err_fn = |err| println!("an error occurred on stream: {}", err);
-
-  let stream = device
-    .build_output_stream(
-      config,
-      move |data: &mut [T], _| write_data(data, channels, &mut next_value),
-      err_fn,
-    )
-    .unwrap();
-  stream.play().unwrap();
-
-  std::thread::sleep(std::time::Duration::from_millis(1000));
-
-  stream
-}
-
-fn write_data<T>(output: &mut [T], channels: usize, next_sample: &mut dyn FnMut() -> f32)
-where
-  T: cpal::Sample,
-{
-  for frame in output.chunks_mut(channels) {
-    let value: T = cpal::Sample::from::<f32>(&next_sample());
-    for sample in frame.iter_mut() {
-      *sample = value;
-    }
+fn write_silence<T: Sample>(data: &mut [T], _: &cpal::OutputCallbackInfo) {
+  // For each sample of the current sample rate iteration write silence
+  for sample in data.iter_mut() {
+    *sample = Sample::from(&0.0);
   }
 }
