@@ -8,9 +8,9 @@ extern crate ringbuf;
 use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
 use ringbuf::RingBuffer;
 use std::str::FromStr;
-use std::sync::mpsc::{channel, Receiver, Sender};
+use std::sync::mpsc::channel;
 use std::sync::RwLock;
-use std::thread::{sleep, spawn};
+use std::thread::spawn;
 use std::time::Duration;
 use std::time::SystemTime;
 use tauri::Manager;
@@ -73,6 +73,7 @@ pub fn calc_beat_delta(bpm: u16, lower: u8) -> Duration {
 
   Duration::from_secs_f64(quarter_note_sec * factor)
 }
+
 #[allow(dead_code)]
 fn mix_waves(waves: Vec<f32>) -> f32 {
   let mut value: f32 = 0.0;
@@ -81,37 +82,6 @@ fn mix_waves(waves: Vec<f32>) -> f32 {
   }
   return value;
 }
-
-// fn write_data<T: Sample>(data: &mut [T]) {
-//   let mut idx = 0;
-//   let mut output_fell_behind = false;
-
-//   // println!("{:?}", info.timestamp());
-//   for sample in data.iter_mut() {
-//     let mut current_sample = 0.0;
-
-//     if *IS_PLAYING.read().unwrap() == true {
-//       if *IS_METRONOME_ENABLED.read().unwrap() == true {
-//         current_sample = mix_waves(vec![current_sample, METRONOME_SOUND[0].samples[idx]]);
-//         // if (*BPM.read().unwrap() / 60.0) as usize * idx % 4 == 0 {
-//         // } else {
-//         //   current_sample = mix_waves(vec![current_sample, METRONOME_SOUND[1][idx]]);
-//         // }
-
-//         // let white_noise_sample = (rand::random::<f32>() - 0.5) / 2.0;
-//         // current_sample = white_noise_sample;
-//       }
-//     }
-
-//     if output_fell_behind {
-//       println!("output stream fell behind: try increasing latency");
-//   }
-//     *sample = Sample::from(&current_sample);
-//     idx += 1;
-//   }
-
-//   println!("{:?}", METRONOME_SOUND[0].samples);
-// }
 
 fn main() {
   // The default host for the current compilation target platform
@@ -126,17 +96,6 @@ fn main() {
 
   // An error handler to handle write errors on stream
   let err_fn = |err| eprintln!("an error occurred on the output audio stream: {}", err);
-
-  // Get the supported config
-  // let mut supported_configs_range = device
-  //   .supported_output_configs()
-  //   .expect("error while querying configs");
-  // let supported_config = supported_configs_range
-  //   .next()
-  //   .expect("no supported config?!")
-  //   .with_max_sample_rate();
-  // let sample_format = supported_config.sample_format();
-  // let config: cpal::StreamConfig = supported_config.into();
 
   // The buffer to share samples
   let ring = RingBuffer::<f32>::new(1024);
@@ -182,21 +141,11 @@ fn main() {
               if *IS_METRONOME_ENABLED.read().unwrap() == true {
                 // High
                 if time.beats_since_bar().to_integer() == 0 {
-                  for i in 0..metronome_sound_high.samples.len() {
-                    if i < 1024 {
-                      producer.push(metronome_sound_high.samples[i]).unwrap();
-                      metronome_sound_high.current_sample += 1;
-                    }
-                  }
+                  write(&mut producer, &metronome_sound_high.samples);
                 }
                 // Low
                 else {
-                  for i in 0..metronome_sound_low.samples.len() {
-                    if i < 1024 {
-                      producer.push(metronome_sound_low.samples[i]).unwrap();
-                      metronome_sound_low.current_sample += 1;
-                    }
-                  }
+                  write(&mut producer, &metronome_sound_low.samples);
                 }
               }
             }
@@ -287,6 +236,14 @@ pub fn print_time(time: clock::Time) {
   } else {
     for i in 0..ticks_since_beat.to_integer() {
       print!("-");
+    }
+  }
+}
+
+fn write(producer: &mut ringbuf::Producer<f32>, samples: &Vec<f32>) {
+  for i in 0..samples.len() {
+    if i < 1024 {
+      producer.push(samples[i]).unwrap();
     }
   }
 }
