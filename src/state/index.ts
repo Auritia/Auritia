@@ -33,22 +33,19 @@ export class State extends Store<IAppState> {
   }
 
   public play() {
-    this.reactive.isPlaying = true;
-    invoke("create");
-
-    console.log("now playing");
-
     emit(
       "play",
       JSON.stringify({
         pos: 0,
       })
     );
+    this.reactive.isPlaying = true;
   }
   public pause() {
     this.reactive.isPlaying = false;
   }
   public stop() {
+    emit("stop");
     this.reactive.isPlaying = false;
     this.reactive.playheadPosition = 0;
   }

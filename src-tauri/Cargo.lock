@@ -65,6 +65,7 @@ name = "app"
 version = "0.1.0"
 dependencies = [
  "cpal",
+ "hound",
  "lazy_static",
  "rand 0.8.4",
  "serde",
@@ -1382,6 +1383,12 @@ checksum = "62b467343b94ba476dcb2500d242dadbb39557df889310ac77c5d99100aaac33"
 dependencies = [
  "libc",
 ]
+
+[[package]]
+name = "hound"
+version = "3.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8a164bb2ceaeff4f42542bdb847c41517c78a60f5649671b2a07312b6e117549"
 
 [[package]]
 name = "html5ever"

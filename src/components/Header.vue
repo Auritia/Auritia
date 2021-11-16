@@ -4,10 +4,10 @@
     <!-- {{ reactive.project.timeSignature }} -->
     <div class="flex gap-0.5 text-theme-900">
       <Slider v-model="reactive.project.tempo" :min="10" :max="999" :step="1.0" :percent="false" :default="128" />
-      <Button @click="reactive.isMetronomeEnabled = !reactive.isMetronomeEnabled" :isActive="reactive.isMetronomeEnabled">
+      <Button @click="toggleMetronome()" :isActive="reactive.isMetronomeEnabled">
         <i-fluency-metronome />
       </Button>
-      <Button @click="reactive.isLoopEnabled = !reactive.isLoopEnabled" :isActive="reactive.isLoopEnabled">
+      <Button @click="toggleLoop()" :isActive="reactive.isLoopEnabled">
         <i-fluency-loop />
       </Button>
     </div>
@@ -26,5 +26,5 @@ import { useState } from "~/state";
 import Button from "./shared/Button.vue";
 import Slider from "./shared/Slider.vue";
 
-const { reactive, play, stop, pause } = useState();
+const { reactive, toggleMetronome, toggleLoop, play, stop, pause } = useState();
 </script>

@@ -11,8 +11,28 @@ use tauri::Manager;
 #[macro_use]
 extern crate lazy_static;
 
+fn load_metronome() -> Vec<Vec<f32>> {
+  return vec![
+    load_sample("./sounds/metronome_low.wav"),
+    load_sample("./sounds/metronome_high.wav"),
+  ];
+}
+
+fn load_sample(path: &str) -> Vec<f32> {
+  return hound::WavReader::open(path)
+    .unwrap()
+    .samples::<f32>()
+    .map(|s| s.unwrap())
+    .collect();
+}
+
 lazy_static! {
   static ref IS_METRONOME_ENABLED: RwLock<bool> = RwLock::new(false);
+  static ref IS_PLAYING: RwLock<bool> = RwLock::new(false);
+  static ref BPM: RwLock<f32> = RwLock::new(120.00);
+  static ref SAMPLE_RATE: RwLock<u32> = RwLock::new(44100);
+  static ref CHANNEL_COUNT: RwLock<u16> = RwLock::new(2);
+  static ref METRONOME_SOUND: Vec<Vec<f32>> = load_metronome();
 }
 
 mod interface;
@@ -24,14 +44,16 @@ struct Payload {
   value: String,
 }
 
-fn write_white_noise<T: Sample>(data: &mut [T], _: &cpal::OutputCallbackInfo) {
+fn write_data<T: Sample>(data: &mut [T], _: &cpal::OutputCallbackInfo) {
   // For each sample of the current sample rate iteration write white noise
   for sample in data.iter_mut() {
     let mut current_sample = 0.0;
 
-    if *IS_METRONOME_ENABLED.read().unwrap() == true {
-      let white_noise_sample = (rand::random::<f32>() - 0.5) / 2.0;
-      current_sample = white_noise_sample;
+    if *IS_PLAYING.read().unwrap() == true {
+      if *IS_METRONOME_ENABLED.read().unwrap() == true {
+        let white_noise_sample = (rand::random::<f32>() - 0.5) / 2.0;
+        current_sample = white_noise_sample;
+      }
     }
     *sample = Sample::from(&current_sample);
   }
@@ -66,15 +88,20 @@ fn main() {
   let sample_format = supported_config.sample_format();
   let config: cpal::StreamConfig = supported_config.into();
 
-  println!("[DEBUG] Device channels: {}", config.channels);
+  // Update the sample rate with the device's default :trol:
+  *SAMPLE_RATE.write().unwrap() = config.sample_rate.0;
   println!("[DEBUG] Device Sample Rrate: {}", config.sample_rate.0);
+  // Update the channels with the device's default :trol:
+  *CHANNEL_COUNT.write().unwrap() = config.channels;
+  println!("[DEBUG] Device channels: {}", config.channels);
+
   println!("[DEBUG] Device Buffer Size: {:?}", config.buffer_size);
 
   // Create a stream for the corresponding format
   let stream = match sample_format {
-    SampleFormat::F32 => device.build_output_stream(&config, write_white_noise::<f32>, err_fn),
-    SampleFormat::I16 => device.build_output_stream(&config, write_white_noise::<i16>, err_fn),
-    SampleFormat::U16 => device.build_output_stream(&config, write_white_noise::<u16>, err_fn),
+    SampleFormat::F32 => device.build_output_stream(&config, write_data::<f32>, err_fn),
+    SampleFormat::I16 => device.build_output_stream(&config, write_data::<i16>, err_fn),
+    SampleFormat::U16 => device.build_output_stream(&config, write_data::<u16>, err_fn),
   }
   .unwrap();
 
@@ -87,16 +114,16 @@ fn main() {
       // listen to the `event-name` (emitted on any window)
       app.listen_global("set_metronome", |event| {
         let value: bool = FromStr::from_str(event.payload().unwrap()).unwrap();
-
         *IS_METRONOME_ENABLED.write().unwrap() = value;
-
         println!("[EVENTS] got set_metronome with payload {:?}", value);
       });
 
-      app.listen_global("set_loop", |event| {
-        let value: bool = FromStr::from_str(event.payload().unwrap()).unwrap();
+      app.listen_global("play", |_| {
+        *IS_PLAYING.write().unwrap() = true;
+      });
 
-        println!("[EVENTS] got set_loop with payload {:?}", value);
+      app.listen_global("stop", |_| {
+        *IS_PLAYING.write().unwrap() = false;
       });
 
       // unlisten to the event using the `id` returned on the `listen_global` function
