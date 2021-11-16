@@ -6,6 +6,8 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 
+const emit = defineEmits(["collapsed"]);
+
 let mousePosition = 0;
 
 const resizableDiv = ref<HTMLDivElement>();
@@ -27,6 +29,7 @@ const handleMouseDown = (e: MouseEvent) => {
 };
 
 function resize(e: MouseEvent) {
+  if (e.x < 128) return emit("collapsed");
   const dx = e.x - mousePosition;
   mousePosition = e.x;
   resizableDiv.value!.style.width = parseInt(getComputedStyle(resizableDiv.value!, "").width) + dx + "px";
