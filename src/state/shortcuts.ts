@@ -24,6 +24,9 @@ onKeyStroke("Enter", () => alt.value && appWindow.toggleMaximize());
 // Ctrl + M -> Toggle Metronome
 onKeyStroke("m", () => crtl.value && (state.isMetronomeEnabled = !state.isMetronomeEnabled));
 
+// Ctrl + L -> Toggle Metronome
+onKeyStroke("l", () => crtl.value && (state.isLoopEnabled = !state.isLoopEnabled));
+
 // Ctrl + N -> New Project
 onKeyStroke("n", () => crtl.value && state.project.new());
 

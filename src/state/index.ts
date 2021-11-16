@@ -105,6 +105,7 @@ export type TimeSignature = [number, number];
 export interface IAppState {
   project: Project;
   isMetronomeEnabled: boolean;
+  isLoopEnabled: boolean;
   isPlaying: boolean;
   playheadPosition: number;
 }
@@ -112,6 +113,7 @@ export interface IAppState {
 const globalState = new State({
   project: new Project(),
   isMetronomeEnabled: false,
+  isLoopEnabled: false,
   playheadPosition: 0,
   isPlaying: false,
 });

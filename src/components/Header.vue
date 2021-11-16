@@ -2,9 +2,15 @@
   <div data-tauri-drag-region class="flex justify-between gap-2 text-xs p-1">
     <!-- {{ state.project.tempo }} -->
     <!-- {{ state.project.timeSignature }} -->
-    <Button @click="state.isMetronomeEnabled = !state.isMetronomeEnabled" :isActive="state.isMetronomeEnabled">
-      <i-fluency-metronome />
-    </Button>
+    <div class="flex gap-0.5">
+      <Button @click="state.isMetronomeEnabled = !state.isMetronomeEnabled" :isActive="state.isMetronomeEnabled">
+        <i-fluency-metronome />
+      </Button>
+      <Button @click="state.isLoopEnabled = !state.isLoopEnabled" :isActive="state.isLoopEnabled">
+        <i-fluency-loop />
+      </Button>
+    </div>
+
     <div class="text-sm flex gap-1">
       <i-fluency-play @click="play()" :class="state.isPlaying && 'text-green-400'" class="clicky" />
       <i-fluency-stop @click="stop()" class="clicky" />
