@@ -2,7 +2,7 @@ import { emit } from "@tauri-apps/api/event";
 import { open, save } from "@tauri-apps/api/dialog";
 import { invoke } from "@tauri-apps/api/tauri";
 import { AURITIA_FILE_FILTER } from "~/constants";
-import { reactive } from "vue";
+import { reactive, watch } from "vue";
 
 /**
  * Le abstract class that holds the attribute state
@@ -63,6 +63,11 @@ export class Project {
     this.name = name;
     this.tempo = tempo;
     this.timeSignature = timeSignature;
+  }
+
+  public setTempo(value: number) {
+    this.tempo = value;
+    emit("set_bpm", JSON.stringify(this.tempo));
   }
 
   /**

@@ -23,7 +23,7 @@ rand = "0.8.4"
 lazy_static = "1.4.0"
 hound = "3.4.0"
 ringbuf = "0.2.6"
-
+num = "0.4.0"
 [features]
 default = [ "custom-protocol" ]
 custom-protocol = [ "tauri/custom-protocol" ]

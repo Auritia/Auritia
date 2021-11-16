@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import { useKeyModifier, useVModel } from "@vueuse/core";
 import { computed, defineEmits, defineProps, ref, watch } from "vue";
+import { useState } from "~/state";
+const { reactive } = useState();
 const props = defineProps<{
   modelValue: number;
   min: number;
@@ -23,7 +25,7 @@ const displayValue = computed(() => {
 // Sets model to 0 if alt is held. Otherwise sets dragging to true.
 const onMouseDown = (e: MouseEvent) => {
   if (e.altKey) {
-    model.value = props.default;
+    state.project.setTempo(props.default);
   } else {
     isDragging.value = true;
     startY = e.clientY;
@@ -40,7 +42,7 @@ const onMove = (e: MouseEvent) => {
   const distance = startY - e.clientY;
   const stepping = props.max / step.value;
   const val = (distance * scale) / stepping;
-  model.value = Math.min(Math.max(initialValue + roundNearestStep(val), props.min), props.max);
+  reactive.project.setTempo(Math.min(Math.max(initialValue + roundNearestStep(val), props.min), props.max));
 };
 const onMouseUp = () => {
   isDragging.value = false;

@@ -6,20 +6,22 @@
 extern crate ringbuf;
 
 use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
-use cpal::{Sample, SampleFormat};
 use ringbuf::RingBuffer;
 use std::str::FromStr;
 use std::sync::RwLock;
+use std::time::Duration;
 use std::time::SystemTime;
 use tauri::Manager;
+
+// mod clock;
 
 #[macro_use]
 extern crate lazy_static;
 
 fn load_metronome() -> Vec<Wav> {
   return vec![
-    load_sample("./sounds/metronome_low.wav"),
     load_sample("./sounds/metronome_high.wav"),
+    load_sample("./sounds/metronome_low.wav"),
   ];
 }
 
@@ -65,6 +67,13 @@ struct Wav {
   current_sample: usize,
 }
 
+pub fn calc_beat_delta(bpm: u16, lower: u8) -> Duration {
+  let quarter_note_sec: f64 = 60f64 / bpm as f64;
+  let factor: f64 = 4f64 / lower as f64;
+
+  Duration::from_secs_f64(quarter_note_sec * factor)
+}
+#[allow(dead_code)]
 fn mix_waves(waves: Vec<f32>) -> f32 {
   let mut value: f32 = 0.0;
   for i in 0..waves.len() {
@@ -115,23 +124,21 @@ fn main() {
 
   println!("[DEBUG] Got device: {}", device.name().unwrap());
 
-  // Get supported stream formats by the device
-  let mut supported_configs_range = device
-    .supported_output_configs()
-    .expect("error while querying configs");
-
-  // Get the supported config
-  let supported_config = supported_configs_range
-    .next()
-    .expect("no supported config?!")
-    .with_max_sample_rate();
-
   // An error handler to handle write errors on stream
   let err_fn = |err| eprintln!("an error occurred on the output audio stream: {}", err);
 
-  // Get configs
-  let sample_format = supported_config.sample_format();
+  // Get the supported config
+  // let mut supported_configs_range = device
+  //   .supported_output_configs()
+  //   .expect("error while querying configs");
+  // let supported_config = supported_configs_range
+  //   .next()
+  //   .expect("no supported config?!")
+  //   .with_max_sample_rate();
+  // let sample_format = supported_config.sample_format();
   // let config: cpal::StreamConfig = supported_config.into();
+
+  // Get configs
   let config: cpal::StreamConfig = cpal::StreamConfig {
     channels: 2,
     sample_rate: cpal::SampleRate(44100),
@@ -200,15 +207,23 @@ fn main() {
       app.listen_global("set_metronome", |event| {
         let value: bool = FromStr::from_str(event.payload().unwrap()).unwrap();
         *IS_METRONOME_ENABLED.write().unwrap() = value;
-        println!("[EVENTS] got set_metronome with payload {:?}", value);
+        println!("[EVENTS] got 'set_metronome' with payload {:?}", value);
+      });
+
+      app.listen_global("set_bpm", |event| {
+        let value: f32 = FromStr::from_str(event.payload().unwrap()).unwrap();
+        *BPM.write().unwrap() = value;
+        println!("[EVENTS] got 'set_bpm' with payload {:?}", value);
       });
 
       app.listen_global("play", |_| {
         *IS_PLAYING.write().unwrap() = true;
+        println!("[EVENTS] got 'play'");
       });
 
       app.listen_global("stop", |_| {
         *IS_PLAYING.write().unwrap() = false;
+        println!("[EVENTS] got 'stop'");
       });
 
       // unlisten to the event using the `id` returned on the `listen_global` function
