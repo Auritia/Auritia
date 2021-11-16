@@ -8,12 +8,14 @@ extern crate ringbuf;
 use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
 use ringbuf::RingBuffer;
 use std::str::FromStr;
+use std::sync::mpsc::{channel, Receiver, Sender};
 use std::sync::RwLock;
 use std::time::Duration;
 use std::time::SystemTime;
 use tauri::Manager;
 
-// mod clock;
+mod clock;
+mod metronome;
 
 #[macro_use]
 extern crate lazy_static;
@@ -137,6 +139,7 @@ fn main() {
   //   .with_max_sample_rate();
   // let sample_format = supported_config.sample_format();
   // let config: cpal::StreamConfig = supported_config.into();
+  let metronome = metronome::Metronome::new().run();
 
   // Get configs
   let config: cpal::StreamConfig = cpal::StreamConfig {
@@ -149,15 +152,15 @@ fn main() {
   let ring = RingBuffer::<f32>::new(1024);
   let (mut producer, mut consumer) = ring.split();
 
-  let mut metronome = METRONOME_SOUND.read().unwrap()[0].clone();
+  let mut metronome_sound = METRONOME_SOUND.read().unwrap()[0].clone();
 
-  for i in 0..metronome.samples.len() {
+  for i in 0..metronome_sound.samples.len() {
     if i < 1024 {
-      producer.push(metronome.samples[i]).unwrap();
+      producer.push(metronome_sound.samples[i]).unwrap();
     }
   }
 
-  metronome.current_sample = 1024;
+  metronome_sound.current_sample = 1024;
 
   let output_data_fn = move |data: &mut [f32], _: &cpal::OutputCallbackInfo| {
     for sample in data {
@@ -165,11 +168,11 @@ fn main() {
         Some(s) => s,
         None => 0.0,
       };
-      if metronome.current_sample < metronome.samples.len() {
+      if metronome_sound.current_sample < metronome_sound.samples.len() {
         producer
-          .push(metronome.samples[metronome.current_sample])
+          .push(metronome_sound.samples[metronome_sound.current_sample])
           .unwrap();
-        metronome.current_sample += 1;
+        metronome_sound.current_sample += 1;
       }
 
       // let mut next_sample = 0.0;
