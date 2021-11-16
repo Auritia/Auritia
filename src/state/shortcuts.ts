@@ -3,7 +3,7 @@ import { appWindow } from "@tauri-apps/api/window";
 import router from "~/router";
 import { useState } from ".";
 
-const { state } = useState();
+const state = useState();
 
 const shift = useKeyModifier("Shift");
 const crtl = useKeyModifier("Control");
@@ -22,19 +22,19 @@ onKeyStroke("F2", () => router.push({ name: "DAW", params: { explorer: "plugins"
 onKeyStroke("Enter", () => alt.value && appWindow.toggleMaximize());
 
 // Ctrl + M -> Toggle Metronome
-onKeyStroke("m", () => crtl.value && (state.isMetronomeEnabled = !state.isMetronomeEnabled));
+onKeyStroke("m", () => crtl.value && state.toggleMetronome());
 
 // Ctrl + L -> Toggle Metronome
-onKeyStroke("l", () => crtl.value && (state.isLoopEnabled = !state.isLoopEnabled));
+onKeyStroke("l", () => crtl.value && state.toggleLoop());
 
 // Ctrl + N -> New Project
-onKeyStroke("n", () => crtl.value && state.project.new());
+onKeyStroke("n", () => crtl.value && state.reactive.project.new());
 
 // Ctrl + O -> Open Project
-onKeyStroke("o", () => crtl.value && state.project.open());
+onKeyStroke("o", () => crtl.value && state.reactive.project.open());
 
 // Ctrl + S -> Save Project
-onKeyStroke("s", () => crtl.value && state.project.save());
+onKeyStroke("s", () => crtl.value && state.reactive.project.save());
 
 // Ctrl + Alt + S -> Save Project As
-onKeyStroke("s", () => crtl.value && alt.value && state.project.saveAs());
+onKeyStroke("s", () => crtl.value && alt.value && state.reactive.project.saveAs());

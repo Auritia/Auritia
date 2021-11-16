@@ -9,10 +9,10 @@ import { reactive } from "vue";
  * @author Goxer & N1kO23
  */
 export abstract class Store<T extends Object> {
-  public state: T;
+  public reactive: T;
 
   public constructor(data: T) {
-    this.state = reactive(data) as T;
+    this.reactive = reactive(data) as T;
   }
 }
 
@@ -22,9 +22,19 @@ export class State extends Store<IAppState> {
     window.addEventListener("keydown", (e: KeyboardEvent) => {});
   }
 
+  public toggleMetronome() {
+    this.reactive.isMetronomeEnabled = !this.reactive.isMetronomeEnabled;
+    emit("set_metronome", JSON.stringify(this.reactive.isMetronomeEnabled));
+  }
+
+  public toggleLoop() {
+    this.reactive.isLoopEnabled = !this.reactive.isLoopEnabled;
+    emit("set_loop", JSON.stringify(this.reactive.isLoopEnabled));
+  }
+
   public play() {
-    this.state.isPlaying = true;
-    invoke("beep");
+    this.reactive.isPlaying = true;
+    invoke("create");
 
     console.log("now playing");
 
@@ -36,11 +46,11 @@ export class State extends Store<IAppState> {
     );
   }
   public pause() {
-    this.state.isPlaying = false;
+    this.reactive.isPlaying = false;
   }
   public stop() {
-    this.state.isPlaying = false;
-    this.state.playheadPosition = 0;
+    this.reactive.isPlaying = false;
+    this.reactive.playheadPosition = 0;
   }
 }
 

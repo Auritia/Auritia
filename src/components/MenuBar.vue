@@ -4,12 +4,12 @@
       <img src="../assets/horizontal_logo.svg" class="ml-2" alt="" />
 
       <Menu title="File">
-        <MenuOption title="Open..." @click="state.project.open" />
-        <MenuOption title="Save Project" @click="state.project.save" />
-        <MenuOption title="Save Project As..." @click="state.project.saveAs" />
+        <MenuOption title="Open..." @click="reactive.project.open" />
+        <MenuOption title="Save Project" @click="reactive.project.save" />
+        <MenuOption title="Save Project As..." @click="reactive.project.saveAs" />
         <MenuSplitter />
-        <MenuOption title="Render Audio..." @click="state.project.render" />
-        <MenuOption title="Project Info..." @click="state.project.info" />
+        <MenuOption title="Render Audio..." @click="reactive.project.render" />
+        <MenuOption title="Project Info..." @click="reactive.project.info" />
       </Menu>
 
       <Menu title="Settings">
@@ -21,7 +21,7 @@
       </Menu>
     </div>
 
-    <p>v{{ version }} | {{ state.project.name }}</p>
+    <p>v{{ version }} | {{ reactive.project.name }}</p>
 
     <ControlButtons />
   </div>
@@ -33,7 +33,7 @@ import Menu from "./shared/Menu.vue";
 import MenuOption from "./shared/MenuOption.vue";
 import MenuSplitter from "./shared/MenuSplitter.vue";
 import ControlButtons from "./ControlButtons.vue";
-const { state } = useState();
+const { reactive } = useState();
 const version = import.meta.env.PACKAGE_VERSION;
 </script>
 
