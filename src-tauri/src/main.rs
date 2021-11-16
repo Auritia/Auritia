@@ -2,37 +2,50 @@
   all(not(debug_assertions), target_os = "windows"),
   windows_subsystem = "windows"
 )]
+
+extern crate ringbuf;
+
 use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
 use cpal::{Sample, SampleFormat};
+use ringbuf::RingBuffer;
 use std::str::FromStr;
 use std::sync::RwLock;
+use std::time::SystemTime;
 use tauri::Manager;
 
 #[macro_use]
 extern crate lazy_static;
 
-fn load_metronome() -> Vec<Vec<f32>> {
+fn load_metronome() -> Vec<Wav> {
   return vec![
     load_sample("./sounds/metronome_low.wav"),
     load_sample("./sounds/metronome_high.wav"),
   ];
 }
 
-fn load_sample(path: &str) -> Vec<f32> {
-  return hound::WavReader::open(path)
+fn load_sample(path: &str) -> Wav {
+  let samples = hound::WavReader::open(path)
     .unwrap()
     .samples::<f32>()
     .map(|s| s.unwrap())
     .collect();
+
+  return Wav {
+    sample_rate: 44100,
+    channel_count: 2,
+    current_sample: 0,
+    samples: samples,
+  };
 }
 
 lazy_static! {
+  static ref START_TIME: SystemTime = SystemTime::now();
   static ref IS_METRONOME_ENABLED: RwLock<bool> = RwLock::new(false);
   static ref IS_PLAYING: RwLock<bool> = RwLock::new(false);
-  static ref BPM: RwLock<f32> = RwLock::new(120.00);
+  static ref BPM: RwLock<f32> = RwLock::new(150.00);
   static ref SAMPLE_RATE: RwLock<u32> = RwLock::new(44100);
   static ref CHANNEL_COUNT: RwLock<u16> = RwLock::new(2);
-  static ref METRONOME_SOUND: Vec<Vec<f32>> = load_metronome();
+  static ref METRONOME_SOUND: RwLock<Vec<Wav>> = RwLock::new(load_metronome());
 }
 
 mod interface;
@@ -44,20 +57,52 @@ struct Payload {
   value: String,
 }
 
-fn write_data<T: Sample>(data: &mut [T], _: &cpal::OutputCallbackInfo) {
-  // For each sample of the current sample rate iteration write white noise
-  for sample in data.iter_mut() {
-    let mut current_sample = 0.0;
-
-    if *IS_PLAYING.read().unwrap() == true {
-      if *IS_METRONOME_ENABLED.read().unwrap() == true {
-        let white_noise_sample = (rand::random::<f32>() - 0.5) / 2.0;
-        current_sample = white_noise_sample;
-      }
-    }
-    *sample = Sample::from(&current_sample);
-  }
+#[derive(Clone)]
+struct Wav {
+  sample_rate: u32,
+  channel_count: u16,
+  samples: Vec<f32>,
+  current_sample: usize,
 }
+
+fn mix_waves(waves: Vec<f32>) -> f32 {
+  let mut value: f32 = 0.0;
+  for i in 0..waves.len() {
+    value += waves[i];
+  }
+  return value;
+}
+
+// fn write_data<T: Sample>(data: &mut [T]) {
+//   let mut idx = 0;
+//   let mut output_fell_behind = false;
+
+//   // println!("{:?}", info.timestamp());
+//   for sample in data.iter_mut() {
+//     let mut current_sample = 0.0;
+
+//     if *IS_PLAYING.read().unwrap() == true {
+//       if *IS_METRONOME_ENABLED.read().unwrap() == true {
+//         current_sample = mix_waves(vec![current_sample, METRONOME_SOUND[0].samples[idx]]);
+//         // if (*BPM.read().unwrap() / 60.0) as usize * idx % 4 == 0 {
+//         // } else {
+//         //   current_sample = mix_waves(vec![current_sample, METRONOME_SOUND[1][idx]]);
+//         // }
+
+//         // let white_noise_sample = (rand::random::<f32>() - 0.5) / 2.0;
+//         // current_sample = white_noise_sample;
+//       }
+//     }
+
+//     if output_fell_behind {
+//       println!("output stream fell behind: try increasing latency");
+//   }
+//     *sample = Sample::from(&current_sample);
+//     idx += 1;
+//   }
+
+//   println!("{:?}", METRONOME_SOUND[0].samples);
+// }
 
 fn main() {
   // The default host for the current compilation target platform
@@ -86,7 +131,50 @@ fn main() {
 
   // Get configs
   let sample_format = supported_config.sample_format();
-  let config: cpal::StreamConfig = supported_config.into();
+  // let config: cpal::StreamConfig = supported_config.into();
+  let config: cpal::StreamConfig = cpal::StreamConfig {
+    channels: 2,
+    sample_rate: cpal::SampleRate(44100),
+    buffer_size: cpal::BufferSize::Default,
+  };
+
+  // The buffer to share samples
+  let ring = RingBuffer::<f32>::new(1024);
+  let (mut producer, mut consumer) = ring.split();
+
+  let mut metronome = METRONOME_SOUND.read().unwrap()[0].clone();
+
+  for i in 0..metronome.samples.len() {
+    if i < 1024 {
+      producer.push(metronome.samples[i]).unwrap();
+    }
+  }
+
+  metronome.current_sample = 1024;
+
+  let output_data_fn = move |data: &mut [f32], _: &cpal::OutputCallbackInfo| {
+    for sample in data {
+      *sample = match consumer.pop() {
+        Some(s) => s,
+        None => 0.0,
+      };
+      if metronome.current_sample < metronome.samples.len() {
+        producer
+          .push(metronome.samples[metronome.current_sample])
+          .unwrap();
+        metronome.current_sample += 1;
+      }
+
+      // let mut next_sample = 0.0;
+
+      // if metronome.current_sample < metronome.samples.len() {
+      //   next_sample += mix_waves(vec![metronome.samples[metronome.current_sample]]);
+      //   metronome.current_sample += 1;
+      // }
+
+      // producer.push(next_sample).unwrap();
+    }
+  };
 
   // Update the sample rate with the device's default :trol:
   *SAMPLE_RATE.write().unwrap() = config.sample_rate.0;
@@ -98,12 +186,9 @@ fn main() {
   println!("[DEBUG] Device Buffer Size: {:?}", config.buffer_size);
 
   // Create a stream for the corresponding format
-  let stream = match sample_format {
-    SampleFormat::F32 => device.build_output_stream(&config, write_data::<f32>, err_fn),
-    SampleFormat::I16 => device.build_output_stream(&config, write_data::<i16>, err_fn),
-    SampleFormat::U16 => device.build_output_stream(&config, write_data::<u16>, err_fn),
-  }
-  .unwrap();
+  let stream = device
+    .build_output_stream(&config, output_data_fn, err_fn)
+    .unwrap();
 
   stream.play().unwrap();
 

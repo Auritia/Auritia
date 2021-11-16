@@ -68,6 +68,7 @@ dependencies = [
  "hound",
  "lazy_static",
  "rand 0.8.4",
+ "ringbuf",
  "serde",
  "serde_json",
  "tauri",
@@ -2638,6 +2639,15 @@ dependencies = [
  "wasm-bindgen-futures",
  "web-sys",
  "winapi",
+]
+
+[[package]]
+name = "ringbuf"
+version = "0.2.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6c60f3923939c33e6c543ddbff14d0ee6a407fcd186d560be37282559616adf3"
+dependencies = [
+ "cache-padded",
 ]
 
 [[package]]
