@@ -7,8 +7,6 @@ use std::sync::mpsc::{channel, Sender, TryRecvError};
 use std::thread::{sleep, spawn};
 use std::time::{Duration, Instant};
 
-use crate::metronome;
-
 pub type Tick = Ratio<i64>;
 pub type Tempo = Ratio<i64>;
 pub type NudgeTempo = Ratio<i64>;
@@ -258,7 +256,9 @@ pub struct Clock {
 }
 
 #[allow(dead_code)]
+#[derive(Clone, Copy, Debug)]
 pub enum Message {
+  Time(Time),
   Tempo(Tempo),
   NudgeTempo(NudgeTempo),
   Reset,
@@ -284,17 +284,15 @@ impl Clock {
   }
 
   #[allow(dead_code)]
-  pub fn start(metronome_tx: Sender<metronome::Message>) -> Sender<Message> {
+  pub fn start(metronome_tx: Sender<Message>) -> Sender<Message> {
     let mut clock = Self::new();
 
     let (tx, rx) = channel();
 
     metronome_tx
-      .send(metronome::Message::Signature(Signature::default()))
+      .send(Message::Signature(Signature::default()))
       .unwrap();
-    metronome_tx
-      .send(metronome::Message::Tempo(clock.tempo))
-      .unwrap();
+    metronome_tx.send(Message::Tempo(clock.tempo)).unwrap();
 
     spawn(move || {
       loop {
@@ -315,17 +313,13 @@ impl Clock {
             }
             Ok(Message::Tap) => {
               if let Some(new_tempo) = clock.tap() {
-                metronome_tx
-                  .send(metronome::Message::Tempo(new_tempo))
-                  .unwrap();
+                metronome_tx.send(Message::Tempo(new_tempo)).unwrap();
               }
             }
             Ok(Message::NudgeTempo(nudge)) => {
               let old_tempo = clock.tempo;
               let new_tempo = old_tempo + nudge;
-              metronome_tx
-                .send(metronome::Message::Tempo(new_tempo))
-                .unwrap();
+              metronome_tx.send(Message::Tempo(new_tempo)).unwrap();
             }
             Ok(Message::Tempo(tempo)) => {
               clock.tempo = tempo;
@@ -336,13 +330,12 @@ impl Clock {
             Err(TryRecvError::Disconnected) => {
               panic!("{:?}", TryRecvError::Disconnected);
             }
+            _ => {}
           }
         }
 
         // send clock time
-        metronome_tx
-          .send(metronome::Message::Time(clock.time()))
-          .unwrap();
+        metronome_tx.send(Message::Time(clock.time())).unwrap();
       }
     });
 

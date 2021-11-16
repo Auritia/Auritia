@@ -10,12 +10,12 @@ use ringbuf::RingBuffer;
 use std::str::FromStr;
 use std::sync::mpsc::{channel, Receiver, Sender};
 use std::sync::RwLock;
+use std::thread::{sleep, spawn};
 use std::time::Duration;
 use std::time::SystemTime;
 use tauri::Manager;
 
 mod clock;
-mod metronome;
 
 #[macro_use]
 extern crate lazy_static;
@@ -51,8 +51,6 @@ lazy_static! {
   static ref CHANNEL_COUNT: RwLock<u16> = RwLock::new(2);
   static ref METRONOME_SOUND: RwLock<Vec<Wav>> = RwLock::new(load_metronome());
 }
-
-mod interface;
 
 // the payload type must implement `Serialize`.
 // for global events, it also must implement `Clone`.
@@ -139,7 +137,61 @@ fn main() {
   //   .with_max_sample_rate();
   // let sample_format = supported_config.sample_format();
   // let config: cpal::StreamConfig = supported_config.into();
-  let metronome = metronome::Metronome::new().run();
+
+  let mut metronome_sound = METRONOME_SOUND.read().unwrap()[0].clone();
+  // The buffer to share samples
+  let ring = RingBuffer::<f32>::new(1024);
+  let (mut producer, mut consumer) = ring.split();
+
+  spawn(move || {
+    let (tx, rx) = channel();
+    let clock_tx = clock::Clock::start(tx.clone());
+    for control_message in rx {
+      match control_message {
+        // // sent by interface
+        // metronome::Message::Reset => {
+        //   clock_tx.send(clock::Message::Reset).unwrap();
+        // }
+        // // sent by interface
+        // metronome::Message::NudgeTempo(nudge) => {
+        //   clock_tx.send(clock::Message::NudgeTempo(nudge)).unwrap();
+        // }
+        // // sent by interface
+        // metronome::Message::Tap => {
+        //   clock_tx.send(clock::Message::Tap).unwrap();
+        // }
+        // // sent by clock
+        // metronome::Message::Signature(signature) => {
+        //   clock_tx.send(clock::Message::Signature(signature)).unwrap();
+        //   terminal_tx
+        //     .send(interface::Message::Signature(signature))
+        //     .unwrap();
+        // }
+        // // sent by clock
+        // metronome::Message::Tempo(tempo) => {
+        //   clock_tx.send(clock::Message::Tempo(tempo)).unwrap();
+        //   terminal_tx.send(interface::Message::Tempo(tempo)).unwrap();
+        // }
+        // Send an event every tick
+        clock::Message::Time(time) => {
+          // If we are at the start of the beat play a metronome sound
+          if time.ticks_since_beat().to_integer() == 0 {
+            println!("BEAT");
+            for i in 0..metronome_sound.samples.len() {
+              if i < 1024 {
+                producer.push(metronome_sound.samples[i]).unwrap();
+                metronome_sound.current_sample += 1;
+              }
+            }
+          }
+
+          print_time(time);
+          // terminal_tx.send(interface::Message::Time(time)).unwrap();
+        }
+        _ => {}
+      }
+    }
+  });
 
   // Get configs
   let config: cpal::StreamConfig = cpal::StreamConfig {
@@ -148,42 +200,27 @@ fn main() {
     buffer_size: cpal::BufferSize::Default,
   };
 
-  // The buffer to share samples
-  let ring = RingBuffer::<f32>::new(1024);
-  let (mut producer, mut consumer) = ring.split();
-
-  let mut metronome_sound = METRONOME_SOUND.read().unwrap()[0].clone();
-
-  for i in 0..metronome_sound.samples.len() {
-    if i < 1024 {
-      producer.push(metronome_sound.samples[i]).unwrap();
-    }
-  }
-
-  metronome_sound.current_sample = 1024;
-
   let output_data_fn = move |data: &mut [f32], _: &cpal::OutputCallbackInfo| {
     for sample in data {
       *sample = match consumer.pop() {
         Some(s) => s,
         None => 0.0,
       };
-      if metronome_sound.current_sample < metronome_sound.samples.len() {
-        producer
-          .push(metronome_sound.samples[metronome_sound.current_sample])
-          .unwrap();
-        metronome_sound.current_sample += 1;
-      }
-
-      // let mut next_sample = 0.0;
-
-      // if metronome.current_sample < metronome.samples.len() {
-      //   next_sample += mix_waves(vec![metronome.samples[metronome.current_sample]]);
-      //   metronome.current_sample += 1;
-      // }
-
-      // producer.push(next_sample).unwrap();
+      // if metronome_sound.current_sample < metronome_sound.samples.len() {
+      //   producer
+      //     .push(metronome_sound.samples[metronome_sound.current_sample])
+      //     .unwrap();
+      //   metronome_sound.current_sample += 1;
     }
+
+    // let mut next_sample = 0.0;
+
+    // if metronome.current_sample < metronome.samples.len() {
+    //   next_sample += mix_waves(vec![metronome.samples[metronome.current_sample]]);
+    //   metronome.current_sample += 1;
+    // }
+
+    // producer.push(next_sample).unwrap();
   };
 
   // Update the sample rate with the device's default :trol:
@@ -236,4 +273,17 @@ fn main() {
     .run(tauri::generate_context!())
     // Catch errors
     .expect("error while running tauri application");
+}
+
+pub fn print_time(time: clock::Time) {
+  print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
+  let ticks_since_beat = time.ticks_since_beat();
+  println!("ticks since beat: {}", &ticks_since_beat);
+  if ticks_since_beat.to_integer() == 0 {
+    println!("BEAT");
+  } else {
+    for i in 0..ticks_since_beat.to_integer() {
+      print!("-");
+    }
+  }
 }
