@@ -131,8 +131,6 @@ fn main() {
         clock::Message::Time(time) => {
           // If we are at the start of the beat play a metronome sound
           if time.ticks_since_beat().to_integer() == 0 {
-            println!("BEAT");
-
             if *IS_PLAYING.read().unwrap() == true {
               if *IS_METRONOME_ENABLED.read().unwrap() == true {
                 // High
@@ -147,7 +145,6 @@ fn main() {
             }
           }
 
-          print_time(time);
           // terminal_tx.send(interface::Message::Time(time)).unwrap();
         }
         _ => {}
@@ -155,12 +152,24 @@ fn main() {
     }
   });
 
+
+
+    let mut supported_configs_range = device
+      .supported_output_configs()
+      .expect("error while querying configs");
+    let supported_config = supported_configs_range
+      .next()
+      .expect("no supported config?!")
+      .with_max_sample_rate();
+    let sample_format = supported_config.sample_format();
+    let config: cpal::StreamConfig = supported_config.into();
+  
   // Get configs
-  let config: cpal::StreamConfig = cpal::StreamConfig {
-    channels: 2,
-    sample_rate: cpal::SampleRate(44100),
-    buffer_size: cpal::BufferSize::Default,
-  };
+  // let config: cpal::StreamConfig = cpal::StreamConfig {
+  //   channels: 2,
+  //   sample_rate: cpal::SampleRate(44100),
+  //   buffer_size: cpal::BufferSize::Default,
+  // };
 
   let output_data_fn = move |data: &mut [f32], _: &cpal::OutputCallbackInfo| {
     for sample in data {
