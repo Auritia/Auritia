@@ -17,6 +17,8 @@ use tauri::Manager;
 
 mod clock;
 
+static RING_BUFFER_SIZE: usize = 1024;
+
 #[macro_use]
 extern crate lazy_static;
 
@@ -98,10 +100,10 @@ fn main() {
   let err_fn = |err| eprintln!("an error occurred on the output audio stream: {}", err);
 
   // The buffer to share samples
-  let ring = RingBuffer::<f32>::new(1024);
+  let ring = RingBuffer::<f32>::new(RING_BUFFER_SIZE);
   let (mut producer, mut consumer) = ring.split();
-  let mut metronome_sound_high = METRONOME_SOUND.read().unwrap()[0].clone();
-  let mut metronome_sound_low = METRONOME_SOUND.read().unwrap()[1].clone();
+  let metronome_sound_high = METRONOME_SOUND.read().unwrap()[0].clone();
+  let metronome_sound_low = METRONOME_SOUND.read().unwrap()[1].clone();
   let (tx, rx) = channel();
   spawn(move || {
     let clock_tx = clock::Clock::start(tx.clone());
@@ -151,19 +153,15 @@ fn main() {
       }
     }
   });
-
-
-
-    let mut supported_configs_range = device
-      .supported_output_configs()
-      .expect("error while querying configs");
-    let supported_config = supported_configs_range
-      .next()
-      .expect("no supported config?!")
-      .with_max_sample_rate();
-    let sample_format = supported_config.sample_format();
-    let config: cpal::StreamConfig = supported_config.into();
-  
+  // let sample_format = supported_config.sample_format();
+  let mut supported_configs_range = device
+    .supported_output_configs()
+    .expect("error while querying configs");
+  let supported_config = supported_configs_range
+    .next()
+    .expect("no supported config?!")
+    .with_max_sample_rate();
+  let config: cpal::StreamConfig = supported_config.into();
   // Get configs
   // let config: cpal::StreamConfig = cpal::StreamConfig {
   //   channels: 2,
@@ -239,7 +237,7 @@ pub fn print_time(time: clock::Time) {
   if ticks_since_beat.to_integer() == 0 {
     println!("BEAT");
   } else {
-    for i in 0..ticks_since_beat.to_integer() {
+    for _ in 0..ticks_since_beat.to_integer() {
       print!("-");
     }
   }
@@ -247,7 +245,8 @@ pub fn print_time(time: clock::Time) {
 
 fn write(producer: &mut ringbuf::Producer<f32>, samples: &Vec<f32>) {
   for i in 0..samples.len() {
-    if i < 1024 {
+    // This currently chops of the metronome if the buffer size is too low
+    if i < RING_BUFFER_SIZE {
       producer.push(samples[i]).unwrap();
     }
   }
