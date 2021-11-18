@@ -11,7 +11,6 @@ use std::str::FromStr;
 use std::sync::mpsc::channel;
 use std::sync::RwLock;
 use std::thread::spawn;
-use std::time::Duration;
 use std::time::SystemTime;
 use tauri::Manager;
 
@@ -69,13 +68,6 @@ struct Wav {
   current_sample: usize,
 }
 
-pub fn calc_beat_delta(bpm: u16, lower: u8) -> Duration {
-  let quarter_note_sec: f64 = 60f64 / bpm as f64;
-  let factor: f64 = 4f64 / lower as f64;
-
-  Duration::from_secs_f64(quarter_note_sec * factor)
-}
-
 #[allow(dead_code)]
 fn mix_waves(waves: Vec<f32>) -> f32 {
   let mut value: f32 = 0.0;
@@ -104,9 +96,16 @@ fn main() {
   let (mut producer, mut consumer) = ring.split();
   let metronome_sound_high = METRONOME_SOUND.read().unwrap()[0].clone();
   let metronome_sound_low = METRONOME_SOUND.read().unwrap()[1].clone();
+
+  // Create a channel to receive messages from other threads
   let (tx, rx) = channel();
+
   spawn(move || {
+    // Make another sender and pass it to the clock so
+    // the clock can send events to the main thread as well
     let clock_tx = clock::Clock::start(tx.clone());
+
+    // Listen to the events in the main thread
     for control_message in rx {
       match control_message {
         // // sent by interface
@@ -153,6 +152,7 @@ fn main() {
       }
     }
   });
+
   // let sample_format = supported_config.sample_format();
   let mut supported_configs_range = device
     .supported_output_configs()
@@ -169,6 +169,8 @@ fn main() {
   //   buffer_size: cpal::BufferSize::Default,
   // };
 
+  // This function runs by CPAl to write data to the audio stream
+  // by popping each sample off the ringbuffer array
   let output_data_fn = move |data: &mut [f32], _: &cpal::OutputCallbackInfo| {
     for sample in data {
       *sample = match consumer.pop() {
@@ -192,8 +194,11 @@ fn main() {
     .build_output_stream(&config, output_data_fn, err_fn)
     .unwrap();
 
+  // Assures the stream starts playing because some low-end devices
+  // don't start it by default apparently
   stream.play().unwrap();
 
+  // Creates the webapp
   tauri::Builder::default()
     // Register Rust function to Vue
     // .invoke_handler(tauri::generate_handler![engine::create])
