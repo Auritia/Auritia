@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useKeyModifier, useVModel } from "@vueuse/core";
-import { computed, defineEmits, defineProps, ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { useState } from "~/state";
 const { reactive } = useState();
 const props = defineProps<{
