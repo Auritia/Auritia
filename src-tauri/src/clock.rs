@@ -14,10 +14,10 @@ pub type NudgeTempo = Ratio<i64>;
 static SECONDS_PER_MINUTE: i64 = 60;
 static NANOS_PER_SECOND: i64 = 1_000_000_000;
 
-static DEFAULT_TICKS_PER_BEAT: i64 = 32;
+static DEFAULT_TICKS_PER_BEAT: i64 = 4;
 static DEFAULT_BEATS_PER_BAR: i64 = 4;
 static DEFAULT_BARS_PER_LOOP: i64 = 4;
-static DEFAULT_BEATS_PER_MINUTE: i64 = 140;
+static DEFAULT_BEATS_PER_MINUTE: i64 = 120;
 
 #[derive(Clone, Copy, Debug)]
 pub struct TimeSignature {
@@ -27,7 +27,6 @@ pub struct TimeSignature {
 }
 
 impl TimeSignature {
-  #[allow(dead_code)]
   pub fn default() -> Self {
     Self {
       ticks_per_beat: Ratio::from_integer(DEFAULT_TICKS_PER_BEAT),
@@ -36,31 +35,25 @@ impl TimeSignature {
     }
   }
 
-  #[allow(dead_code)]
   pub fn ticks_per_beat(&self) -> Tick {
     self.ticks_per_beat
   }
 
-  #[allow(dead_code)]
   pub fn ticks_per_bar(&self) -> Tick {
     self.ticks_per_beat() * self.beats_per_bar
   }
 
-  #[allow(dead_code)]
   pub fn ticks_per_loop(&self) -> Tick {
     self.ticks_per_bar() * self.bars_per_loop
   }
-  #[allow(dead_code)]
   pub fn ticks_to_beats(&self, ticks: Tick) -> Tick {
     ticks / self.ticks_per_beat
   }
 
-  #[allow(dead_code)]
   pub fn ticks_to_bars(&self, ticks: Tick) -> Tick {
     self.ticks_to_beats(ticks) / self.beats_per_bar
   }
 
-  #[allow(dead_code)]
   pub fn nanos_per_tick(&self, beats_per_minute: Tick) -> Tick {
     let minutes_per_beat = Ratio::from_integer(1) / beats_per_minute;
     let seconds_per_beat = minutes_per_beat * Ratio::from_integer(SECONDS_PER_MINUTE);
@@ -69,22 +62,18 @@ impl TimeSignature {
     nanos_per_tick
   }
 
-  #[allow(dead_code)]
   pub fn nanos_per_beat(&self, beats_per_minute: Tick) -> Tick {
     self.nanos_per_tick(beats_per_minute) * self.ticks_per_beat
   }
 
-  #[allow(dead_code)]
   pub fn nanos_per_bar(&self, beats_per_minute: Tick) -> Tick {
     self.nanos_per_beat(beats_per_minute) * self.beats_per_bar
   }
 
-  #[allow(dead_code)]
   pub fn nanos_per_loop(&self, beats_per_minute: Tick) -> Tick {
     self.nanos_per_bar(beats_per_minute) * self.bars_per_loop
   }
 
-  #[allow(dead_code)]
   pub fn beats_per_minute(&self, nanos_per_tick: Tick) -> Tempo {
     let nanos_per_beat = nanos_per_tick * self.ticks_per_beat;
     let beats_per_nano = Ratio::from_integer(1) / nanos_per_beat;
@@ -101,7 +90,6 @@ pub struct Time {
 }
 
 impl Time {
-  #[allow(dead_code)]
   pub fn new(time_signature: TimeSignature) -> Self {
     Self {
       ticks: Ratio::from_integer(0),
@@ -109,57 +97,46 @@ impl Time {
     }
   }
 
-  #[allow(dead_code)]
   pub fn ticks(&self) -> Tick {
     self.ticks
   }
 
-  #[allow(dead_code)]
   pub fn beats(&self) -> Tick {
     self.time_signature.ticks_to_beats(self.ticks)
   }
 
-  #[allow(dead_code)]
   pub fn bars(&self) -> Tick {
     self.time_signature.ticks_to_bars(self.ticks)
   }
 
-  #[allow(dead_code)]
   pub fn ticks_since_beat(&self) -> Tick {
     self.ticks() % self.time_signature.ticks_per_beat
   }
 
-  #[allow(dead_code)]
   pub fn beats_since_bar(&self) -> Tick {
     self.beats() % self.time_signature.beats_per_bar
   }
 
-  #[allow(dead_code)]
   pub fn bars_since_loop(&self) -> Tick {
     self.bars() % self.time_signature.bars_per_loop
   }
 
-  #[allow(dead_code)]
   pub fn ticks_before_beat(&self) -> Tick {
     self.ticks() - self.ticks_since_beat()
   }
 
-  #[allow(dead_code)]
   pub fn is_first_tick(&self) -> bool {
     self.ticks_since_beat().floor() == Ratio::from_integer(0)
   }
 
-  #[allow(dead_code)]
   pub fn is_first_beat(&self) -> bool {
     self.beats_since_bar().floor() == Ratio::from_integer(0)
   }
 
-  #[allow(dead_code)]
   pub fn is_first_bar(&self) -> bool {
     self.bars_since_loop().floor() == Ratio::from_integer(0)
   }
 
-  #[allow(dead_code)]
   pub fn next(&self) -> Self {
     Self {
       ticks: self.ticks + 1,
@@ -167,7 +144,6 @@ impl Time {
     }
   }
 
-  #[allow(dead_code)]
   pub fn quantize_beat(&self) -> Self {
     // find how far off the beat we are
     let ticks_per_beat = self.time_signature.ticks_per_beat();
@@ -194,7 +170,6 @@ pub struct Timer {
 }
 
 impl Timer {
-  #[allow(dead_code)]
   pub fn new(time_signature: TimeSignature) -> Self {
     Self {
       instant: Instant::now(),
@@ -202,46 +177,36 @@ impl Timer {
     }
   }
 
-  #[allow(dead_code)]
   pub fn nanos(&self) -> Tick {
     Ratio::from_integer(duration_to_nanos(self.instant.elapsed()))
   }
 
-  #[allow(dead_code)]
   pub fn nanos_since_tick(&self, beats_per_minute: Tick) -> Tick {
     self.nanos() % self.time_signature.nanos_per_tick(beats_per_minute)
   }
 
-  #[allow(dead_code)]
   pub fn nanos_since_beat(&self, beats_per_minute: Tick) -> Tick {
     self.nanos() % self.time_signature.nanos_per_beat(beats_per_minute)
   }
 
-  #[allow(dead_code)]
   pub fn nanos_since_bar(&self, beats_per_minute: Tick) -> Tick {
     self.nanos() % self.time_signature.nanos_per_bar(beats_per_minute)
   }
 
-  #[allow(dead_code)]
   pub fn nanos_since_loop(&self, beats_per_minute: Tick) -> Tick {
     self.nanos() % self.time_signature.nanos_per_loop(beats_per_minute)
   }
 
-  #[allow(dead_code)]
   pub fn nanos_until_tick(&self, beats_per_minute: Tick) -> Tick {
     let nanos_since_tick = self.nanos_since_tick(beats_per_minute);
     let nanos_per_tick = self.time_signature.nanos_per_tick(beats_per_minute);
     nanos_per_tick - nanos_since_tick
   }
 
-  #[allow(dead_code)]
   pub fn next(&self, beats_per_minute: Tick) -> Tick {
     let nanos_until_tick = self.nanos_until_tick(beats_per_minute);
-
     let nanos = nanos_until_tick.numer() / nanos_until_tick.denom();
-
     sleep(Duration::new(0, nanos as u32));
-
     nanos_until_tick
   }
 }
@@ -255,7 +220,6 @@ pub struct Clock {
   tap: Option<Instant>,
 }
 
-#[allow(dead_code)]
 #[derive(Clone, Copy, Debug)]
 pub enum Message {
   Time(Time),
@@ -267,7 +231,6 @@ pub enum Message {
 }
 
 impl Clock {
-  #[allow(dead_code)]
   pub fn new() -> Self {
     let time_signature = TimeSignature::default();
     let time = Time::new(time_signature);
@@ -283,7 +246,6 @@ impl Clock {
     }
   }
 
-  #[allow(dead_code)]
   pub fn start(parent_tx: Sender<Message>) -> Sender<Message> {
     let mut clock = Self::new();
 
@@ -342,32 +304,27 @@ impl Clock {
     tx
   }
 
-  #[allow(dead_code)]
   pub fn reset(&mut self) {
     self.time = Time::new(self.time_signature);
     self.timer = Timer::new(self.time_signature);
   }
 
-  #[allow(dead_code)]
   pub fn set_time_signature(&mut self, time_signature: TimeSignature) {
     self.time_signature = time_signature;
     self.time = Time::new(self.time_signature);
     self.timer = Timer::new(self.time_signature);
   }
 
-  #[allow(dead_code)]
   pub fn time(&self) -> Time {
     self.time
   }
 
-  #[allow(dead_code)]
   pub fn tick(&mut self) -> Tick {
     let nanos_until_tick = self.timer.next(self.tempo);
     self.time = self.time.next();
     nanos_until_tick
   }
 
-  #[allow(dead_code)]
   pub fn tap(&mut self) -> Option<Tempo> {
     // on every tap, quantize beat
     self.time = self.time.quantize_beat();

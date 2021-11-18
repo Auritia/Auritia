@@ -2,7 +2,7 @@ import { emit } from "@tauri-apps/api/event";
 import { open, save } from "@tauri-apps/api/dialog";
 import { invoke } from "@tauri-apps/api/tauri";
 import { AURITIA_FILE_FILTER } from "~/constants";
-import { reactive, watch } from "vue";
+import { reactive } from "vue";
 
 /**
  * Le abstract class that holds the attribute state

@@ -6,6 +6,7 @@
 extern crate ringbuf;
 
 use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
+use num::rational::Ratio;
 use ringbuf::RingBuffer;
 use std::str::FromStr;
 use std::sync::mpsc::channel;
@@ -47,7 +48,6 @@ lazy_static! {
   static ref START_TIME: SystemTime = SystemTime::now();
   static ref IS_METRONOME_ENABLED: RwLock<bool> = RwLock::new(false);
   static ref IS_PLAYING: RwLock<bool> = RwLock::new(false);
-  static ref BPM: RwLock<f32> = RwLock::new(150.00);
   static ref SAMPLE_RATE: RwLock<u32> = RwLock::new(44100);
   static ref CHANNEL_COUNT: RwLock<u16> = RwLock::new(2);
   static ref METRONOME_SOUND: RwLock<Vec<Wav>> = RwLock::new(load_metronome());
@@ -100,10 +100,12 @@ fn main() {
   // Create a channel to receive messages from other threads
   let (tx, rx) = channel();
 
+  let clock_tx = clock::Clock::start(tx.clone());
+
+  // Audio engine thread
   spawn(move || {
     // Make another sender and pass it to the clock so
     // the clock can send events to the main thread as well
-    let clock_tx = clock::Clock::start(tx.clone());
 
     // Listen to the events in the main thread
     for control_message in rx {
@@ -145,6 +147,8 @@ fn main() {
               }
             }
           }
+
+          // print_time(time);
 
           // terminal_tx.send(interface::Message::Time(time)).unwrap();
         }
@@ -202,7 +206,10 @@ fn main() {
   tauri::Builder::default()
     // Register Rust function to Vue
     // .invoke_handler(tauri::generate_handler![engine::create])
-    .setup(|app| {
+    .setup(move |app| {
+      // clone the channel so this thread can send events to the Clock
+      let clock_tx = clock_tx.clone();
+
       // listen to the `event-name` (emitted on any window)
       app.listen_global("set_metronome", |event| {
         let value: bool = FromStr::from_str(event.payload().unwrap()).unwrap();
@@ -210,10 +217,12 @@ fn main() {
         println!("[EVENTS] got 'set_metronome' with payload {:?}", value);
       });
 
-      app.listen_global("set_bpm", |event| {
-        let value: f32 = FromStr::from_str(event.payload().unwrap()).unwrap();
-        *BPM.write().unwrap() = value;
-        println!("[EVENTS] got 'set_bpm' with payload {:?}", value);
+      app.listen_global("set_bpm", move |event| {
+        let value: i64 = FromStr::from_str(event.payload().unwrap()).unwrap();
+        clock_tx
+          .send(clock::Message::Tempo(Ratio::from_integer(value)))
+          .unwrap();
+        // *BPM.write().unwrap() = value;
       });
 
       app.listen_global("play", |_| {
