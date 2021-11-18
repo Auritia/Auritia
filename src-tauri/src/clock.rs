@@ -14,7 +14,7 @@ pub type NudgeTempo = Ratio<i64>;
 static SECONDS_PER_MINUTE: i64 = 60;
 static NANOS_PER_SECOND: i64 = 1_000_000_000;
 
-static DEFAULT_TICKS_PER_BEAT: i64 = 3;
+static DEFAULT_TICKS_PER_BEAT: i64 = 4;
 static DEFAULT_BEATS_PER_BAR: i64 = 4;
 static DEFAULT_BARS_PER_LOOP: i64 = 4;
 static DEFAULT_BEATS_PER_MINUTE: i64 = 120;
