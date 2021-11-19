@@ -13,7 +13,7 @@
       </Menu>
 
       <Menu title="Settings">
-        <MenuOption title="Preferences..." @click="" />
+        <MenuOption title="Preferences..." @click="openPreferences()" />
       </Menu>
 
       <Menu title="Help">
@@ -33,6 +33,7 @@ import Menu from "./shared/Menu.vue";
 import MenuOption from "./shared/MenuOption.vue";
 import MenuSplitter from "./shared/MenuSplitter.vue";
 import ControlButtons from "./ControlButtons.vue";
+import { openPreferences } from "~/state/windows";
 const { reactive } = useState();
 const version = import.meta.env.PACKAGE_VERSION;
 </script>

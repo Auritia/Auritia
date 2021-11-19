@@ -36,7 +36,7 @@ function resize(e: MouseEvent) {
 }
 </script>
 
-<style scoped>
+<style lang="postcss" scoped>
 .resizableDiv {
   @apply pr-1;
   cursor: ew-resize;

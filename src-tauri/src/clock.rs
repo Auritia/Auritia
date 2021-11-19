@@ -13,7 +13,6 @@ pub type NudgeTempo = Ratio<i64>;
 
 static SECONDS_PER_MINUTE: i64 = 60;
 static NANOS_PER_SECOND: i64 = 1_000_000_000;
-
 static DEFAULT_TICKS_PER_BEAT: i64 = 4;
 static DEFAULT_BEATS_PER_BAR: i64 = 4;
 static DEFAULT_BARS_PER_LOOP: i64 = 4;
@@ -353,6 +352,6 @@ fn duration_to_nanos(duration: Duration) -> i64 {
 }
 
 fn round_to_nearest<T: Clone + Copy + Integer>(value: Ratio<T>, quantum: T) -> Ratio<T> {
-  let quantum_rat = Ratio::from_integer(quantum);
-  (value * quantum_rat).round() / quantum_rat
+  let quantum_ratio = Ratio::from_integer(quantum);
+  (value * quantum_ratio).round() / quantum_ratio
 }

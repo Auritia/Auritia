@@ -6,7 +6,7 @@
     </ul>
 
     <ResizableDiv @collapsed="switchExplorerView" v-if="isAtSamples" class="w-64">
-      <ul class="text-theme-700 p-1 bg-theme-200 scrollable overflow-scroll text-xs h-full">
+      <ul class="cursor-default text-theme-700 p-1 bg-theme-200 scrollable overflow-scroll text-xs h-full">
         <li class="hover:text-accent cursor-pointer flex items-center gap-1" v-for="file of files" :Lkey="file.path">
           <p class="overflow-hidden whitespace-nowrap overflow-ellipsis max-w-full"><i-fluency-file />{{ file.name }}</p>
         </li>
@@ -30,7 +30,7 @@ const switchExplorerView = (name: string) => (name === activeRoute.value ? route
 
 const files: Ref<FileEntry[]> = ref([]);
 
-fs.readDir("D:/Geoxor Project/Samples").then((content) => (files.value = content));
+fs.readDir("C:/Users/Geoxor/Documents/VSTs").then((content) => (files.value = content));
 </script>
 
 <style scoped lang="postcss">
