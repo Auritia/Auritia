@@ -6,7 +6,11 @@
     </ul>
 
     <ResizableDiv @collapsed="switchExplorerView" v-if="isAtSamples" class="w-64">
-      <ul class="cursor-default p-1 bg-theme-200 scrollable overflow-scroll text-xs h-full">
+      <ul
+        @drop="handleDrop"
+        @dragover.prevent
+        class="cursor-default p-1 bg-theme-200 scrollable overflow-scroll text-xs h-full"
+      >
         <li class="hover:text-accent cursor-pointer flex items-center gap-1" v-for="file of files" :Lkey="file.path">
           <p class="overflow-hidden whitespace-nowrap overflow-ellipsis max-w-full"><i-fluency-file />{{ file.name }}</p>
         </li>
@@ -30,6 +34,10 @@ const switchExplorerView = (name: string) =>
   name === activeRoute.value ? router.push({ name: "DAW" }) : router.push({ name: "DAW", params: { explorer: name } });
 
 const files: Ref<FileEntry[]> = ref([]);
+
+const handleDrop = (e: DragEvent) => {
+  console.log(e);
+};
 
 fs.readDir("C:/Users/Geoxor/Documents/VSTs").then((content) => (files.value = content));
 </script>
