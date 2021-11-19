@@ -214,13 +214,13 @@ fn main() {
           }
           "set_bpm" => {
             app.listen_global(event_name, move |event| {
+              // This crashes when incementing by 0.10
               let value: i64 = FromStr::from_str(event.payload().unwrap()).unwrap();
               tx.send(clock::Message::Tempo(Ratio::from_integer(value)))
                 .unwrap();
               println!("[EVENTS] got '{}' with payload {:?}", event_name, value);
             });
           }
-
           "play" => {
             app.listen_global(event_name, move |_| {
               *IS_PLAYING.write().unwrap() = true;
