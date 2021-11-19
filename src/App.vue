@@ -3,15 +3,16 @@ import MenuBar from "./components/MenuBar.vue";
 import Navigation from "./components/Navigation.vue";
 import Header from "./components/Header.vue";
 import Footer from "./components/Footer.vue";
+import Timeline from "./components/Timeline.vue";
 </script>
 
 <template>
   <div class="flex flex-col h-full w-full">
     <MenuBar />
     <Header />
-    <div class="flex flex-col bg-theme-300 justify-center w-full overflow-scroll h-full">
+    <div class="flex bg-theme-300 justify-center w-full overflow-scroll h-full">
       <Navigation />
-      <div class="w-full"></div>
+      <Timeline />
     </div>
     <Footer :isActive="false" />
   </div>

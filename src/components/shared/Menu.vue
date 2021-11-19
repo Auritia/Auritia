@@ -13,8 +13,10 @@
 </template>
 
 <script lang="ts" setup>
+import { onKeyStroke } from "@vueuse/core";
 import { ref } from "vue";
 const isShowing = ref(false);
+onKeyStroke("Escape", () => (isShowing.value = false));
 
 defineProps<{
   title: string;
