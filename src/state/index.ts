@@ -22,6 +22,10 @@ export class State extends Store<IAppState> {
     window.addEventListener("keydown", (e: KeyboardEvent) => {});
   }
 
+  public setHint(hint: string) {
+    this.reactive.hint = hint;
+  }
+
   public toggleMetronome() {
     this.reactive.isMetronomeEnabled = !this.reactive.isMetronomeEnabled;
     emit("set_metronome", JSON.stringify(this.reactive.isMetronomeEnabled));
@@ -118,6 +122,7 @@ export interface IAppState {
   project: Project;
   isMetronomeEnabled: boolean;
   isLoopEnabled: boolean;
+  hint?: string;
   isPlaying: boolean;
   playheadPosition: number;
 }

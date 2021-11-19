@@ -2,12 +2,16 @@ import { onKeyStroke, useKeyModifier } from "@vueuse/core";
 import { appWindow } from "@tauri-apps/api/window";
 import router from "~/router";
 import { useState } from ".";
+import { openPreferences } from "./windows";
 
 const state = useState();
 
-const shift = useKeyModifier("Shift");
-const crtl = useKeyModifier("Control");
-const alt = useKeyModifier("Alt");
+export const shift = useKeyModifier("Shift");
+export const crtl = useKeyModifier("Control");
+export const alt = useKeyModifier("Alt");
+
+// CTRL + , -> Preferences
+onKeyStroke(",", () => crtl.value && openPreferences());
 
 // F11 -> Fullscreen
 onKeyStroke("F11", () => appWindow.isFullscreen().then((value) => appWindow.setFullscreen(!value)));

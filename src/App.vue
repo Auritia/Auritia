@@ -2,18 +2,19 @@
 import MenuBar from "./components/MenuBar.vue";
 import Navigation from "./components/Navigation.vue";
 import Header from "./components/Header.vue";
+import Footer from "./components/Footer.vue";
+import Timeline from "./components/Timeline.vue";
 </script>
 
 <template>
   <div class="flex flex-col h-full w-full">
     <MenuBar />
     <Header />
-    <div class="flex flex-col bg-theme-300 justify-center w-full overflow-scroll h-full">
-      <!-- <img src="./assets/full_logo.svg" class="w-96" alt="" /> -->
+    <div class="flex bg-theme-300 justify-center w-full overflow-scroll h-full">
       <Navigation />
-      <div class="w-full"></div>
+      <Timeline />
     </div>
-    <!-- <div class="flex h-96"></div> -->
+    <Footer :isActive="false" />
   </div>
 </template>
 
@@ -21,8 +22,34 @@ import Header from "./components/Header.vue";
 #app,
 body,
 html {
-  @apply h-full w-full select-none text-white bg-theme-100;
+  @apply text-theme-700 h-full w-full select-none bg-theme-100;
   font-family: "Roboto";
+}
+
+kbd {
+  margin: 0px 0.1em;
+  padding: 0.1em 0.6em;
+  border-radius: 2px;
+  border: 1px solid var(--theme-200);
+  color: var(--theme-700);
+  line-height: 1.4;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10px;
+  display: inline-block;
+  box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.2), inset 0px 0px 0px 2px var(--theme-500);
+  background-color: var(--theme-400);
+  -moz-box-shadow: 0 1px 0px rgba(0, 0, 0, 0.2), 0 0 0 2px var(--theme-500) inset;
+  -webkit-box-shadow: 0 1px 0px rgba(0, 0, 0, 0.2), 0 0 0 2px var(--theme-500) inset;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  text-shadow: 0 1px 0 var(--theme-500);
+}
+
+kbd.active {
+  @apply font-bold text-black bg-accent;
+  border: 1px solid var(--accent-color);
+  text-shadow: 0 1px 0 #e1cbff;
+  box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.2), inset 0px 0px 0px 2px #e1cbff;
 }
 
 :root {

@@ -4,10 +4,10 @@
     <!-- {{ reactive.project.timeSignature }} -->
     <div class="flex gap-0.5 text-theme-900">
       <Slider v-model="reactive.project.tempo" :min="10" :max="999" :step="1.0" :percent="false" :default="128" />
-      <Button @click="toggleMetronome()" :isActive="reactive.isMetronomeEnabled">
+      <Button hint="Toggles the metronome" @click="toggleMetronome()" :isActive="reactive.isMetronomeEnabled">
         <i-fluency-metronome />
       </Button>
-      <Button @click="toggleLoop()" :isActive="reactive.isLoopEnabled">
+      <Button hint="Loops the selected region" @click="toggleLoop()" :isActive="reactive.isLoopEnabled">
         <i-fluency-loop />
       </Button>
     </div>

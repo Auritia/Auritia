@@ -1,6 +1,9 @@
 <template>
-  <div class="flex text-theme-700">
-    <button @click="appWindow.isFullscreen().then((isFullscreen) => appWindow.setFullscreen(!isFullscreen))" class="controlButton hover:bg-theme-400 active:bg-theme-500">
+  <div class="flex">
+    <button
+      @click="appWindow.isFullscreen().then((isFullscreen) => appWindow.setFullscreen(!isFullscreen))"
+      class="controlButton hover:bg-theme-400 active:bg-theme-500"
+    >
       <i-fluency-fullscreen />
     </button>
 

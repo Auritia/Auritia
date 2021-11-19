@@ -17,7 +17,7 @@ use tauri::Manager;
 
 mod clock;
 
-static RING_BUFFER_SIZE: usize = 1024;
+static RING_BUFFER_SIZE: usize = 2048;
 
 #[macro_use]
 extern crate lazy_static;

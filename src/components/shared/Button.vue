@@ -1,11 +1,19 @@
 <template>
-  <button class="button" :class="isActive && 'active'">
+  <button
+    @mouseenter="hint && state.setHint(hint)"
+    @mouseleave="hint && state.setHint('')"
+    class="button"
+    :class="isActive && 'active'"
+  >
     <slot />
   </button>
 </template>
 
 <script lang="ts" setup>
+import { useState } from "~/state";
+const state = useState();
 defineProps<{
+  hint?: string;
   isActive: boolean;
 }>();
 </script>
