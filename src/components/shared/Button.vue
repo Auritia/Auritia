@@ -14,7 +14,7 @@ import { useState } from "~/state";
 const state = useState();
 defineProps<{
   hint?: string;
-  isActive: boolean;
+  isActive?: boolean;
 }>();
 </script>
 

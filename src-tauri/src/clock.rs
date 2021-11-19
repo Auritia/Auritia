@@ -274,7 +274,10 @@ impl Clock {
             }
             Ok(Message::Tap) => {
               if let Some(new_tempo) = clock.tap() {
+                // Send the resulting tempo back to the UI to update it
                 parent_tx.send(Message::Tempo(new_tempo)).unwrap();
+                // Set the new tempo to the clock
+                clock.tempo = new_tempo;
               }
             }
             Ok(Message::NudgeTempo(nudge)) => {

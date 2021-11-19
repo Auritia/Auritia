@@ -125,11 +125,10 @@ fn main() {
         // // sent by clock
         // Message::Signature(signature) => {
         //   clock_tx.send(clock::Message::Signature(signature)).unwrap();
-
-        // // sent by clock
-        // Message::Tempo(tempo) => {
-        //   clock_tx.send(clock::Message::Tempo(tempo)).unwrap();
-        // }
+        // Update the UI whenever the clock sends an event that the tempo changed
+        clock::Message::Tempo(tempo) => {
+          println!("{:?}", tempo);
+        }
         // Send an event every tick
         clock::Message::Time(time) => {
           // If we are at the start of the beat play a metronome sound
@@ -147,10 +146,6 @@ fn main() {
               }
             }
           }
-
-          // print_time(time);
-
-          // terminal_tx.send(interface::Message::Time(time)).unwrap();
         }
         _ => {}
       }
@@ -166,12 +161,6 @@ fn main() {
     .expect("no supported config?!")
     .with_max_sample_rate();
   let config: cpal::StreamConfig = supported_config.into();
-  // Get configs
-  // let config: cpal::StreamConfig = cpal::StreamConfig {
-  //   channels: 2,
-  //   sample_rate: cpal::SampleRate(44100),
-  //   buffer_size: cpal::BufferSize::Default,
-  // };
 
   // This function runs by CPAl to write data to the audio stream
   // by popping each sample off the ringbuffer array
@@ -190,7 +179,6 @@ fn main() {
   // Update the channels with the device's default :trol:
   *CHANNEL_COUNT.write().unwrap() = config.channels;
   println!("[DEBUG] Device channels: {}", config.channels);
-
   println!("[DEBUG] Device Buffer Size: {:?}", config.buffer_size);
 
   // Create a stream for the corresponding format
@@ -202,59 +190,60 @@ fn main() {
   // don't start it by default apparently
   stream.play().unwrap();
 
+  let events = ["set_metronome", "tap_metronome", "set_bpm", "play", "stop"];
+
   // Creates the webapp
   tauri::Builder::default()
-    // Register Rust function to Vue
-    // .invoke_handler(tauri::generate_handler![engine::create])
     .setup(move |app| {
-      // clone the channel so this thread can send events to the Clock
-      let clock_tx = clock_tx.clone();
+      for event_name in events {
+        let tx = clock_tx.clone();
 
-      // listen to the `event-name` (emitted on any window)
-      app.listen_global("set_metronome", |event| {
-        let value: bool = FromStr::from_str(event.payload().unwrap()).unwrap();
-        *IS_METRONOME_ENABLED.write().unwrap() = value;
-        println!("[EVENTS] got 'set_metronome' with payload {:?}", value);
-      });
+        match event_name {
+          "set_metronome" => {
+            app.listen_global(event_name, move |event| {
+              let value: bool = FromStr::from_str(event.payload().unwrap()).unwrap();
+              *IS_METRONOME_ENABLED.write().unwrap() = value;
+              println!("[EVENTS] got '{}' with payload {:?}", event_name, value);
+            });
+          }
+          "tap_metronome" => {
+            app.listen_global(event_name, move |_| {
+              tx.send(clock::Message::Tap).unwrap();
+              println!("[EVENTS] got '{}'", event_name);
+            });
+          }
+          "set_bpm" => {
+            app.listen_global(event_name, move |event| {
+              let value: i64 = FromStr::from_str(event.payload().unwrap()).unwrap();
+              tx.send(clock::Message::Tempo(Ratio::from_integer(value)))
+                .unwrap();
+              println!("[EVENTS] got '{}' with payload {:?}", event_name, value);
+            });
+          }
 
-      app.listen_global("set_bpm", move |event| {
-        let value: i64 = FromStr::from_str(event.payload().unwrap()).unwrap();
-        clock_tx
-          .send(clock::Message::Tempo(Ratio::from_integer(value)))
-          .unwrap();
-        // *BPM.write().unwrap() = value;
-      });
-
-      app.listen_global("play", |_| {
-        *IS_PLAYING.write().unwrap() = true;
-        println!("[EVENTS] got 'play'");
-      });
-
-      app.listen_global("stop", |_| {
-        *IS_PLAYING.write().unwrap() = false;
-        println!("[EVENTS] got 'stop'");
-      });
-
-      // unlisten to the event using the `id` returned on the `listen_global` function
+          "play" => {
+            app.listen_global(event_name, move |_| {
+              *IS_PLAYING.write().unwrap() = true;
+              println!("[EVENTS] got '{}'", event_name);
+            });
+          }
+          "stop" => {
+            app.listen_global(event_name, move |_| {
+              *IS_PLAYING.write().unwrap() = false;
+              println!("[EVENTS] got '{}'", event_name);
+            });
+          }
+          _ => {}
+        }
+      }
       Ok(())
     })
+    // Register Rust function to Vue
+    // .invoke_handler(tauri::generate_handler![engine::create])
     // Run the app
     .run(tauri::generate_context!())
     // Catch errors
     .expect("error while running tauri application");
-}
-
-pub fn print_time(time: clock::Time) {
-  print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
-  let ticks_since_beat = time.ticks_since_beat();
-  println!("ticks since beat: {}", &ticks_since_beat);
-  if ticks_since_beat.to_integer() == 0 {
-    println!("BEAT");
-  } else {
-    for _ in 0..ticks_since_beat.to_integer() {
-      print!("-");
-    }
-  }
 }
 
 fn write(producer: &mut ringbuf::Producer<f32>, samples: &Vec<f32>) {

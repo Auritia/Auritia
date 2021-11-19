@@ -3,6 +3,9 @@
     <!-- {{ reactive.project.tempo }} -->
     <!-- {{ reactive.project.timeSignature }} -->
     <div class="flex gap-0.5 text-theme-900">
+      <Button hint="Tap to sync the metronome to your speed" @click="tapMetronome()">
+        <i-fluency-tap />
+      </Button>
       <Slider v-model="reactive.project.tempo" :min="10" :max="999" :step="1.0" :percent="false" :default="128" />
       <Button hint="Toggles the metronome" @click="toggleMetronome()" :isActive="reactive.isMetronomeEnabled">
         <i-fluency-metronome />
@@ -26,5 +29,5 @@ import { useState } from "~/state";
 import Button from "./shared/Button.vue";
 import Slider from "./shared/Slider.vue";
 
-const { reactive, toggleMetronome, toggleLoop, play, stop, pause } = useState();
+const { reactive, toggleMetronome, tapMetronome, toggleLoop, play, stop, pause } = useState();
 </script>

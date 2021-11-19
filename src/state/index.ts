@@ -31,6 +31,10 @@ export class State extends Store<IAppState> {
     emit("set_metronome", JSON.stringify(this.reactive.isMetronomeEnabled));
   }
 
+  public tapMetronome() {
+    emit("tap_metronome");
+  }
+
   public toggleLoop() {
     this.reactive.isLoopEnabled = !this.reactive.isLoopEnabled;
     emit("set_loop", JSON.stringify(this.reactive.isLoopEnabled));
