@@ -2,6 +2,7 @@
 import MenuBar from "./components/MenuBar.vue";
 import Navigation from "./components/Navigation.vue";
 import Header from "./components/Header.vue";
+import Footer from "./components/Footer.vue";
 </script>
 
 <template>
@@ -9,11 +10,10 @@ import Header from "./components/Header.vue";
     <MenuBar />
     <Header />
     <div class="flex flex-col bg-theme-300 justify-center w-full overflow-scroll h-full">
-      <!-- <img src="./assets/full_logo.svg" class="w-96" alt="" /> -->
       <Navigation />
       <div class="w-full"></div>
     </div>
-    <!-- <div class="flex h-96"></div> -->
+    <Footer :isActive="false" />
   </div>
 </template>
 
@@ -21,7 +21,7 @@ import Header from "./components/Header.vue";
 #app,
 body,
 html {
-  @apply h-full w-full select-none text-white bg-theme-100;
+  @apply text-theme-700 h-full w-full select-none bg-theme-100;
   font-family: "Roboto";
 }
 
