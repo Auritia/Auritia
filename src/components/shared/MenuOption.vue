@@ -13,7 +13,6 @@
 
 <script lang="ts" setup>
 import { useState } from "~/state";
-
 const state = useState();
 defineProps<{
   title: string;

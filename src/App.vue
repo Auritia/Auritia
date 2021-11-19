@@ -45,6 +45,13 @@ kbd {
   text-shadow: 0 1px 0 var(--theme-500);
 }
 
+kbd.active {
+  @apply font-bold text-black bg-accent;
+  border: 1px solid var(--accent-color);
+  text-shadow: 0 1px 0 #e1cbff;
+  box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.2), inset 0px 0px 0px 2px #e1cbff;
+}
+
 :root {
   --accent-color: #d1b1ff;
   --theme-100: #0c0d0f;
