@@ -25,6 +25,25 @@ html {
   font-family: "Roboto";
 }
 
+kbd {
+  margin: 0px 0.1em;
+  padding: 0.1em 0.6em;
+  border-radius: 2px;
+  border: 1px solid var(--theme-200);
+  color: var(--theme-700);
+  line-height: 1.4;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10px;
+  display: inline-block;
+  box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.2), inset 0px 0px 0px 2px var(--theme-500);
+  background-color: var(--theme-400);
+  -moz-box-shadow: 0 1px 0px rgba(0, 0, 0, 0.2), 0 0 0 2px var(--theme-500) inset;
+  -webkit-box-shadow: 0 1px 0px rgba(0, 0, 0, 0.2), 0 0 0 2px var(--theme-500) inset;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  text-shadow: 0 1px 0 var(--theme-500);
+}
+
 :root {
   --accent-color: #d1b1ff;
   --theme-100: #0c0d0f;

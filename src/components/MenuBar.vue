@@ -4,16 +4,16 @@
       <img src="../assets/horizontal_logo.svg" class="ml-2" alt="" />
 
       <Menu title="File">
-        <MenuOption title="Open..." @click="reactive.project.open" />
-        <MenuOption title="Save Project" @click="reactive.project.save" />
-        <MenuOption title="Save Project As..." @click="reactive.project.saveAs" />
+        <MenuOption :shortcuts="['CTRL', 'O']" title="Open..." @click="reactive.project.open" />
+        <MenuOption :shortcuts="['CTRL', 'S']" title="Save Project" @click="reactive.project.save" />
+        <MenuOption :shortcuts="['CTRL', 'SHIFT', 'S']" title="Save Project As..." @click="reactive.project.saveAs" />
         <MenuSplitter />
-        <MenuOption title="Render Audio..." @click="reactive.project.render" />
-        <MenuOption title="Project Info..." @click="reactive.project.info" />
+        <MenuOption :shortcuts="['CTRL', 'R']" title="Render Audio..." @click="reactive.project.render" />
+        <MenuOption :shortcuts="['CTRL', 'I']" title="Project Info..." @click="reactive.project.info" />
       </Menu>
 
       <Menu title="Settings">
-        <MenuOption title="Preferences..." @click="openPreferences()" />
+        <MenuOption :shortcuts="['CTRL', ',']" title="Preferences..." @click="openPreferences()" />
       </Menu>
 
       <Menu title="Help">
