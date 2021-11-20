@@ -105,33 +105,17 @@ fn main() {
   thread::Builder::new()
     .name("event_handler".to_string())
     .spawn(move || {
-      // Make another sender and pass it to the clock so
-      // the clock can send events to the main thread as well
-
       // Listen to the events in the main thread
-      for control_message in rx {
+      for control_message in &rx {
         match control_message {
-          // // sent by interface
-          // Message::Reset => {
-          //   clock_tx.send(clock::Message::Reset).unwrap();
-          // }
-          // // sent by interface
-          // Message::NudgeTempo(nudge) => {
-          //   clock_tx.send(clock::Message::NudgeTempo(nudge)).unwrap();
-          // }
-          // // sent by interface
-          // Message::Tap => {
-          //   clock_tx.send(clock::Message::Tap).unwrap();
-          // }
-          // // sent by clock
-          // Message::Signature(signature) => {
-          //   clock_tx.send(clock::Message::Signature(signature)).unwrap();
-          // Update the UI whenever the clock sends an event that the tempo changed
           clock::Message::Tempo(tempo) => {
             println!("{:?}", tempo);
           }
           // Send an event every tick
           clock::Message::Time(time) => {
+            let current_bar = time.bars().to_integer();
+            let current_beat = time.beats_since_bar().to_integer() + 1;
+
             // If we are at the start of the beat play a metronome sound
             if time.ticks_since_beat().to_integer() == 0 {
               if *IS_PLAYING.read().unwrap() {
@@ -198,43 +182,16 @@ fn main() {
   tauri::Builder::default()
     .setup(move |app| {
       for event_name in events {
+        // Make another sender and pass it to the clock so
+        // the clock can send events to the main thread as well
         let tx = clock_tx.clone();
 
         match event_name {
-          "set_metronome" => {
-            app.listen_global(event_name, move |event| {
-              let value: bool = FromStr::from_str(event.payload().unwrap()).unwrap();
-              *IS_METRONOME_ENABLED.write().unwrap() = value;
-              println!("[EVENTS] got '{}' with payload {:?}", event_name, value);
-            });
-          }
-          "tap_metronome" => {
-            app.listen_global(event_name, move |_| {
-              tx.send(clock::Message::Tap).unwrap();
-              println!("[EVENTS] got '{}'", event_name);
-            });
-          }
-          "set_bpm" => {
-            app.listen_global(event_name, move |event| {
-              // This crashes when incementing by 0.10
-              let value: i64 = FromStr::from_str(event.payload().unwrap()).unwrap();
-              tx.send(clock::Message::Tempo(Ratio::from_integer(value)))
-                .unwrap();
-              println!("[EVENTS] got '{}' with payload {:?}", event_name, value);
-            });
-          }
-          "play" => {
-            app.listen_global(event_name, move |_| {
-              *IS_PLAYING.write().unwrap() = true;
-              println!("[EVENTS] got '{}'", event_name);
-            });
-          }
-          "stop" => {
-            app.listen_global(event_name, move |_| {
-              *IS_PLAYING.write().unwrap() = false;
-              println!("[EVENTS] got '{}'", event_name);
-            });
-          }
+          "set_metronome" => set_metronome(app, event_name),
+          "tap_metronome" => tap_metronome(app, event_name, tx),
+          "set_bpm" => set_bpm(app, event_name, tx),
+          "play" => play(app, event_name),
+          "stop" => stop(app, event_name),
           _ => {}
         }
       }
@@ -255,4 +212,51 @@ fn write(producer: &mut ringbuf::Producer<f32>, samples: &Vec<f32>) {
       producer.push(samples[i]).unwrap();
     }
   }
+}
+
+fn set_metronome(app: &mut tauri::App, event_name: &'static str) {
+  app.listen_global(event_name, move |event| {
+    let value: bool = FromStr::from_str(event.payload().unwrap()).unwrap();
+    *IS_METRONOME_ENABLED.write().unwrap() = value;
+    println!("[EVENTS] got '{}' with payload {:?}", event_name, value);
+  });
+}
+
+fn tap_metronome(
+  app: &mut tauri::App,
+  event_name: &'static str,
+  tx: std::sync::mpsc::Sender<clock::Message>,
+) {
+  app.listen_global(event_name, move |_| {
+    tx.send(clock::Message::Tap).unwrap();
+    println!("[EVENTS] got '{}'", event_name);
+  });
+}
+
+fn set_bpm(
+  app: &mut tauri::App,
+  event_name: &'static str,
+  tx: std::sync::mpsc::Sender<clock::Message>,
+) {
+  app.listen_global(event_name, move |event| {
+    // This crashes when incementing by 0.10
+    let value: i64 = FromStr::from_str(event.payload().unwrap()).unwrap();
+    tx.send(clock::Message::Tempo(Ratio::from_integer(value)))
+      .unwrap();
+    println!("[EVENTS] got '{}' with payload {:?}", event_name, value);
+  });
+}
+
+fn play(app: &mut tauri::App, event_name: &'static str) {
+  app.listen_global(event_name, move |_| {
+    *IS_PLAYING.write().unwrap() = true;
+    println!("[EVENTS] got '{}'", event_name);
+  });
+}
+
+fn stop(app: &mut tauri::App, event_name: &'static str) {
+  app.listen_global(event_name, move |_| {
+    *IS_PLAYING.write().unwrap() = true;
+    println!("[EVENTS] got '{}'", event_name);
+  });
 }
