@@ -27,6 +27,7 @@ import { useRoute, useRouter } from "vue-router";
 import ResizableDiv from "./shared/ResizableDiv.vue";
 const route = useRoute();
 const router = useRouter();
+
 const activeRoute = computed(() => route.params.explorer);
 const isAtSamples = computed(() => activeRoute.value === "samples");
 const isAtPlugins = computed(() => activeRoute.value === "plugins");

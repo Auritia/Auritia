@@ -134,8 +134,8 @@ fn main() {
           clock::Message::Time(time) => {
             // If we are at the start of the beat play a metronome sound
             if time.ticks_since_beat().to_integer() == 0 {
-              if *IS_PLAYING.read().unwrap() == true {
-                if *IS_METRONOME_ENABLED.read().unwrap() == true {
+              if *IS_PLAYING.read().unwrap() {
+                if *IS_METRONOME_ENABLED.read().unwrap() {
                   // High
                   if time.beats_since_bar().to_integer() == 0 {
                     write(&mut producer, &metronome_sound_high.samples);

@@ -74,8 +74,10 @@ export class Project {
   }
 
   public setTempo(value: number) {
-    this.tempo = value;
-    emit("set_bpm", JSON.stringify(this.tempo));
+    if (this.tempo !== value) {
+      this.tempo = value;
+      emit("set_bpm", JSON.stringify(this.tempo));
+    }
   }
 
   /**
