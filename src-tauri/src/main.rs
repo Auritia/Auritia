@@ -11,7 +11,7 @@ use ringbuf::RingBuffer;
 use std::str::FromStr;
 use std::sync::mpsc::channel;
 use std::sync::RwLock;
-use std::thread::spawn;
+use std::thread;
 use std::time::SystemTime;
 use tauri::Manager;
 
@@ -102,55 +102,57 @@ fn main() {
 
   let clock_tx = clock::Clock::start(tx.clone());
 
-  // Audio engine thread
-  spawn(move || {
-    // Make another sender and pass it to the clock so
-    // the clock can send events to the main thread as well
+  thread::Builder::new()
+    .name("event_handler".to_string())
+    .spawn(move || {
+      // Make another sender and pass it to the clock so
+      // the clock can send events to the main thread as well
 
-    // Listen to the events in the main thread
-    for control_message in rx {
-      match control_message {
-        // // sent by interface
-        // Message::Reset => {
-        //   clock_tx.send(clock::Message::Reset).unwrap();
-        // }
-        // // sent by interface
-        // Message::NudgeTempo(nudge) => {
-        //   clock_tx.send(clock::Message::NudgeTempo(nudge)).unwrap();
-        // }
-        // // sent by interface
-        // Message::Tap => {
-        //   clock_tx.send(clock::Message::Tap).unwrap();
-        // }
-        // // sent by clock
-        // Message::Signature(signature) => {
-        //   clock_tx.send(clock::Message::Signature(signature)).unwrap();
-        // Update the UI whenever the clock sends an event that the tempo changed
-        clock::Message::Tempo(tempo) => {
-          println!("{:?}", tempo);
-        }
-        // Send an event every tick
-        clock::Message::Time(time) => {
-          // If we are at the start of the beat play a metronome sound
-          if time.ticks_since_beat().to_integer() == 0 {
-            if *IS_PLAYING.read().unwrap() == true {
-              if *IS_METRONOME_ENABLED.read().unwrap() == true {
-                // High
-                if time.beats_since_bar().to_integer() == 0 {
-                  write(&mut producer, &metronome_sound_high.samples);
-                }
-                // Low
-                else {
-                  write(&mut producer, &metronome_sound_low.samples);
+      // Listen to the events in the main thread
+      for control_message in rx {
+        match control_message {
+          // // sent by interface
+          // Message::Reset => {
+          //   clock_tx.send(clock::Message::Reset).unwrap();
+          // }
+          // // sent by interface
+          // Message::NudgeTempo(nudge) => {
+          //   clock_tx.send(clock::Message::NudgeTempo(nudge)).unwrap();
+          // }
+          // // sent by interface
+          // Message::Tap => {
+          //   clock_tx.send(clock::Message::Tap).unwrap();
+          // }
+          // // sent by clock
+          // Message::Signature(signature) => {
+          //   clock_tx.send(clock::Message::Signature(signature)).unwrap();
+          // Update the UI whenever the clock sends an event that the tempo changed
+          clock::Message::Tempo(tempo) => {
+            println!("{:?}", tempo);
+          }
+          // Send an event every tick
+          clock::Message::Time(time) => {
+            // If we are at the start of the beat play a metronome sound
+            if time.ticks_since_beat().to_integer() == 0 {
+              if *IS_PLAYING.read().unwrap() == true {
+                if *IS_METRONOME_ENABLED.read().unwrap() == true {
+                  // High
+                  if time.beats_since_bar().to_integer() == 0 {
+                    write(&mut producer, &metronome_sound_high.samples);
+                  }
+                  // Low
+                  else {
+                    write(&mut producer, &metronome_sound_low.samples);
+                  }
                 }
               }
             }
           }
+          _ => {}
         }
-        _ => {}
       }
-    }
-  });
+    })
+    .expect("event_handler did a little trolling");
 
   // let sample_format = supported_config.sample_format();
   let mut supported_configs_range = device

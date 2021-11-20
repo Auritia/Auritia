@@ -4,7 +4,8 @@
 use num::integer::Integer;
 use num::rational::Ratio;
 use std::sync::mpsc::{channel, Sender, TryRecvError};
-use std::thread::{sleep, spawn};
+use std::thread;
+use std::thread::sleep;
 use std::time::{Duration, Instant};
 
 pub type Tick = Ratio<i64>;
@@ -255,53 +256,56 @@ impl Clock {
       .unwrap();
     parent_tx.send(Message::Tempo(clock.tempo)).unwrap();
 
-    spawn(move || {
-      loop {
-        // wait a tick
-        #[allow(unused_variables)]
-        let diff = clock.tick();
+    thread::Builder::new()
+      .name("clock".to_string())
+      .spawn(move || {
+        loop {
+          // wait a tick
+          #[allow(unused_variables)]
+          let diff = clock.tick();
 
-        // handle any incoming messages
-        let mut is_empty = false;
-        while !is_empty {
-          let message_result = rx.try_recv();
-          match message_result {
-            Ok(Message::Reset) => {
-              clock.reset();
-            }
-            Ok(Message::TimeSignature(time_signature)) => {
-              clock.set_time_signature(time_signature);
-            }
-            Ok(Message::Tap) => {
-              if let Some(new_tempo) = clock.tap() {
-                // Send the resulting tempo back to the UI to update it
-                parent_tx.send(Message::Tempo(new_tempo)).unwrap();
-                // Set the new tempo to the clock
-                clock.tempo = new_tempo;
+          // handle any incoming messages
+          let mut is_empty = false;
+          while !is_empty {
+            let message_result = rx.try_recv();
+            match message_result {
+              Ok(Message::Reset) => {
+                clock.reset();
               }
+              Ok(Message::TimeSignature(time_signature)) => {
+                clock.set_time_signature(time_signature);
+              }
+              Ok(Message::Tap) => {
+                if let Some(new_tempo) = clock.tap() {
+                  // Send the resulting tempo back to the UI to update it
+                  parent_tx.send(Message::Tempo(new_tempo)).unwrap();
+                  // Set the new tempo to the clock
+                  clock.tempo = new_tempo;
+                }
+              }
+              Ok(Message::NudgeTempo(nudge)) => {
+                let old_tempo = clock.tempo;
+                let new_tempo = old_tempo + nudge;
+                parent_tx.send(Message::Tempo(new_tempo)).unwrap();
+              }
+              Ok(Message::Tempo(tempo)) => {
+                clock.tempo = tempo;
+              }
+              Err(TryRecvError::Empty) => {
+                is_empty = true;
+              }
+              Err(TryRecvError::Disconnected) => {
+                panic!("{:?}", TryRecvError::Disconnected);
+              }
+              _ => {}
             }
-            Ok(Message::NudgeTempo(nudge)) => {
-              let old_tempo = clock.tempo;
-              let new_tempo = old_tempo + nudge;
-              parent_tx.send(Message::Tempo(new_tempo)).unwrap();
-            }
-            Ok(Message::Tempo(tempo)) => {
-              clock.tempo = tempo;
-            }
-            Err(TryRecvError::Empty) => {
-              is_empty = true;
-            }
-            Err(TryRecvError::Disconnected) => {
-              panic!("{:?}", TryRecvError::Disconnected);
-            }
-            _ => {}
           }
-        }
 
-        // send clock time
-        parent_tx.send(Message::Time(clock.time())).unwrap();
-      }
-    });
+          // send clock time
+          parent_tx.send(Message::Time(clock.time())).unwrap();
+        }
+      })
+      .expect("clock did a little trolling");
 
     tx
   }
