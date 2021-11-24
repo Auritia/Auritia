@@ -55,7 +55,7 @@ listen("tauri://file-drop", (event: Event<string[]>) => {
   setTimeout(() => {
     if (!isInDiv.value) return;
     currentPath.value = event.payload[0];
-    fs.readDir(currentPath.value).then((content) => (files.value = content));
+    fs.readDir(currentPath.value).then((content) => (files.value = content.filter((file) => !file.name?.endsWith(".asd"))));
   }, 10);
 });
 </script>

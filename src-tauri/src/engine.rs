@@ -76,7 +76,7 @@ impl Engine {
       .load_sound(sample_path, SoundSettings::default())?;
 
     sound_handle.play(InstanceSettings::default())?;
-    return Ok(());
+    Ok(()) // and?
   }
 
   pub fn set_tempo(&mut self, tempo: f64) {
