@@ -16,10 +16,9 @@ pub enum MetronomeEvent {
 }
 
 pub struct Engine {
-  audio_manager: Mutex<AudioManager>,
-  pub metronome_handle: MetronomeHandle,
-  is_metronome_enabled: bool,
-  sequence_handle: SequenceInstanceHandle<MetronomeEvent>,
+  pub audio_manager: Mutex<AudioManager>,
+  pub clock: MetronomeHandle,
+  pub sequence_handle: SequenceInstanceHandle<MetronomeEvent>,
 }
 
 impl Engine {
@@ -27,11 +26,11 @@ impl Engine {
     let mut audio_manager =
       parking_lot::Mutex::new(AudioManager::new(AudioManagerSettings::default()).unwrap());
 
-    let metronome_sound_handle = audio_manager
+    let metronome_sound = audio_manager
       .lock()
       .load_sound("sounds/metronome_low.wav", SoundSettings::default())?;
 
-    let mut metronome_handle = audio_manager
+    let mut clock = audio_manager
       .lock()
       .add_metronome(MetronomeSettings::new().tempo(Tempo(150.0)))?;
 
@@ -39,27 +38,30 @@ impl Engine {
       {
         let mut sequence = Sequence::new(SequenceSettings::default());
         sequence.start_loop();
-        sequence.play(&metronome_sound_handle, InstanceSettings::default());
+        sequence.play(&metronome_sound, InstanceSettings::default());
         sequence.emit(MetronomeEvent::Metronome);
         sequence.wait(kira::Duration::Beats(1.0));
         sequence
       },
-      SequenceInstanceSettings::new().metronome(&metronome_handle),
+      SequenceInstanceSettings::new().metronome(&clock),
     )?;
 
     return Ok(Engine {
       audio_manager,
-      metronome_handle,
+      clock,
       sequence_handle,
-      is_metronome_enabled: false,
     });
   }
 
   pub fn set_tempo(&mut self, tempo: f64) {
-    self.metronome_handle.set_tempo(Tempo(tempo));
+    self.clock.set_tempo(Tempo(tempo));
   }
 
   pub fn set_metronome(&mut self, state: bool) {
-    self.is_metronome_enabled = state;
+    if state {
+      self.sequence_handle.resume()
+    } else {
+      self.sequence_handle.pause()
+    };
   }
 }

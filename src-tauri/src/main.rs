@@ -64,7 +64,7 @@ fn main() {
       println!("[EVENTS] got '{}' with payload {:?}", "set_bpm", value);
     });
     ..listen_global("play", move |event| {
-      engine2.lock().metronome_handle.start();
+      engine2.lock().clock.start();
       println!("[EVENTS] got '{}'", "play");
     });
     ..listen_global("stop", move |event| {
