@@ -5,7 +5,6 @@ use kira::metronome::handle::MetronomeHandle;
 use kira::metronome::MetronomeSettings;
 use kira::sequence::handle::SequenceInstanceHandle;
 use kira::sequence::{Sequence, SequenceInstanceSettings, SequenceSettings};
-use kira::sound::handle::SoundHandle;
 use kira::sound::SoundSettings;
 use kira::Tempo;
 use parking_lot::{self, Mutex};
@@ -19,6 +18,8 @@ pub enum MetronomeEvent {
 pub struct Engine {
   audio_manager: Mutex<AudioManager>,
   pub metronome_handle: MetronomeHandle,
+  is_metronome_enabled: bool,
+  sequence_handle: SequenceInstanceHandle<MetronomeEvent>,
 }
 
 impl Engine {
@@ -49,6 +50,16 @@ impl Engine {
     return Ok(Engine {
       audio_manager,
       metronome_handle,
+      sequence_handle,
+      is_metronome_enabled: false,
     });
+  }
+
+  pub fn set_tempo(&mut self, tempo: f64) {
+    self.metronome_handle.set_tempo(Tempo(tempo));
+  }
+
+  pub fn set_metronome(&mut self, state: bool) {
+    self.is_metronome_enabled = state;
   }
 }

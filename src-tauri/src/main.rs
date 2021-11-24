@@ -5,10 +5,8 @@
 
 use parking_lot::Mutex;
 use std::str::FromStr;
-use std::sync::RwLock;
-use std::thread::spawn;
+use std::sync::{Arc, RwLock};
 use std::time::SystemTime;
-use tauri::Event;
 use tauri::Manager;
 
 mod engine;
@@ -36,7 +34,11 @@ struct Payload {
 }
 
 fn main() {
-  let mut engine = Mutex::new(Engine::new().unwrap());
+  let mut engine = Arc::new(Mutex::new(Engine::new().unwrap()));
+
+  let engine1 = engine.clone();
+  let engine2 = engine.clone();
+  let engine3 = engine.clone();
 
   let app = tauri::Builder::default()
     .build(tauri::generate_context!())
@@ -46,6 +48,7 @@ fn main() {
     &app;
     ..listen_global("set_metronome", move |event| {
       let value: bool = FromStr::from_str(event.payload().unwrap()).unwrap();
+      engine1.lock().set_metronome(value);
       println!(
         "[EVENTS] got '{}' with payload {:?}",
         "set_metronome", value
@@ -57,10 +60,11 @@ fn main() {
     ..listen_global("set_bpm", move |event| {
       // This crashes when incementing by 0.10
       let value: i64 = FromStr::from_str(event.payload().unwrap()).unwrap();
+      engine3.lock().set_tempo(value as f64);
       println!("[EVENTS] got '{}' with payload {:?}", "set_bpm", value);
     });
     ..listen_global("play", move |event| {
-      engine.lock().metronome_handle.start();
+      engine2.lock().metronome_handle.start();
       println!("[EVENTS] got '{}'", "play");
     });
     ..listen_global("stop", move |event| {
