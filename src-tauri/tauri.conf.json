@@ -52,8 +52,7 @@
         "height": 600,
         "resizable": true,
         "decorations": false,
-        "fullscreen": false,
-        "fileDropEnabled": false
+        "fullscreen": false
       }
     ],
     "security": {

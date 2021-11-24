@@ -40,15 +40,11 @@ fn main() {
   let engine2 = engine.clone();
   let engine3 = engine.clone();
   let engine4 = engine.clone();
+  let engine5 = engine.clone();
 
   let app = tauri::Builder::default()
     .build(tauri::generate_context!())
     .expect("Failed to build");
-
-  while let Some(event) = engine.lock().metronome_sequence.pop_event().unwrap() {
-    app.handle().emit_all("beat", ());
-    println!("{:?}", event);
-  }
 
   cascade! {
     &app;
@@ -59,6 +55,12 @@ fn main() {
         "[EVENTS] got '{}' with payload {:?}",
         "set_metronome", value
       );
+    });
+    // Replace this with a direct #[tauri::command] function
+    ..listen_global("preview_sample", move |event| {
+      let path = event.payload().unwrap();
+      println!("[EVENTS] got '{}' path {}", "preview_sample", path);
+      engine5.lock().preview_sample(path);
     });
     ..listen_global("tap_metronome", move |event| {
       println!("[EVENTS] got '{}'", "tap_metronome");

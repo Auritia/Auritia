@@ -12,7 +12,7 @@ use std::error::Error;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum MetronomeEvent {
-  Metronome,
+  Beat,
 }
 
 pub struct Engine {
@@ -42,18 +42,18 @@ impl Engine {
       {
         let mut sequence = Sequence::new(SequenceSettings::default());
         sequence.start_loop();
+        sequence.emit(MetronomeEvent::Beat);
         sequence.play(&metronome_high_sound, InstanceSettings::default());
         sequence.wait(kira::Duration::Beats(1.0));
-        sequence.emit(MetronomeEvent::Metronome);
+        sequence.emit(MetronomeEvent::Beat);
         sequence.play(&metronome_low_sound, InstanceSettings::default());
         sequence.wait(kira::Duration::Beats(1.0));
-        sequence.emit(MetronomeEvent::Metronome);
+        sequence.emit(MetronomeEvent::Beat);
         sequence.play(&metronome_low_sound, InstanceSettings::default());
         sequence.wait(kira::Duration::Beats(1.0));
-        sequence.emit(MetronomeEvent::Metronome);
+        sequence.emit(MetronomeEvent::Beat);
         sequence.play(&metronome_low_sound, InstanceSettings::default());
         sequence.wait(kira::Duration::Beats(1.0));
-        sequence.emit(MetronomeEvent::Metronome);
         sequence
       },
       SequenceInstanceSettings::new().metronome(&clock),
@@ -64,6 +64,16 @@ impl Engine {
       clock,
       metronome_sequence,
     });
+  }
+
+  pub fn preview_sample(&mut self, sample_path: &str) {
+    let mut sound_handle = self
+      .audio_manager
+      .lock()
+      .load_sound(sample_path, SoundSettings::default())
+      .expect("ass");
+
+    sound_handle.play(InstanceSettings::default()).expect("ass");
   }
 
   pub fn set_tempo(&mut self, tempo: f64) {
