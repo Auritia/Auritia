@@ -60,7 +60,7 @@ fn main() {
     ..listen_global("preview_sample", move |event| {
       let path = event.payload().unwrap();
       println!("[EVENTS] got '{}' path {}", "preview_sample", path);
-      engine5.lock().preview_sample(path);
+      engine5.lock().preview_sample(String::from(path));
     });
     ..listen_global("tap_metronome", move |event| {
       println!("[EVENTS] got '{}'", "tap_metronome");
