@@ -39,6 +39,7 @@ fn main() {
   let engine1 = engine.clone();
   let engine2 = engine.clone();
   let engine3 = engine.clone();
+  let engine4 = engine.clone();
 
   let app = tauri::Builder::default()
     .build(tauri::generate_context!())
@@ -68,6 +69,7 @@ fn main() {
       println!("[EVENTS] got '{}'", "play");
     });
     ..listen_global("stop", move |event| {
+      engine4.lock().clock.stop();
       println!("[EVENTS] got '{}'", "stop");
     });
   };
