@@ -23,6 +23,8 @@ lazy_static = "1.4.0"
 num = "0.4.0"
 kira = "0.5.3"
 cascade = "1.0.0"
+parking_lot = "0.11.2"
+
 [features]
 default = [ "custom-protocol" ]
 custom-protocol = [ "tauri/custom-protocol" ]

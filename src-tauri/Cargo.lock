@@ -68,6 +68,7 @@ dependencies = [
  "kira",
  "lazy_static",
  "num",
+ "parking_lot",
  "rand 0.8.4",
  "serde",
  "serde_json",

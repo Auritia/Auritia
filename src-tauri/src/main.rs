@@ -8,6 +8,10 @@ use std::sync::RwLock;
 use std::time::SystemTime;
 use tauri::Manager;
 
+mod engine;
+
+use crate::engine::Engine;
+
 #[macro_use]
 extern crate lazy_static;
 #[macro_use]
@@ -32,6 +36,8 @@ fn main() {
   // Creates the webapp
   tauri::Builder::default()
     .setup(move |app| {
+      let engine = Engine::new();
+
       cascade! {
         app;
         ..listen_global("set_metronome", move |event| {
