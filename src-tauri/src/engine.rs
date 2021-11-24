@@ -1,11 +1,14 @@
 use kira;
+use kira::instance::handle::InstanceHandle;
 use kira::instance::InstanceSettings;
 use kira::manager::{AudioManager, AudioManagerSettings};
 use kira::metronome::handle::MetronomeHandle;
 use kira::metronome::MetronomeSettings;
 use kira::sequence::handle::SequenceInstanceHandle;
 use kira::sequence::{Sequence, SequenceInstanceSettings, SequenceSettings};
+use kira::sound::handle::SoundHandle;
 use kira::sound::SoundSettings;
+use kira::CommandError;
 use kira::Tempo;
 use parking_lot::{self, Mutex};
 use std::error::Error;
@@ -66,14 +69,14 @@ impl Engine {
     });
   }
 
-  pub fn preview_sample(&mut self, sample_path: &str) {
+  pub fn preview_sample(&mut self, sample_path: &str) -> Result<(), Box<dyn Error>> {
     let mut sound_handle = self
       .audio_manager
       .lock()
-      .load_sound(sample_path, SoundSettings::default())
-      .expect("ass");
+      .load_sound(sample_path, SoundSettings::default())?;
 
-    sound_handle.play(InstanceSettings::default()).expect("ass");
+    sound_handle.play(InstanceSettings::default())?;
+    return Ok(());
   }
 
   pub fn set_tempo(&mut self, tempo: f64) {
