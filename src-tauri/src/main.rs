@@ -3,17 +3,15 @@
   windows_subsystem = "windows"
 )]
 
-extern crate ringbuf;
-
 use std::str::FromStr;
 use std::sync::RwLock;
 use std::time::SystemTime;
 use tauri::Manager;
 
-static RING_BUFFER_SIZE: usize = 2048;
-
 #[macro_use]
 extern crate lazy_static;
+#[macro_use]
+extern crate cascade;
 
 lazy_static! {
   static ref START_TIME: SystemTime = SystemTime::now();
@@ -34,30 +32,30 @@ fn main() {
   // Creates the webapp
   tauri::Builder::default()
     .setup(move |app| {
-      app.listen_global("set_metronome", move |event| {
-        let value: bool = FromStr::from_str(event.payload().unwrap()).unwrap();
-        println!(
-          "[EVENTS] got '{}' with payload {:?}",
-          "set_metronome", value
-        );
-      });
-
-      app.listen_global("tap_metronome", move |event| {
-        println!("[EVENTS] got '{}'", "tap_metronome");
-      });
-
-      app.listen_global("set_bpm", move |event| {
-        // This crashes when incementing by 0.10
-        let value: i64 = FromStr::from_str(event.payload().unwrap()).unwrap();
-        println!("[EVENTS] got '{}' with payload {:?}", "set_bpm", value);
-      });
-
-      app.listen_global("play", move |event| {
-        println!("[EVENTS] got '{}'", "play");
-      });
-      app.listen_global("stop", move |event| {
-        println!("[EVENTS] got '{}'", "stop");
-      });
+      cascade! {
+        app;
+        ..listen_global("set_metronome", move |event| {
+          let value: bool = FromStr::from_str(event.payload().unwrap()).unwrap();
+          println!(
+            "[EVENTS] got '{}' with payload {:?}",
+            "set_metronome", value
+          );
+        });
+        ..listen_global("tap_metronome", move |event| {
+          println!("[EVENTS] got '{}'", "tap_metronome");
+        });
+        ..listen_global("set_bpm", move |event| {
+          // This crashes when incementing by 0.10
+          let value: i64 = FromStr::from_str(event.payload().unwrap()).unwrap();
+          println!("[EVENTS] got '{}' with payload {:?}", "set_bpm", value);
+        });
+        ..listen_global("play", move |event| {
+          println!("[EVENTS] got '{}'", "play");
+        });
+        ..listen_global("stop", move |event| {
+          println!("[EVENTS] got '{}'", "stop");
+        });
+      };
 
       Ok(())
     })
