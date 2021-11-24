@@ -68,16 +68,5 @@ fn main() {
     });
   };
 
-  app.run(move |app_handle, e| match e {
-    // Application is ready (triggered only once)
-    Event::Ready => {
-      let app_handle = app_handle.clone();
-
-      spawn(move || {
-        std::thread::sleep(std::time::Duration::from_secs(4));
-        app_handle.emit_all(&"bullshit", ());
-      });
-    }
-    _ => {}
-  });
+  app.run(|app_handle, e| ());
 }

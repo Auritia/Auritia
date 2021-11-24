@@ -19,8 +19,6 @@ pub enum MetronomeEvent {
 pub struct Engine {
   audio_manager: Mutex<AudioManager>,
   pub metronome_handle: MetronomeHandle,
-  pub sequence_handle: SequenceInstanceHandle<MetronomeEvent>,
-  pub metronome_sound_handle: SoundHandle,
 }
 
 impl Engine {
@@ -50,9 +48,7 @@ impl Engine {
 
     return Ok(Engine {
       audio_manager,
-      metronome_sound_handle,
       metronome_handle,
-      sequence_handle,
     });
   }
 }
