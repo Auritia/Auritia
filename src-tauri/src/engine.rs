@@ -26,21 +26,34 @@ impl Engine {
     let mut audio_manager =
       parking_lot::Mutex::new(AudioManager::new(AudioManagerSettings::default()).unwrap());
 
-    let metronome_sound = audio_manager
+    let metronome_high_sound = audio_manager
+      .lock()
+      .load_sound("sounds/metronome_high.wav", SoundSettings::default())?;
+
+    let metronome_low_sound = audio_manager
       .lock()
       .load_sound("sounds/metronome_low.wav", SoundSettings::default())?;
 
     let mut clock = audio_manager
       .lock()
-      .add_metronome(MetronomeSettings::new().tempo(Tempo(150.0)))?;
+      .add_metronome(MetronomeSettings::new().tempo(Tempo(120.0)))?;
 
     let sequence_handle = audio_manager.lock().start_sequence(
       {
         let mut sequence = Sequence::new(SequenceSettings::default());
         sequence.start_loop();
-        sequence.play(&metronome_sound, InstanceSettings::default());
-        sequence.emit(MetronomeEvent::Metronome);
+        sequence.play(&metronome_high_sound, InstanceSettings::default());
         sequence.wait(kira::Duration::Beats(1.0));
+        sequence.emit(MetronomeEvent::Metronome);
+        sequence.play(&metronome_low_sound, InstanceSettings::default());
+        sequence.wait(kira::Duration::Beats(1.0));
+        sequence.emit(MetronomeEvent::Metronome);
+        sequence.play(&metronome_low_sound, InstanceSettings::default());
+        sequence.wait(kira::Duration::Beats(1.0));
+        sequence.emit(MetronomeEvent::Metronome);
+        sequence.play(&metronome_low_sound, InstanceSettings::default());
+        sequence.wait(kira::Duration::Beats(1.0));
+        sequence.emit(MetronomeEvent::Metronome);
         sequence
       },
       SequenceInstanceSettings::new().metronome(&clock),
