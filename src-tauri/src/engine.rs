@@ -21,6 +21,7 @@ pub struct Engine {
   pub audio_manager: Arc<Mutex<AudioManager>>,
   pub clock: MetronomeHandle,
   pub metronome_sequence: SequenceInstanceHandle<MetronomeEvent>,
+  pub loop_preview: bool,
 }
 
 impl Engine {
@@ -66,6 +67,8 @@ impl Engine {
       audio_manager,
       clock,
       metronome_sequence,
+      // Todo: make this be passed as a param from the constructor and localstorage
+      loop_preview: false,
     });
   }
 
@@ -91,6 +94,10 @@ impl Engine {
 
   pub fn set_tempo(&mut self, tempo: f64) {
     self.clock.set_tempo(Tempo(tempo));
+  }
+
+  pub fn set_loop_preview(&mut self, state: bool) {
+    self.loop_preview = state;
   }
 
   pub fn set_metronome(&mut self, state: bool) {

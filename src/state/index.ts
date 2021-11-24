@@ -35,6 +35,11 @@ export class State extends Store<IAppState> {
     emit("set_metronome", JSON.stringify(this.reactive.isMetronomeEnabled));
   }
 
+  public toggleLoopPreview() {
+    this.reactive.isLoopPreviewEnabled = !this.reactive.isLoopPreviewEnabled;
+    emit("set_loop_preview", JSON.stringify(this.reactive.isLoopPreviewEnabled));
+  }
+
   public tapMetronome() {
     emit("tap_metronome");
   }
@@ -132,6 +137,7 @@ export interface IAppState {
   project: Project;
   isMetronomeEnabled: boolean;
   isLoopEnabled: boolean;
+  isLoopPreviewEnabled: boolean;
   hint?: string;
   isPlaying: boolean;
   playheadPosition: number;
@@ -141,6 +147,7 @@ const globalState = new State({
   project: new Project(),
   isMetronomeEnabled: false,
   isLoopEnabled: false,
+  isLoopPreviewEnabled: false,
   playheadPosition: 0,
   isPlaying: false,
 });

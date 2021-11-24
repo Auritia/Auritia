@@ -41,6 +41,7 @@ fn main() {
   let engine3 = engine.clone();
   let engine4 = engine.clone();
   let engine5 = engine.clone();
+  let engine6 = engine.clone();
 
   let app = tauri::Builder::default()
     .build(tauri::generate_context!())
@@ -54,6 +55,14 @@ fn main() {
       println!(
         "[EVENTS] got '{}' with payload {:?}",
         "set_metronome", value
+      );
+    });
+    ..listen_global("set_loop_preview", move |event| {
+      let value: bool = FromStr::from_str(event.payload().unwrap()).unwrap();
+      engine6.lock().set_loop_preview(value);
+      println!(
+        "[EVENTS] got '{}' with payload {:?}",
+        "set_loop_preview", value
       );
     });
     // Replace this with a direct #[tauri::command] function

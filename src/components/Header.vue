@@ -13,6 +13,13 @@
       <Button hint="Loops the selected region" @click="toggleLoop()" :isActive="reactive.isLoopEnabled">
         <i-fluency-loop />
       </Button>
+      <Button
+        hint="Enables auto loop when previewing short samples"
+        @click="toggleLoopPreview()"
+        :isActive="reactive.isLoopPreviewEnabled"
+      >
+        <i-fluency-infinateloop />
+      </Button>
     </div>
 
     <div class="text-sm flex gap-1">
@@ -29,5 +36,5 @@ import { useState } from "~/state";
 import Button from "./shared/Button.vue";
 import Slider from "./shared/Slider.vue";
 
-const { reactive, toggleMetronome, tapMetronome, toggleLoop, play, stop, pause } = useState();
+const { reactive, toggleMetronome, toggleLoopPreview, tapMetronome, toggleLoop, play, stop, pause } = useState();
 </script>
