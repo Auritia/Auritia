@@ -18,7 +18,7 @@ pub enum MetronomeEvent {
 pub struct Engine {
   pub audio_manager: Mutex<AudioManager>,
   pub clock: MetronomeHandle,
-  pub sequence_handle: SequenceInstanceHandle<MetronomeEvent>,
+  pub metronome_sequence: SequenceInstanceHandle<MetronomeEvent>,
 }
 
 impl Engine {
@@ -38,7 +38,7 @@ impl Engine {
       .lock()
       .add_metronome(MetronomeSettings::new().tempo(Tempo(120.0)))?;
 
-    let sequence_handle = audio_manager.lock().start_sequence(
+    let metronome_sequence = audio_manager.lock().start_sequence(
       {
         let mut sequence = Sequence::new(SequenceSettings::default());
         sequence.start_loop();
@@ -62,7 +62,7 @@ impl Engine {
     return Ok(Engine {
       audio_manager,
       clock,
-      sequence_handle,
+      metronome_sequence,
     });
   }
 
@@ -72,9 +72,9 @@ impl Engine {
 
   pub fn set_metronome(&mut self, state: bool) {
     if state {
-      self.sequence_handle.resume()
+      self.metronome_sequence.resume()
     } else {
-      self.sequence_handle.pause()
+      self.metronome_sequence.pause()
     };
   }
 }

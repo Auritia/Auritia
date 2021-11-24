@@ -45,6 +45,11 @@ fn main() {
     .build(tauri::generate_context!())
     .expect("Failed to build");
 
+  while let Some(event) = engine.lock().metronome_sequence.pop_event().unwrap() {
+    app.handle().emit_all("beat", ());
+    println!("{:?}", event);
+  }
+
   cascade! {
     &app;
     ..listen_global("set_metronome", move |event| {

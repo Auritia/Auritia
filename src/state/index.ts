@@ -4,8 +4,8 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { AURITIA_FILE_FILTER } from "~/constants";
 import { reactive } from "vue";
 
-listen("bullshit", (event) => {
-  window.alert("when the software");
+listen("beat", (event) => {
+  console.log("beat");
 });
 
 /**
