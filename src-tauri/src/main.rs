@@ -6,6 +6,8 @@
 use std::str::FromStr;
 use std::sync::RwLock;
 use std::time::SystemTime;
+use tauri::App;
+use tauri::Event;
 use tauri::Manager;
 
 mod engine;
@@ -33,42 +35,43 @@ struct Payload {
 }
 
 fn main() {
-  // Creates the webapp
-  tauri::Builder::default()
-    .setup(move |app| {
-      let engine = Engine::new();
+  let mut engine = Engine::new().unwrap();
+  engine.metronome_handle.start();
 
-      cascade! {
-        app;
-        ..listen_global("set_metronome", move |event| {
-          let value: bool = FromStr::from_str(event.payload().unwrap()).unwrap();
-          println!(
-            "[EVENTS] got '{}' with payload {:?}",
-            "set_metronome", value
-          );
-        });
-        ..listen_global("tap_metronome", move |event| {
-          println!("[EVENTS] got '{}'", "tap_metronome");
-        });
-        ..listen_global("set_bpm", move |event| {
-          // This crashes when incementing by 0.10
-          let value: i64 = FromStr::from_str(event.payload().unwrap()).unwrap();
-          println!("[EVENTS] got '{}' with payload {:?}", "set_bpm", value);
-        });
-        ..listen_global("play", move |event| {
-          println!("[EVENTS] got '{}'", "play");
-        });
-        ..listen_global("stop", move |event| {
-          println!("[EVENTS] got '{}'", "stop");
-        });
-      };
+  let app = tauri::Builder::default()
+    .build(tauri::generate_context!())
+    .expect("Failed to build");
 
-      Ok(())
-    })
-    // Register Rust function to Vue
-    // .invoke_handler(tauri::generate_handler![engine::create])
-    // Run the app
-    .run(tauri::generate_context!())
-    // Catch errors
-    .expect("error while running tauri application");
+  cascade! {
+    &app;
+    ..listen_global("set_metronome", move |event| {
+      let value: bool = FromStr::from_str(event.payload().unwrap()).unwrap();
+      println!(
+        "[EVENTS] got '{}' with payload {:?}",
+        "set_metronome", value
+      );
+    });
+    ..listen_global("tap_metronome", move |event| {
+      println!("[EVENTS] got '{}'", "tap_metronome");
+    });
+    ..listen_global("set_bpm", move |event| {
+      // This crashes when incementing by 0.10
+      let value: i64 = FromStr::from_str(event.payload().unwrap()).unwrap();
+      println!("[EVENTS] got '{}' with payload {:?}", "set_bpm", value);
+    });
+    ..listen_global("play", move |event| {
+      println!("[EVENTS] got '{}'", "play");
+    });
+    ..listen_global("stop", move |event| {
+      println!("[EVENTS] got '{}'", "stop");
+    });
+  };
+
+  app.run(|app_handle, e| match e {
+    // Application is ready (triggered only once)
+    Event::Ready => {
+      let app_handle = app_handle.clone();
+    }
+    _ => {}
+  });
 }
