@@ -24,6 +24,7 @@ num = "0.4.0"
 kira = "0.5.3"
 cascade = "1.0.0"
 parking_lot = "0.11.2"
+crossbeam-channel = "0.4.4"
 
 [features]
 default = [ "custom-protocol" ]

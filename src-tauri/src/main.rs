@@ -3,10 +3,11 @@
   windows_subsystem = "windows"
 )]
 
+use parking_lot::Mutex;
 use std::str::FromStr;
 use std::sync::RwLock;
+use std::thread::spawn;
 use std::time::SystemTime;
-use tauri::App;
 use tauri::Event;
 use tauri::Manager;
 
@@ -35,8 +36,7 @@ struct Payload {
 }
 
 fn main() {
-  let mut engine = Engine::new().unwrap();
-  engine.metronome_handle.start();
+  let mut engine = Mutex::new(Engine::new().unwrap());
 
   let app = tauri::Builder::default()
     .build(tauri::generate_context!())
@@ -60,6 +60,7 @@ fn main() {
       println!("[EVENTS] got '{}' with payload {:?}", "set_bpm", value);
     });
     ..listen_global("play", move |event| {
+      engine.lock().metronome_handle.start();
       println!("[EVENTS] got '{}'", "play");
     });
     ..listen_global("stop", move |event| {
@@ -67,10 +68,15 @@ fn main() {
     });
   };
 
-  app.run(|app_handle, e| match e {
+  app.run(move |app_handle, e| match e {
     // Application is ready (triggered only once)
     Event::Ready => {
       let app_handle = app_handle.clone();
+
+      spawn(move || {
+        std::thread::sleep(std::time::Duration::from_secs(4));
+        app_handle.emit_all(&"bullshit", ());
+      });
     }
     _ => {}
   });
