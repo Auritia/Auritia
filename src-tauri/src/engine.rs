@@ -38,12 +38,17 @@ impl Engine {
       .lock()
       .add_metronome(MetronomeSettings::new().tempo(Tempo(120.0)))?;
 
-    // wait lets pass the up and down
     let metronome = metronome::Metronome::new(
       &mut audio_manager.lock(),
       resource_root.join("sounds/metronome_high.wav"),
       resource_root.join("sounds/metronome_low.wav"),
     )?;
+
+    println!(
+      "{:?} {:?}",
+      resource_root.join("sounds/metronome_high.wav"),
+      resource_root.join("sounds/metronome_low.wav")
+    );
 
     return Ok(Engine {
       resource_root,

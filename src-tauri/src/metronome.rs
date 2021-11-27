@@ -27,8 +27,8 @@ impl Metronome {
     high_path: impl AsRef<std::path::Path>,
     low_path: impl AsRef<std::path::Path>,
   ) -> Result<Metronome, LoadSoundError> {
+    println!("{:?} {:?}", high_path.as_ref(), low_path.as_ref());
     let high_sound = audio_manager.load_sound(high_path, SoundSettings::default())?;
-
     let low_sound = audio_manager.load_sound(low_path, SoundSettings::default())?;
 
     let sequence = cascade! {
