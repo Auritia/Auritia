@@ -39,7 +39,7 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: Auritia Installer AppImage Linux
-        path: src-tauri/target/release/bundle/appimage/*.AppImage
+        path: src-tauri/target/release/bundle/appimage/auritia_*.AppImage
 
   build-windows:
     name: "🌬 Compile for Windows"
