@@ -8,7 +8,7 @@
     "vite:dev": "vite",
     "gen:icon": "npm run tauri icon --icon ./src/assets/logo.png",
     "bump": "npm version patch --force",
-    "compile": "npm run tauri build --verbose",
+    "compile": "tauri build --verbose",
     "build": "vue-tsc --noEmit && vite build",
     "serve": "vite preview",
     "dev": "tauri dev",
