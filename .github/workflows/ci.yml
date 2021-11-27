@@ -26,20 +26,25 @@ jobs:
     - name: ⚡ Install NPM Dependancies
       run: "npm i"
 
+    - name: ⚡ Set Version Variable
+      id: version
+      run: >
+        echo "::set-output name=value::$(node require("./package.json").version)"
+
     - name: 🛠 Build 
       run: npm run compile
       
     - name: 🗳 Upload bundle Debian artifact
       uses: actions/upload-artifact@v1
       with:
-        name: Auritia Installer Debian Linux
-        path: src-tauri/target/release/bundle/deb/*.deb
+        name: Auritia_v{{ steps.version.outputs.value }}_linux.deb
+        path: src-tauri/target/release/bundle/deb/auritia_${{ steps.version.outputs.value }}_amd64.deb
     
     - name: 🗳 Upload bundle AppImage artifact
       uses: actions/upload-artifact@v1
       with:
-        name: Auritia Installer AppImage Linux
-        path: src-tauri/target/release/bundle/appimage/auritia_*.AppImage
+        name: Auritia_v{{ steps.version.outputs.value }}_linux.AppImage
+        path: src-tauri/target/release/bundle/appimage/auritia_${{ steps.version.outputs.value }}_amd64.AppImage
 
   build-windows:
     name: "🌬 Compile for Windows"
@@ -61,5 +66,5 @@ jobs:
     - name: 🗳 Upload bundle artifact
       uses: actions/upload-artifact@v1
       with:
-        name: Auritia Installer Windows
-        path: src-tauri/target/release/bundle/msi
+        name: Auritia_v{{ steps.version.outputs.value }}_win.msi
+        path: src-tauri/target/release/bundle/msi/Auritia_${{ steps.version.outputs.value }}_x64.msi
