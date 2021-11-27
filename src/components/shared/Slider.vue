@@ -21,6 +21,8 @@ const isGranular = useKeyModifier("Shift");
 
 const directInputField = ref<HTMLInputElement | undefined>();
 
+const directInput = ref(false);
+
 let startY = 0;
 let initialValue = 0;
 
@@ -55,6 +57,16 @@ const onMouseUp = () => {
   isDragging.value = false;
   startY = model.value;
 };
+const onDirectInputKey = (event: KeyboardEvent) => {
+  if (event.key === "Escape") {
+    directInputTempo.value = model.value;
+    directInput.value = false;
+  }
+  if (event.key === "Enter") {
+    reactive.project.setTempo(directInputTempo.value);
+    directInput.value = false;
+  }
+};
 watch(isDragging, () => {
   if (isDragging.value) {
     document.addEventListener("mousemove", onMove);
@@ -72,15 +84,22 @@ watch(model, () => {
 </script>
 
 <template>
-  <div class="modifier" @mousedown.passive="onMouseDown" @mouseup.passive="isDragging = false" @dblclick="directInput = true">
-    <div class="value flex items-center justify-center bg-surface-800 py-0.5 px-1 min-w-12 text-secondary-400">
-      <h1 :class="{ pop }">{{ prefix }}{{ displayValue }}</h1>
+  <div class="modifier" @dblclick="directInput = true">
+    <div
+      @mousedown.passive="onMouseDown"
+      @mouseup.passive="isDragging = false"
+      class="value flex items-center justify-center bg-theme-300 py-0.5 px-1 min-w-12 text-secondary-400"
+    >
+      <input
+        class="bg-theme-300 appearance-none bg-transparentborder-none w-12"
+        type="number"
+        v-if="directInput"
+        @keydown="onDirectInputKey"
+        ref="directInputField"
+        v-model="directInputTempo"
+      />
+      <h1 v-else :class="{ pop }">{{ prefix }}{{ displayValue }}</h1>
     </div>
-    <input
-      @keydown="$event.key === 'Enter' && reactive.project.setTempo(directInputTempo)"
-      ref="directInputField"
-      v-model="directInputTempo"
-    />
   </div>
 </template>
 

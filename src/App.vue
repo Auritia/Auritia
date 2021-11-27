@@ -100,6 +100,11 @@ svg {
   border-radius: 20px;
   border: transparent;
 }
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
 input[type="range"]::-webkit-slider-runnable-track {
   @apply bg-theme-300 rounded-full h-2;
 }
