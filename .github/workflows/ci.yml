@@ -28,3 +28,32 @@ jobs:
       with:
         name: auritia_compiled_linux_${{matrix.targetPlatform}}
         path: src-tauri/target/release/auritia 
+
+  build-windows:
+    name: "✔ Compile for Windows"
+    runs-on: windows-latest
+    steps: 
+
+    - name: 🧪 Environment Info
+      run: "npx envinfo"
+
+    - name: 🛎 Checkout
+      uses: actions/checkout@v2
+
+    - name: ⚡ Install NPM Dependancies
+      run: "npm i"
+
+    - name: 🛠 Build 
+      run: npm run compile
+
+    - name: 🗳 Upload binary artifact 
+      uses: actions/upload-artifact@v1
+      with:
+        name: Auritia
+        path: src-tauri/target/release/Auritia.exe
+
+    - name: 🗳 Upload bundle artifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: Auritia Installer
+        path: src-tauri/target/release/bundle/*.msi
