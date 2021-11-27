@@ -29,13 +29,13 @@ jobs:
     - name: 🛠 Build 
       run: npm run compile
       
-    - name: 🗳 Upload bundle artifact
+    - name: 🗳 Upload bundle Debian artifact
       uses: actions/upload-artifact@v1
       with:
         name: Auritia Installer Debian Linux
         path: src-tauri/target/release/bundle/deb/*.deb
     
-    - name: 🗳 Upload bundle artifact
+    - name: 🗳 Upload bundle AppImage artifact
       uses: actions/upload-artifact@v1
       with:
         name: Auritia Installer AppImage Linux
