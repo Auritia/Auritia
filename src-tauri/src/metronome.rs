@@ -24,10 +24,10 @@ pub struct Metronome {
 impl Metronome {
   pub fn new(audio_manager: &mut AudioManager) -> Result<Metronome, LoadSoundError> {
     let high_sound =
-      audio_manager.load_sound("sounds/metronome_high.wav", SoundSettings::default())?;
+      audio_manager.load_sound("./sounds/metronome_high.wav", SoundSettings::default())?;
 
     let low_sound =
-      audio_manager.load_sound("sounds/metronome_low.wav", SoundSettings::default())?;
+      audio_manager.load_sound("./sounds/metronome_low.wav", SoundSettings::default())?;
 
     let sequence = cascade! {
       Sequence::new(SequenceSettings::default());
