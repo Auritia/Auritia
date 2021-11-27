@@ -6,7 +6,7 @@
   "build": {
     "distDir": "../dist",
     "devPath": "http://localhost:3000",
-    "beforeDevCommand": "npm run dev",
+    "beforeDevCommand": "npm run vite:dev",
     "beforeBuildCommand": "npm run build"
   },
   "tauri": {

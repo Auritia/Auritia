@@ -5,13 +5,13 @@
   "repository": "https://github.com/Auritia/Auritia",
   "homepage": "https://auritia.app",
   "scripts": {
-    "dev": "vite",
+    "vite:dev": "vite",
     "gen:icon": "npm run tauri icon --icon ./src/assets/logo.png",
     "bump": "npm version patch --force",
     "compile": "npm run tauri build --verbose",
     "build": "vue-tsc --noEmit && vite build",
     "serve": "vite preview",
-    "tauri": "tauri",
+    "dev": "tauri dev",
     "prettify": "npx prettier --write \"./**/*.ts\" && npx prettier --write \"./**/*.json\" && npx prettier --write \"./**/*.vue\""
   },
   "dependencies": {
