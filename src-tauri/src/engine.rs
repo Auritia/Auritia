@@ -1,7 +1,6 @@
 use crate::metronome;
 use crossbeam_channel::Sender;
 use kira::instance::InstanceSettings;
-use kira::manager::error::StartSequenceError;
 use kira::manager::{AudioManager, AudioManagerSettings};
 use kira::metronome::handle::MetronomeHandle;
 use kira::metronome::MetronomeSettings;
