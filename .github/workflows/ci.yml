@@ -1,6 +1,6 @@
-name: Build on Commit
+name: Build Auritia
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build-linux:
