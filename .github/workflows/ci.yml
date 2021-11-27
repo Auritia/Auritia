@@ -46,8 +46,6 @@ jobs:
     runs-on: windows-latest
     steps: 
 
-    - uses: Swatinem/rust-cache@v1
-
     - name: 🧪 Environment Info
       run: "npx envinfo"
 
