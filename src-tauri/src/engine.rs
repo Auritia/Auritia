@@ -44,12 +44,6 @@ impl Engine {
       resource_root.join("sounds/metronome_low.wav"),
     )?;
 
-    println!(
-      "{:?} {:?}",
-      resource_root.join("sounds/metronome_high.wav"),
-      resource_root.join("sounds/metronome_low.wav")
-    );
-
     return Ok(Engine {
       resource_root,
       audio_manager,

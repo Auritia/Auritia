@@ -83,8 +83,8 @@ fn main() {
 
     app.listen_global("set_bpm", move |event| {
       // This crashes when incementing by 0.10
-      let value: i64 = FromStr::from_str(event.payload().unwrap()).unwrap();
-      if let Err(_) = engine.lock().set_tempo(value as f64) {
+      let value: f64 = FromStr::from_str(event.payload().unwrap()).unwrap();
+      if let Err(_) = engine.lock().set_tempo(value) {
         engine.lock().tx.send("Couldn't set tempo".into());
       }
     });
