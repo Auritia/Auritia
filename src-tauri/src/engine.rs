@@ -1,3 +1,4 @@
+use crossbeam_channel::Sender;
 use kira::instance::InstanceSettings;
 use kira::manager::{AudioManager, AudioManagerSettings};
 use kira::metronome::handle::MetronomeHandle;
@@ -12,12 +13,17 @@ use std::error::Error;
 use std::sync::Arc;
 use std::thread::spawn;
 
+fn sleep(secs: f64) {
+  return std::thread::sleep(std::time::Duration::from_secs_f64(secs));
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum MetronomeEvent {
   Beat,
 }
 
 pub struct Engine {
+  pub tx: Sender<String>,
   pub audio_manager: Arc<Mutex<AudioManager>>,
   pub clock: MetronomeHandle,
   pub metronome_sequence: SequenceInstanceHandle<MetronomeEvent>,
@@ -25,7 +31,8 @@ pub struct Engine {
 }
 
 impl Engine {
-  pub fn new() -> Result<Engine, Box<dyn Error>> {
+  pub fn new(tx: Sender<String>) -> Result<Engine, Box<dyn Error>> {
+    let tx = tx.clone();
     let mut audio_manager = Arc::new(parking_lot::Mutex::new(
       AudioManager::new(AudioManagerSettings::default()).unwrap(),
     ));
@@ -67,6 +74,7 @@ impl Engine {
       audio_manager,
       clock,
       metronome_sequence,
+      tx,
       // Todo: make this be passed as a param from the constructor and localstorage
       loop_preview: false,
     });
@@ -75,21 +83,26 @@ impl Engine {
   pub fn preview_sample(&self, sample_path: String) -> Result<(), Box<dyn Error>> {
     let audio_manager = self.audio_manager.clone();
 
+    let tx = self.tx.clone();
     spawn(move || {
-      let mut sound_handle = audio_manager
+      let load_result = audio_manager
         .lock()
-        .load_sound(sample_path, SoundSettings::default())
-        .unwrap();
+        .load_sound(sample_path, SoundSettings::default());
 
-      sound_handle.play(InstanceSettings::default()).unwrap();
-
-      spawn(move || {
-        std::thread::sleep(std::time::Duration::from_secs_f64(sound_handle.duration()));
-        audio_manager
-          .lock()
-          .remove_sound(sound_handle.id())
-          .expect("failed to remove sound handle preview");
-      });
+      match load_result {
+        Ok(mut sound_handle) => {
+          let play_result = sound_handle.play(InstanceSettings::default());
+          if let Err(e) = play_result {
+            tx.send(e.to_string()).unwrap();
+          };
+          sleep(sound_handle.duration());
+          audio_manager
+            .lock()
+            .remove_sound(sound_handle.id())
+            .unwrap();
+        }
+        Err(e) => tx.send(e.to_string()).unwrap(),
+      }
     });
 
     Ok(()) // and?

@@ -22,15 +22,13 @@ struct Payload {
 }
 
 fn main() {
-  let engine = Arc::new(Mutex::new(Engine::new().unwrap()));
-
   let builder = tauri::Builder::default()
     .build(tauri::generate_context!())
     .expect("Failed to build");
 
   let app = builder.handle();
   let (s, r) = unbounded::<String>();
-  let engine_manager = (s, engine);
+  let engine = Arc::new(Mutex::new(Engine::new(s).unwrap()));
 
   {
     let app = app.clone();
@@ -43,84 +41,69 @@ fn main() {
   }
 
   {
-    let (s, engine) = engine_manager.clone();
+    let engine = engine.clone();
 
     app.listen_global("set_metronome", move |event| {
       let value: bool = FromStr::from_str(event.payload().unwrap()).unwrap();
-      engine
-        .lock()
-        .set_metronome(value)
-        .expect("Couldn't set tempo");
-      println!(
-        "[EVENTS] got '{}' with payload {:?}",
-        "set_metronome", value
-      );
-    });
-  }
-
-  {
-    let (s, engine) = engine_manager.clone();
-
-    app.listen_global("set_loop_preview", move |event| {
-      let value: bool = FromStr::from_str(event.payload().unwrap()).unwrap();
-      engine.lock().set_loop_preview(value);
-      println!(
-        "[EVENTS] got '{}' with payload {:?}",
-        "set_loop_preview", value
-      );
-    });
-  }
-
-  {
-    let (s, engine) = engine_manager.clone();
-
-    // Replace this with a direct #[tauri::command] function
-    app.listen_global("preview_sample", move |event| {
-      let path = event.payload().unwrap();
-      println!("[EVENTS] got '{}' path {}", "preview_sample", path);
-      if let Err(error) = engine.lock().preview_sample(String::from(path)) {
-        s.send(error.to_string());
+      if let Err(_) = engine.lock().set_metronome(value) {
+        engine.lock().tx.send("Couldn't set tempo".into());
       }
     });
   }
 
   {
-    app.listen_global("tap_metronome", move |_| {
-      println!("[EVENTS] got '{}'", "tap_metronome");
+    let engine = engine.clone();
+
+    app.listen_global("set_loop_preview", move |event| {
+      let value: bool = FromStr::from_str(event.payload().unwrap()).unwrap();
+      engine.lock().set_loop_preview(value);
     });
   }
 
   {
-    let (s, engine) = engine_manager.clone();
+    let engine = engine.clone();
+
+    // Replace this with a direct #[tauri::command] function
+    app.listen_global("preview_sample", move |event| {
+      let path = event.payload().unwrap();
+      if let Err(error) = engine.lock().preview_sample(String::from(path)) {
+        engine.lock().tx.send(error.to_string());
+      }
+    });
+  }
+
+  {
+    app.listen_global("tap_metronome", move |_| {});
+  }
+
+  {
+    let engine = engine.clone();
 
     app.listen_global("set_bpm", move |event| {
       // This crashes when incementing by 0.10
       let value: i64 = FromStr::from_str(event.payload().unwrap()).unwrap();
       if let Err(_) = engine.lock().set_tempo(value as f64) {
-        s.send("Couldn't set tempo".into());
+        engine.lock().tx.send("Couldn't set tempo".into());
       }
-      println!("[EVENTS] got '{}' with payload {:?}", "set_bpm", value);
     });
   }
   {
-    let (s, engine) = engine_manager.clone();
+    let engine = engine.clone();
 
     app.listen_global("play", move |_| {
       if let Err(_) = engine.lock().clock.start() {
-        s.send("Couldn't start playback".into());
+        engine.lock().tx.send("Couldn't start playback".into());
       }
-      println!("[EVENTS] got '{}'", "play");
     });
   }
 
   {
-    let (s, engine) = engine_manager.clone();
+    let engine = engine.clone();
 
     app.listen_global("stop", move |_| {
       if let Err(_) = engine.lock().clock.stop() {
-        s.send("Couldn't stop playback".into());
+        engine.lock().tx.send("Couldn't stop playback".into());
       }
-      println!("[EVENTS] got '{}'", "stop");
     });
   }
 
