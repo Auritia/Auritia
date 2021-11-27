@@ -22,12 +22,14 @@ pub struct Metronome {
 }
 
 impl Metronome {
-  pub fn new(audio_manager: &mut AudioManager) -> Result<Metronome, LoadSoundError> {
-    let high_sound =
-      audio_manager.load_sound("./sounds/metronome_high.wav", SoundSettings::default())?;
+  pub fn new(
+    audio_manager: &mut AudioManager,
+    high_path: impl AsRef<std::path::Path>,
+    low_path: impl AsRef<std::path::Path>,
+  ) -> Result<Metronome, LoadSoundError> {
+    let high_sound = audio_manager.load_sound(high_path, SoundSettings::default())?;
 
-    let low_sound =
-      audio_manager.load_sound("./sounds/metronome_low.wav", SoundSettings::default())?;
+    let low_sound = audio_manager.load_sound(low_path, SoundSettings::default())?;
 
     let sequence = cascade! {
       Sequence::new(SequenceSettings::default());

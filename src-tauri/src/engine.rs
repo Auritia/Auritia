@@ -9,6 +9,7 @@ use kira::Tempo;
 use kira::{self, CommandError};
 use parking_lot::{self, Mutex};
 use std::error::Error;
+use std::path::PathBuf;
 use std::sync::Arc;
 use std::thread::spawn;
 
@@ -17,6 +18,7 @@ fn sleep(secs: f64) {
 }
 
 pub struct Engine {
+  pub resource_root: PathBuf,
   pub tx: Sender<String>,
   pub audio_manager: Arc<Mutex<AudioManager>>,
   pub clock: MetronomeHandle,
@@ -25,7 +27,8 @@ pub struct Engine {
 }
 
 impl Engine {
-  pub fn new(tx: Sender<String>) -> Result<Engine, Box<dyn Error>> {
+  pub fn new(tx: Sender<String>, resource_root: PathBuf) -> Result<Engine, Box<dyn Error>> {
+    let resource_root = resource_root;
     let tx = tx.clone();
     let mut audio_manager = Arc::new(parking_lot::Mutex::new(
       AudioManager::new(AudioManagerSettings::default()).unwrap(),
@@ -35,9 +38,15 @@ impl Engine {
       .lock()
       .add_metronome(MetronomeSettings::new().tempo(Tempo(120.0)))?;
 
-    let metronome = metronome::Metronome::new(&mut audio_manager.lock()).unwrap();
+    // wait lets pass the up and down
+    let metronome = metronome::Metronome::new(
+      &mut audio_manager.lock(),
+      resource_root.join("sounds/metronome_high.wav"),
+      resource_root.join("sounds/metronome_low.wav"),
+    )?;
 
     return Ok(Engine {
+      resource_root,
       audio_manager,
       clock,
       metronome,

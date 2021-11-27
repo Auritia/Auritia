@@ -29,9 +29,9 @@ fn main() {
     .expect("Failed to build");
 
   let app = builder.handle();
+  let resource_path = app.path_resolver().resource_dir().unwrap();
   let (s, r) = unbounded::<String>();
-  let engine = Arc::new(Mutex::new(Engine::new(s).unwrap()));
-
+  let engine = Arc::new(Mutex::new(Engine::new(s, resource_path).unwrap()));
   {
     let app = app.clone();
 
