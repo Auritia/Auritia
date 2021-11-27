@@ -1,4 +1,4 @@
-name: Build Auritia
+name: Build on Commit
 
 on: [push]
 
