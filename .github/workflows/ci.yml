@@ -30,7 +30,13 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: Auritia
-        path: src-tauri/target/release/auritia 
+        path: src-tauri/target/release/Auritia
+
+    - name: 🗳 Upload bundle artifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: Auritia Installer
+        path: src-tauri/target/release/bundle/msi
 
   build-windows:
     name: "🌬 Compile for Windows"
