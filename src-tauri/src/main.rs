@@ -14,7 +14,8 @@ mod engine;
 mod metronome;
 
 use crate::engine::Engine;
-
+#[macro_use]
+extern crate cascade;
 // the payload type must implement `Serialize`.
 // for global events, it also must implement `Clone`.
 #[derive(Clone, serde::Serialize)]
