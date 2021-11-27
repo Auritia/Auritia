@@ -1,4 +1,3 @@
-use kira;
 use kira::instance::InstanceSettings;
 use kira::manager::{AudioManager, AudioManagerSettings};
 use kira::metronome::handle::MetronomeHandle;
@@ -7,6 +6,7 @@ use kira::sequence::handle::SequenceInstanceHandle;
 use kira::sequence::{Sequence, SequenceInstanceSettings, SequenceSettings};
 use kira::sound::SoundSettings;
 use kira::Tempo;
+use kira::{self, CommandError};
 use parking_lot::{self, Mutex};
 use std::error::Error;
 use std::sync::Arc;
@@ -85,26 +85,29 @@ impl Engine {
 
       spawn(move || {
         std::thread::sleep(std::time::Duration::from_secs_f64(sound_handle.duration()));
-        audio_manager.lock().remove_sound(sound_handle.id());
+        audio_manager
+          .lock()
+          .remove_sound(sound_handle.id())
+          .expect("failed to remove sound handle preview");
       });
     });
 
     Ok(()) // and?
   }
 
-  pub fn set_tempo(&mut self, tempo: f64) {
-    self.clock.set_tempo(Tempo(tempo));
+  pub fn set_tempo(&mut self, tempo: f64) -> Result<(), CommandError> {
+    return self.clock.set_tempo(Tempo(tempo));
   }
 
   pub fn set_loop_preview(&mut self, state: bool) {
     self.loop_preview = state;
   }
 
-  pub fn set_metronome(&mut self, state: bool) {
+  pub fn set_metronome(&mut self, state: bool) -> Result<(), CommandError> {
     if state {
-      self.metronome_sequence.resume()
+      return self.metronome_sequence.resume();
     } else {
-      self.metronome_sequence.pause()
+      return self.metronome_sequence.pause();
     };
   }
 }
