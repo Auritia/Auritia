@@ -32,9 +32,14 @@ jobs:
     - name: 🗳 Upload bundle artifact
       uses: actions/upload-artifact@v1
       with:
-        name: Auritia Installer Linux
+        name: Auritia Installer Debian Linux
         path: src-tauri/target/release/bundle/deb/*.deb
-
+    
+    - name: 🗳 Upload bundle artifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: Auritia Installer AppImage Linux
+        path: src-tauri/target/release/bundle/appimage/*.AppImage
 
   build-windows:
     name: "🌬 Compile for Windows"
