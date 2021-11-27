@@ -43,7 +43,7 @@ jobs:
     - name: 🗳 Upload bundle AppImage artifact
       uses: actions/upload-artifact@v1
       with:
-        name: Auritia_v{{ steps.version.outputs.value }}_linux.AppImage
+        name: Auritia_v${{ steps.version.outputs.value }}_linux.AppImage
         path: src-tauri/target/release/bundle/appimage/auritia_${{ steps.version.outputs.value }}_amd64.AppImage
 
   build-windows:
@@ -71,5 +71,5 @@ jobs:
     - name: 🗳 Upload bundle artifact
       uses: actions/upload-artifact@v1
       with:
-        name: Auritia_v{{ steps.version.outputs.value }}_win.msi
+        name: Auritia_v${{ steps.version.outputs.value }}_win.msi
         path: src-tauri/target/release/bundle/msi/Auritia_${{ steps.version.outputs.value }}_x64.msi
