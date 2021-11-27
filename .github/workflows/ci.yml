@@ -39,13 +39,13 @@ jobs:
     - name: 🗳 Upload bundle Debian artifact
       uses: actions/upload-artifact@v1
       with:
-        name: Auritia_v${{ steps.version.outputs.value }}_linux.deb
+        name: auritia_compiled_linux.deb
         path: src-tauri/target/release/bundle/deb/auritia_${{ steps.version.outputs.value }}_amd64.deb
     
     - name: 🗳 Upload bundle AppImage artifact
       uses: actions/upload-artifact@v1
       with:
-        name: Auritia_v${{ steps.version.outputs.value }}_linux.AppImage
+        name: auritia_compiled_linux.AppImage
         path: src-tauri/target/release/bundle/appimage/auritia_${{ steps.version.outputs.value }}_amd64.AppImage
 
   build-windows:
@@ -73,7 +73,7 @@ jobs:
     - name: 🗳 Upload bundle artifact
       uses: actions/upload-artifact@v1
       with:
-        name: Auritia_v${{ steps.version.outputs.value }}_win.msi
+        name: auritia_compiled_win.msi
         path: src-tauri/target/release/bundle/msi/Auritia_${{ steps.version.outputs.value }}_x64.msi
 
   create-release:
@@ -116,8 +116,8 @@ jobs:
       - name: 💎 Download ${{matrix.targetPlatform}} binaries
         uses: actions/download-artifact@v2
         with:
-          name: Auritia_v${{ needs.build-linux.outputs.version }}_${{matrix.targetPlatform}}
-          path: installers
+          name: auritia_compiled_${{matrix.targetPlatform}}
+          path: build/${{matrix.targetPlatform}}
 
       # Upload Release
       - name: 💎 Upload ${{matrix.targetPlatform}} artifact
@@ -127,6 +127,6 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: installers/Auritia_v${{ needs.build-linux.outputs.version }}_${{ matrix.targetPlatform }}
+          asset_path: build/${{matrix.targetPlatform}}
           asset_name: Auritia_v${{ needs.build-linux.outputs.version }}_${{matrix.targetPlatform}}
           asset_content_type: application/octet-stream
