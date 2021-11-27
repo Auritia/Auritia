@@ -23,16 +23,18 @@ jobs:
     - name: 🛠 Build 
       run: npm run compile
 
-    - name: 🗳 Upload artifact 
+    - name: 🗳 Upload binary artifact 
       uses: actions/upload-artifact@v1
       with:
-        name: auritia_compiled_linux_${{matrix.targetPlatform}}
+        name: Auritia
         path: src-tauri/target/release/auritia 
 
   build-windows:
-    name: "✔ Compile for Windows"
+    name: "🌬 Compile for Windows"
     runs-on: windows-latest
     steps: 
+
+    - uses: Swatinem/rust-cache@v1
 
     - name: 🧪 Environment Info
       run: "npx envinfo"
@@ -56,4 +58,4 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: Auritia Installer
-        path: src-tauri/target/release/bundle/*.msi
+        path: src-tauri/target/release/bundle/msi
