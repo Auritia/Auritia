@@ -1,10 +1,10 @@
+use crate::metronome;
 use crossbeam_channel::Sender;
 use kira::instance::InstanceSettings;
+use kira::manager::error::StartSequenceError;
 use kira::manager::{AudioManager, AudioManagerSettings};
 use kira::metronome::handle::MetronomeHandle;
 use kira::metronome::MetronomeSettings;
-use kira::sequence::handle::SequenceInstanceHandle;
-use kira::sequence::{Sequence, SequenceInstanceSettings, SequenceSettings};
 use kira::sound::SoundSettings;
 use kira::Tempo;
 use kira::{self, CommandError};
@@ -17,16 +17,11 @@ fn sleep(secs: f64) {
   return std::thread::sleep(std::time::Duration::from_secs_f64(secs));
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum MetronomeEvent {
-  Beat,
-}
-
 pub struct Engine {
   pub tx: Sender<String>,
   pub audio_manager: Arc<Mutex<AudioManager>>,
   pub clock: MetronomeHandle,
-  pub metronome_sequence: SequenceInstanceHandle<MetronomeEvent>,
+  pub metronome: metronome::Metronome,
   pub loop_preview: bool,
 }
 
@@ -37,43 +32,16 @@ impl Engine {
       AudioManager::new(AudioManagerSettings::default()).unwrap(),
     ));
 
-    let metronome_high_sound = audio_manager
-      .lock()
-      .load_sound("sounds/metronome_high.wav", SoundSettings::default())?;
-
-    let metronome_low_sound = audio_manager
-      .lock()
-      .load_sound("sounds/metronome_low.wav", SoundSettings::default())?;
-
     let mut clock = audio_manager
       .lock()
       .add_metronome(MetronomeSettings::new().tempo(Tempo(120.0)))?;
 
-    let metronome_sequence = audio_manager.lock().start_sequence(
-      {
-        let mut sequence = Sequence::new(SequenceSettings::default());
-        sequence.start_loop();
-        sequence.emit(MetronomeEvent::Beat);
-        sequence.play(&metronome_high_sound, InstanceSettings::default());
-        sequence.wait(kira::Duration::Beats(1.0));
-        sequence.emit(MetronomeEvent::Beat);
-        sequence.play(&metronome_low_sound, InstanceSettings::default());
-        sequence.wait(kira::Duration::Beats(1.0));
-        sequence.emit(MetronomeEvent::Beat);
-        sequence.play(&metronome_low_sound, InstanceSettings::default());
-        sequence.wait(kira::Duration::Beats(1.0));
-        sequence.emit(MetronomeEvent::Beat);
-        sequence.play(&metronome_low_sound, InstanceSettings::default());
-        sequence.wait(kira::Duration::Beats(1.0));
-        sequence
-      },
-      SequenceInstanceSettings::new().metronome(&clock),
-    )?;
+    let metronome = metronome::Metronome::new(&mut audio_manager.lock()).unwrap();
 
     return Ok(Engine {
       audio_manager,
       clock,
-      metronome_sequence,
+      metronome,
       tx,
       // Todo: make this be passed as a param from the constructor and localstorage
       loop_preview: false,
@@ -116,11 +84,13 @@ impl Engine {
     self.loop_preview = state;
   }
 
-  pub fn set_metronome(&mut self, state: bool) -> Result<(), CommandError> {
+  pub fn set_metronome(&mut self, state: bool) -> Result<(), Box<dyn Error>> {
     if state {
-      return self.metronome_sequence.resume();
+      let mut audio_manager = self.audio_manager.lock();
+      self.metronome.start(&mut audio_manager, &mut self.clock)?;
     } else {
-      return self.metronome_sequence.pause();
+      self.metronome.stop()?;
     };
+    Ok(())
   }
 }

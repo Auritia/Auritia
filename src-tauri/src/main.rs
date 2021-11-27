@@ -11,6 +11,7 @@ use std::thread::spawn;
 use tauri::Manager;
 
 mod engine;
+mod metronome;
 
 use crate::engine::Engine;
 
