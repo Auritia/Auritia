@@ -1,16 +1,15 @@
 <template>
-  <footer :class="isActive && 'active'" class="flex items-center text-xs w-full px-2 h-6 bg-theme-200">
-    <h1 class="flex items-center gap-1" v-if="state.reactive.hint"><i-fluency-bulb />{{ state.reactive.hint }}</h1>
+  <footer class="flex items-center text-xs w-full h-6">
+    <h1 class="flex items-center gap-1 px-2" v-if="text">
+      <div class="flex items-center text-xs"><slot /></div>
+      {{ text }}
+    </h1>
   </footer>
 </template>
 
 <script setup lang="ts">
-import { useState } from "~/state";
-
-const state = useState();
-
 defineProps<{
-  isActive?: boolean;
+  text?: string;
 }>();
 </script>
 

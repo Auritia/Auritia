@@ -4,10 +4,6 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { AURITIA_FILE_FILTER } from "~/constants";
 import { reactive } from "vue";
 
-listen("beat", (event) => {
-  console.log("beat");
-});
-
 /**
  * Le abstract class that holds the attribute state
  * @author Goxer & N1kO23
@@ -24,6 +20,8 @@ export class State extends Store<IAppState> {
   constructor(state: IAppState) {
     super(state);
     window.addEventListener("keydown", (e: KeyboardEvent) => {});
+
+    listen<string>("error", (event) => (this.reactive.errorText = event.payload));
   }
 
   public setHint(hint: string) {
@@ -139,6 +137,7 @@ export interface IAppState {
   isLoopEnabled: boolean;
   isLoopPreviewEnabled: boolean;
   hint?: string;
+  errorText: string | undefined;
   isPlaying: boolean;
   playheadPosition: number;
 }
@@ -149,6 +148,7 @@ const globalState = new State({
   isLoopEnabled: false,
   isLoopPreviewEnabled: false,
   playheadPosition: 0,
+  errorText: undefined,
   isPlaying: false,
 });
 

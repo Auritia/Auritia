@@ -4,6 +4,8 @@ import Navigation from "./components/Navigation.vue";
 import Header from "./components/Header.vue";
 import Footer from "./components/Footer.vue";
 import Timeline from "./components/Timeline.vue";
+import { useState } from "./state/index";
+const state = useState();
 </script>
 
 <template>
@@ -14,7 +16,16 @@ import Timeline from "./components/Timeline.vue";
       <Navigation />
       <Timeline />
     </div>
-    <Footer :isActive="false" />
+    <div class="flex">
+      <Footer :text="state.reactive.hint"> <i-fluency-bulb /> </Footer>
+      <Footer
+        @click="state.reactive.errorText = undefined"
+        class="flex-1 bg-red-600 whitespace-nowrap text-white"
+        :text="state.reactive.errorText"
+      >
+        <i-fluency-file />
+      </Footer>
+    </div>
   </div>
 </template>
 

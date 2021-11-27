@@ -3,17 +3,16 @@
   windows_subsystem = "windows"
 )]
 
+use crossbeam_channel::unbounded;
 use parking_lot::Mutex;
 use std::str::FromStr;
 use std::sync::Arc;
+use std::thread::spawn;
 use tauri::Manager;
 
 mod engine;
 
 use crate::engine::Engine;
-
-#[macro_use]
-extern crate cascade;
 
 // the payload type must implement `Serialize`.
 // for global events, it also must implement `Clone`.
@@ -25,15 +24,30 @@ struct Payload {
 fn main() {
   let engine = Arc::new(Mutex::new(Engine::new().unwrap()));
 
-  let app = tauri::Builder::default()
+  let builder = tauri::Builder::default()
     .build(tauri::generate_context!())
     .expect("Failed to build");
+
+  let app = builder.handle();
+  let (s, r) = unbounded::<&str>();
+  {
+    let app = app.clone();
+
+    spawn(move || {
+      for value in r.iter() {
+        app.emit_all("error", &value).expect("failed to emit error");
+      }
+    });
+  }
 
   {
     let engine = engine.clone();
     app.listen_global("set_metronome", move |event| {
       let value: bool = FromStr::from_str(event.payload().unwrap()).unwrap();
-      engine.lock().set_metronome(value).expect("Couldn't set tempo");
+      engine
+        .lock()
+        .set_metronome(value)
+        .expect("Couldn't set tempo");
       println!(
         "[EVENTS] got '{}' with payload {:?}",
         "set_metronome", value
@@ -101,10 +115,13 @@ fn main() {
   {
     let engine = engine.clone();
     app.listen_global("stop", move |_| {
-      engine.lock().clock.stop().expect("Couldn't stop playback");
+      s.send("trolled your mom");
+      if let Err(_) = engine.lock().clock.stop() {
+        s.send("Couldn't stop playback").unwrap();
+      }
       println!("[EVENTS] got '{}'", "stop");
     });
   }
 
-  app.run(|_, _| ());
+  builder.run(|_, _| ());
 }
