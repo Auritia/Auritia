@@ -28,12 +28,13 @@ jobs:
 
     - name: 🛠 Build 
       run: npm run compile
-
+      
     - name: 🗳 Upload bundle artifact
       uses: actions/upload-artifact@v1
       with:
         name: Auritia Installer
-        path: src-tauri/target/release/bundle/msi
+        path: src-tauri/target/release/bundle/deb
+
 
   build-windows:
     name: "🌬 Compile for Windows"
@@ -58,4 +59,4 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: Auritia Installer
-        path: src-tauri/target/release/bundle/deb
+        path: src-tauri/target/release/bundle/msi
