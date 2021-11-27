@@ -29,7 +29,9 @@ fn main() {
     .expect("Failed to build");
 
   let app = builder.handle();
-  let (s, r) = unbounded::<&str>();
+  let (s, r) = unbounded::<String>();
+  let engine_manager = (s, engine);
+
   {
     let app = app.clone();
 
@@ -41,7 +43,8 @@ fn main() {
   }
 
   {
-    let engine = engine.clone();
+    let (s, engine) = engine_manager.clone();
+
     app.listen_global("set_metronome", move |event| {
       let value: bool = FromStr::from_str(event.payload().unwrap()).unwrap();
       engine
@@ -56,7 +59,8 @@ fn main() {
   }
 
   {
-    let engine = engine.clone();
+    let (s, engine) = engine_manager.clone();
+
     app.listen_global("set_loop_preview", move |event| {
       let value: bool = FromStr::from_str(event.payload().unwrap()).unwrap();
       engine.lock().set_loop_preview(value);
@@ -68,56 +72,53 @@ fn main() {
   }
 
   {
-    let engine = engine.clone();
+    let (s, engine) = engine_manager.clone();
+
     // Replace this with a direct #[tauri::command] function
     app.listen_global("preview_sample", move |event| {
       let path = event.payload().unwrap();
       println!("[EVENTS] got '{}' path {}", "preview_sample", path);
-      engine
-        .lock()
-        .preview_sample(String::from(path))
-        .expect("Couldn't preview given sample");
+      if let Err(error) = engine.lock().preview_sample(String::from(path)) {
+        s.send(error.to_string());
+      }
     });
   }
 
   {
-    let _engine = engine.clone();
     app.listen_global("tap_metronome", move |_| {
       println!("[EVENTS] got '{}'", "tap_metronome");
     });
   }
 
   {
-    let engine = engine.clone();
+    let (s, engine) = engine_manager.clone();
+
     app.listen_global("set_bpm", move |event| {
       // This crashes when incementing by 0.10
       let value: i64 = FromStr::from_str(event.payload().unwrap()).unwrap();
-      engine
-        .lock()
-        .set_tempo(value as f64)
-        .expect("Couldn't set tempo");
+      if let Err(_) = engine.lock().set_tempo(value as f64) {
+        s.send("Couldn't set tempo".into());
+      }
       println!("[EVENTS] got '{}' with payload {:?}", "set_bpm", value);
     });
   }
   {
-    let engine = engine.clone();
+    let (s, engine) = engine_manager.clone();
 
     app.listen_global("play", move |_| {
-      engine
-        .lock()
-        .clock
-        .start()
-        .expect("Couldn't start playback");
+      if let Err(_) = engine.lock().clock.start() {
+        s.send("Couldn't start playback".into());
+      }
       println!("[EVENTS] got '{}'", "play");
     });
   }
 
   {
-    let engine = engine.clone();
+    let (s, engine) = engine_manager.clone();
+
     app.listen_global("stop", move |_| {
-      s.send("trolled your mom");
       if let Err(_) = engine.lock().clock.stop() {
-        s.send("Couldn't stop playback").unwrap();
+        s.send("Couldn't stop playback".into());
       }
       println!("[EVENTS] got '{}'", "stop");
     });
