@@ -16,7 +16,10 @@ jobs:
 
     - name: ⚡ Install ALSA
       run: sudo apt install -y alsa-utils libasound2-dev
-
+    
+    - name: ⚡ Install FUSE
+      run: sudo apt install -y libfuse-dev
+    
     - name: ⚡ Install NPM Dependancies
       run: "npm i"
 
