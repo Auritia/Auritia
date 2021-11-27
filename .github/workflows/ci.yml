@@ -39,7 +39,7 @@ jobs:
     - name: 🗳 Upload bundle Debian artifact
       uses: actions/upload-artifact@v1
       with:
-        name: Auritia_v{{ steps.version.outputs.value }}_linux.deb
+        name: Auritia_v${{ steps.version.outputs.value }}_linux.deb
         path: src-tauri/target/release/bundle/deb/auritia_${{ steps.version.outputs.value }}_amd64.deb
     
     - name: 🗳 Upload bundle AppImage artifact
