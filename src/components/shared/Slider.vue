@@ -14,14 +14,21 @@ const props = defineProps<{
 }>();
 const emit = defineEmits(["update:modelValue"]);
 const model = useVModel(props, "modelValue", emit);
+
+const directInputTempo = ref(model.value);
 const isDragging = ref(false);
 const isGranular = useKeyModifier("Shift");
+
+const directInputField = ref<HTMLInputElement | undefined>();
+
 let startY = 0;
 let initialValue = 0;
+
 const displayValue = computed(() => {
   if (props.percent) return `${(model.value * 100).toFixed(2)}%`;
   return props.step < 1 ? model.value.toFixed(2) : model.value.toFixed(2);
 });
+
 // Sets model to 0 if alt is held. Otherwise sets dragging to true.
 const onMouseDown = (e: MouseEvent) => {
   if (e.altKey) {
@@ -65,10 +72,15 @@ watch(model, () => {
 </script>
 
 <template>
-  <div class="modifier" @mousedown.passive="onMouseDown" @mouseup.passive="isDragging = false">
+  <div class="modifier" @mousedown.passive="onMouseDown" @mouseup.passive="isDragging = false" @dblclick="directInput = true">
     <div class="value flex items-center justify-center bg-surface-800 py-0.5 px-1 min-w-12 text-secondary-400">
       <h1 :class="{ pop }">{{ prefix }}{{ displayValue }}</h1>
     </div>
+    <input
+      @keydown="$event.key === 'Enter' && reactive.project.setTempo(directInputTempo)"
+      ref="directInputField"
+      v-model="directInputTempo"
+    />
   </div>
 </template>
 

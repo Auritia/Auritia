@@ -29,7 +29,7 @@ jobs:
     - name: ⚡ Set Version Variable
       id: version
       run: >
-        echo "::set-output name=value::$(node -i -e "require('./package.json').version")"
+        echo "::set-output name=value::$(node --eval "console.log(require('./package.json').version)")"
 
     - name: 🛠 Build 
       run: npm run compile
@@ -63,7 +63,7 @@ jobs:
     - name: ⚡ Set Version Variable
       id: version
       run: >
-        echo "::set-output name=value::$(node -i -e "require('./package.json').version")"
+        echo "::set-output name=value::$(node --eval "console.log(require('./package.json').version)")"
 
     - name: 🛠 Build 
       run: npm run compile
