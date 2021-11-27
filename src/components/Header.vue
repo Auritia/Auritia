@@ -6,7 +6,7 @@
       <Button hint="Tap to sync the metronome to your speed" @click="state.tapMetronome()">
         <i-fluency-tap />
       </Button>
-      <Slider v-model="state.reactive.project.tempo" :min="1" :max="9999" :step="1.0" :percent="false" :default="128" />
+      <Slider v-model="state.reactive.project.tempo" :min="1" :max="99999" :step="1.0" :percent="false" :default="128" />
       <Button hint="Toggles the metronome" @click="state.toggleMetronome()" :isActive="state.reactive.isMetronomeEnabled">
         <i-fluency-metronome />
       </Button>
