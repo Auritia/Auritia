@@ -73,3 +73,66 @@ jobs:
       with:
         name: Auritia_v${{ steps.version.outputs.value }}_win.msi
         path: src-tauri/target/release/bundle/msi/Auritia_${{ steps.version.outputs.value }}_x64.msi
+
+  create-release:
+    name: "📦 Create Release"
+    # runs-on: ubuntu-latest
+    runs-on: self-hosted
+    needs: [build-linux, build-macos, build-windows]
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      
+      # Yes we get the repo again but only for the version in the package.json
+      - name: 🛎 Checkout
+        uses: actions/checkout@v2
+      - name: ⚡ Set Version Variable
+        id: version
+        run: >
+          echo "::set-output name=value::$(node --eval "console.log(require('./package.json').version)")"
+     
+      # The release script that prepares a new Github release
+      - name: ⚡ Create Release
+        uses: actions/create-release@v1
+        id: create_release
+        continue-on-error: true
+        with:
+          draft: false
+          prerelease: false
+          release_name: Auritia v${{ steps.version.outputs.value }}
+          tag_name: v${{ steps.version.outputs.value }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+  upload: 
+    name: "📤 Upload Builds"
+    # runs-on: ubuntu-latest
+    runs-on: self-hosted
+    needs: create-release
+    strategy:
+      matrix: 
+       targetPlatform:
+          - linux.deb
+          - linux.AppImage
+          - win.msi
+      fail-fast: false
+    steps:
+
+      # Download the artifacts
+      - name: 💎 Download ${{matrix.targetPlatform}} binaries
+        uses: actions/download-artifact@v2
+        with:
+          name: Auritia_v${{ steps.version.outputs.value }}_${{matrix.targetPlatform}}
+          path: installers
+
+      # Upload Release
+      - name: 💎 Upload ${{matrix.targetPlatform}} artifact
+        uses: actions/upload-release-asset@v1
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: installers/Auritia_v${{ steps.version.outputs.value }}_${{ matrix.targetPlatform }}
+          asset_name: Auritia_v${{ steps.version.outputs.value }}_${{matrix.targetPlatform}}
+          asset_content_type: application/octet-stream
