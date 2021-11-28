@@ -1,3 +1,4 @@
+import { onKeyStroke, useKeyModifier } from "@vueuse/core";
 import { DynamicCanvas } from "./DynamicCanvas";
 
 export interface ColorPalette {
@@ -11,10 +12,14 @@ export class TimelineRenderer extends DynamicCanvas {
   private horizontalZoom = 1 / 8;
   private verticalScrollPx = 0;
   private trackCount = 1;
+  private subBarDivision = 1;
 
   constructor(public output: HTMLCanvasElement, public palette: ColorPalette) {
     super(output);
     this.debug(palette);
+    const crtl = useKeyModifier("Control");
+    onKeyStroke("1", () => crtl.value && this.lowerSubBarDivision());
+    onKeyStroke("2", () => crtl.value && this.raiseSubBarDivision());
   }
 
   public setTrackCount(trackCount: number) {
@@ -30,6 +35,20 @@ export class TimelineRenderer extends DynamicCanvas {
 
   public deleteTrack() {
     this.setTrackCount(this.trackCount - 1);
+  }
+
+  public setSubBarDivision(value: number) {
+    this.subBarDivision = Math.min(Math.max(value, 1), 8);
+    this.debug(this.subBarDivision);
+    this.draw();
+  }
+
+  public raiseSubBarDivision() {
+    this.setSubBarDivision(this.subBarDivision + 1);
+  }
+
+  public lowerSubBarDivision() {
+    this.setSubBarDivision(this.subBarDivision - 1);
   }
 
   public setVerticalZoom(value: number) {
@@ -76,7 +95,7 @@ export class TimelineRenderer extends DynamicCanvas {
 
       // Draw sub vertical lines
       this.ctx.lineWidth = this.px(subBarThickness);
-      this.drawSubBar(i * gridLineWidthPx, gridLineWidthPx, 8);
+      this.drawSubBar(i * gridLineWidthPx, gridLineWidthPx, 8 * this.subBarDivision);
       this.ctx.lineWidth = this.px(barsThickness);
 
       // Horizontal lines
