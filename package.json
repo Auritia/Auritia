@@ -6,9 +6,9 @@
   "homepage": "https://auritia.app",
   "scripts": {
     "git:refresh": "git rm -r --cached . && git add .",
-    "bump:patch": "npm version patch --force & node ./scripts/bump.js",
-    "bump:minor": "npm version minor --force & node ./scripts/bump.js",
-    "bump:major": "npm version major --force & node ./scripts/bump.js",
+    "bump:patch": "npm version patch --force & node ./scripts/bump.js && git push",
+    "bump:minor": "npm version minor --force & node ./scripts/bump.js && git push",
+    "bump:major": "npm version major --force & node ./scripts/bump.js && git push",
     "vite:dev": "vite",
     "gen:icon": "npm run tauri icon --icon ./src/assets/logo.png",
     "compile": "tauri build --verbose",
