@@ -34,7 +34,7 @@ Auritia is a DAW coded in Rust and Vue in hopes of having cross platform compata
 
 # 🛠 Compiling
 
-## Linux
+## 🐧 Linux
 
 - Install bloatware dependancies
 
@@ -52,5 +52,14 @@ Auritia is a DAW coded in Rust and Vue in hopes of having cross platform compata
    libasound2-dev
 ```
 
+- Install bloat `npm i`
 - Compile with `npm run compile`
-- The compiled bundle will be in `src-tauri/target/release/bundle/<auritia>.deb`
+- The compiled bundle will be in `src-tauri/target/release/bundle/deb/<auritia>.deb`
+
+## 💻 Windows
+
+- Install [Visual Studio C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
+- Install [Rustc and Cargo Package Manager](https://win.rustup.rs/x86_64)
+- Install bloat `npm i`
+- Compile with `npm run compile`
+- The compiled bundle will be in `src-tauri/target/release/bundle/msi/<auritia>.msi`
