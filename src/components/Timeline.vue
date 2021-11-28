@@ -3,6 +3,8 @@
     <div class="px-2 py-1">
       <input type="range" step="0.1" min="0.1" max="4" v-model="upsampleValue" />
       {{ upsampleValue }}
+      <Button @click="addTrack">Add Track</Button>
+      <Button @click="deleteTrack">Delete Track</Button>
     </div>
     <canvas ref="timeline" class="w-full h-full transform origin-top-left"></canvas>
   </div>
@@ -13,10 +15,17 @@
 import { onMounted, ref, watch } from "vue";
 import { DynamicCanvas } from "~/logic/DynamicCanvas";
 import { TimelineRenderer } from "~/logic/TimelineRenderer";
+import Button from "./shared/Button.vue";
 
 let renderer: TimelineRenderer | undefined;
+
 const timeline = ref<HTMLCanvasElement | undefined>();
 const upsampleValue = ref(2);
+const zoomLevel = ref(1 / 8);
+
+const addTrack = () => renderer?.addTrack();
+
+const deleteTrack = () => renderer?.deleteTrack();
 
 watch(upsampleValue, () => {
   renderer?.changeUpsampling(upsampleValue.value);

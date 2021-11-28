@@ -1,4 +1,3 @@
-import { tsMethodSignature } from "@babel/types";
 import { DynamicCanvas } from "./DynamicCanvas";
 
 export interface ColorPalette {
@@ -11,17 +10,32 @@ export class TimelineRenderer extends DynamicCanvas {
   private verticalZoom = 1 / 8;
   private horizontalZoom = 1 / 8;
   private verticalScrollPx = 0;
+  private trackCount = 1;
 
   constructor(public output: HTMLCanvasElement, public palette: ColorPalette) {
     super(output);
     this.debug(palette);
   }
 
+  public setTrackCount(trackCount: number) {
+    this.debug(`trackCount: ${trackCount}`);
+    // Clamp the value so we don't go below 1
+    this.trackCount = Math.max(1, trackCount);
+    this.draw();
+  }
+
+  public addTrack() {
+    this.setTrackCount(this.trackCount + 1);
+  }
+
+  public deleteTrack() {
+    this.setTrackCount(this.trackCount - 1);
+  }
+
   private drawTrackHighlights() {
     const trackHeightPx = this.output.height * this.verticalZoom;
 
-    for (let i = 0; i < 8; i++) {
-      // whatever default value for now
+    for (let i = 0; i < this.trackCount; i++) {
       this.ctx.fillStyle = i % 2 == 0 ? this.palette.highShade : this.palette.lowShade; // Alternate track's shades
       this.ctx.fillRect(0, i * trackHeightPx, this.output.width, trackHeightPx);
     }
@@ -69,6 +83,7 @@ export class TimelineRenderer extends DynamicCanvas {
   }
 
   public draw() {
+    this.ctx.clearRect(0, 0, this.output.width, this.output.height);
     this.drawTrackHighlights();
     this.drawBars(2);
   }
