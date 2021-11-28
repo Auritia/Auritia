@@ -38,17 +38,17 @@ export class TimelineRenderer extends DynamicCanvas {
   }
 
   public setSubBarDivision(value: number) {
-    this.subBarDivision = Math.min(Math.max(value, 1), 8);
+    this.subBarDivision = Math.min(Math.max(value, 0.25), 4);
     this.debug(this.subBarDivision);
     this.draw();
   }
 
   public raiseSubBarDivision() {
-    this.setSubBarDivision(this.subBarDivision + 1);
+    this.setSubBarDivision(this.subBarDivision * 2);
   }
 
   public lowerSubBarDivision() {
-    this.setSubBarDivision(this.subBarDivision - 1);
+    this.setSubBarDivision(this.subBarDivision / 2);
   }
 
   public setVerticalZoom(value: number) {
