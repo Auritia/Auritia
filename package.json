@@ -5,9 +5,9 @@
   "repository": "https://github.com/Auritia/Auritia",
   "homepage": "https://auritia.app",
   "scripts": {
+    "bump": "npm version patch --force && node ./scripts/bump.js",
     "vite:dev": "vite",
     "gen:icon": "npm run tauri icon --icon ./src/assets/logo.png",
-    "bump": "npm version patch --force",
     "compile": "tauri build --verbose",
     "build": "vue-tsc --noEmit && vite build",
     "serve": "vite preview",
