@@ -98,7 +98,7 @@ export class TimelineRenderer extends DynamicCanvas {
    * @param barWidth the total horizontal pixel width of the current bar
    * @param subBarDivision the amount of sub division lines to draw within the bar
    */
-  private drawSubBar(barStart: number, barWidth: number, subBarDivision: number = 8) {
+  private drawSubBar(barStart: number, barWidth: number, subBarDivision: number = 8 * this.subBarDivision) {
     const subBarOffset = barWidth / subBarDivision;
 
     for (let i = 0; i < subBarDivision; i++) {
@@ -132,7 +132,7 @@ export class TimelineRenderer extends DynamicCanvas {
 
       // Draw sub vertical lines
       this.ctx.lineWidth = this.px(subBarThickness);
-      this.drawSubBar(i * gridLineWidthPx, gridLineWidthPx, 8 * this.subBarDivision);
+      this.drawSubBar(i * gridLineWidthPx, gridLineWidthPx);
       this.ctx.lineWidth = this.px(barsThickness);
 
       // Horizontal lines
