@@ -1,3 +1,4 @@
+import { minmax } from ".";
 import { DynamicCanvas } from "./DynamicCanvas";
 
 export interface ColorPalette {
@@ -34,7 +35,7 @@ export class TimelineRenderer extends DynamicCanvas {
   }
 
   public setSubBarDivision(value: number) {
-    this.subBarDivision = Math.min(Math.max(value, 0.25), 4);
+    this.subBarDivision = minmax(value, 0.25, 4);
     this.debug(this.subBarDivision);
     this.draw();
   }
