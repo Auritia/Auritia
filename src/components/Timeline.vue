@@ -16,7 +16,7 @@
 <script setup lang="ts">
 import { onKeyStroke, useKeyModifier } from "@vueuse/core";
 import { onMounted, ref, watch } from "vue";
-import { minmax } from "~/logic";
+import { rootHexColor, minmax } from "~/logic";
 import { TimelineRenderer } from "~/logic/TimelineRenderer";
 import Button from "./shared/Button.vue";
 
@@ -56,11 +56,10 @@ onKeyStroke("1", () => crtl.value && renderer!.lowerSubBarDivision());
 onKeyStroke("2", () => crtl.value && renderer!.raiseSubBarDivision());
 
 onMounted(() => {
-  const styles = getComputedStyle(document.documentElement);
   renderer = new TimelineRenderer(timeline.value!, {
-    highShade: styles.getPropertyValue("--theme-300").trim(),
-    lowShade: styles.getPropertyValue("--theme-250").trim(),
-    gridColor: styles.getPropertyValue("--theme-100").trim(),
+    highShade: rootHexColor("--theme-300"),
+    lowShade: rootHexColor("--theme-250"),
+    gridColor: rootHexColor("--theme-100"),
   });
 
   renderer.draw();
