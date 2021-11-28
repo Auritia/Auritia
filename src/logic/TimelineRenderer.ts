@@ -105,6 +105,6 @@ export class TimelineRenderer extends DynamicCanvas {
   public draw() {
     this.ctx.clearRect(0, 0, this.output.width, this.output.height);
     this.drawTrackHighlights();
-    this.drawBars(2);
+    this.drawBars();
   }
 }

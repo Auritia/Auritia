@@ -10,7 +10,7 @@ export class DynamicCanvas {
   protected debug = scopedDebug("DynamicCanvas");
 
   /**
-   * This propertyu multiplies the render scale by an amount to reduce the bluriness canvases have.
+   * This property multiplies the render scale by an amount to reduce the bluriness canvases have.
    *
    * 1x is the default which is very blurry and looks like shit.
    * 2x looks a lot sharper and normal.
