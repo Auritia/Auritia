@@ -13,6 +13,7 @@ export default defineConfig({
         theme: {
           100: "var(--theme-100)",
           200: "var(--theme-200)",
+          250: "var(--theme-250)",
           300: "var(--theme-300)",
           400: "var(--theme-400)",
           500: "var(--theme-500)",

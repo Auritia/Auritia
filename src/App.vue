@@ -12,7 +12,7 @@ const state = useState();
   <div class="flex flex-col h-full w-full">
     <MenuBar />
     <Header />
-    <div class="flex bg-theme-300 justify-center w-full overflow-scroll h-full">
+    <div class="flex bg-theme-300 justify-center w-full overflow-hidden h-full">
       <Navigation />
       <Timeline />
     </div>
@@ -67,6 +67,7 @@ kbd.active {
   --accent-color: #d1b1ff;
   --theme-100: #0c0d0f;
   --theme-200: #111215;
+  --theme-250: #131418;
   --theme-300: #17191e;
   --theme-400: #1d2026;
   --theme-500: #2a2d34;
