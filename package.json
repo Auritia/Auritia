@@ -6,7 +6,7 @@
   "homepage": "https://auritia.app",
   "scripts": {
     "git:refresh": "git rm -r --cached . && git add .",
-    "bump": "npm version patch --force && node ./scripts/bump.js",
+    "bump": "npm version patch --force & node ./scripts/bump.js",
     "vite:dev": "vite",
     "gen:icon": "npm run tauri icon --icon ./src/assets/logo.png",
     "compile": "tauri build --verbose",
