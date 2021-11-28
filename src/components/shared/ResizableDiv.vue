@@ -38,7 +38,7 @@ function resize(e: MouseEvent) {
 
 <style lang="postcss" scoped>
 .resizableDiv {
-  @apply pr-1;
+  @apply pr-1 bg-theme-200 hover:bg-accent;
   cursor: ew-resize;
 }
 </style>

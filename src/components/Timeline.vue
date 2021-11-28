@@ -23,7 +23,12 @@ watch(upsampleValue, () => {
 });
 
 onMounted(() => {
-  renderer = new TimelineRenderer(timeline.value!);
+  const styles = getComputedStyle(document.documentElement);
+  renderer = new TimelineRenderer(timeline.value!, {
+    highShade: styles.getPropertyValue("--theme-200").trim(),
+    lowShade: styles.getPropertyValue("--theme-300").trim(),
+    gridColor: styles.getPropertyValue("--theme-100").trim(),
+  });
   renderer.draw();
 });
 </script>

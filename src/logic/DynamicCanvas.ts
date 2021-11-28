@@ -6,8 +6,8 @@ import { scopedDebug } from "./Debug";
  * @author Geoxor & Bluskript
  */
 export class DynamicCanvas {
-  private ctx: CanvasRenderingContext2D;
-  private debug = scopedDebug("DynamicCanvas");
+  protected ctx: CanvasRenderingContext2D;
+  protected debug = scopedDebug("DynamicCanvas");
 
   /**
    * This propertyu multiplies the render scale by an amount to reduce the bluriness canvases have.
@@ -19,13 +19,12 @@ export class DynamicCanvas {
    * It's also possible to set it to numbers less than 1x to achive lower resolutions
    * kinda like how video games have render resolution options like 0.8 etc
    */
-  private upsampling = 2;
+  protected upsampling = 2;
 
   constructor(public output: HTMLCanvasElement) {
     this.ctx = output.getContext("2d")!; // this will never be undefined lmfao unless shit pc
     this.ctx.imageSmoothingEnabled = false;
     this.attachResize();
-    this.draw();
   }
 
   /**
