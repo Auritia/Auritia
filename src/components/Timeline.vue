@@ -1,8 +1,11 @@
 <template>
   <div class="w-full h-full bg-theme-100">
-    <div class="px-2 py-1">
+    <div class="flex items-center gap-2 text-xs px-2 py-1">
       <input type="range" step="0.1" min="0.1" max="4" v-model="upsampleValue" />
-      {{ upsampleValue }}
+      <span>Upsample: {{ upsampleValue }}</span>
+      <input type="range" step="0.01" :min="1 / 16" :max="1 / 4" v-model="zoomLevel" />
+      <span>Zoom: {{ zoomLevel }}</span>
+      <div class="flex-1"></div>
       <Button @click="addTrack">Add Track</Button>
       <Button @click="deleteTrack">Delete Track</Button>
     </div>
@@ -26,6 +29,8 @@ const zoomLevel = ref(1 / 8);
 const addTrack = () => renderer?.addTrack();
 
 const deleteTrack = () => renderer?.deleteTrack();
+
+watch(zoomLevel, () => renderer?.setVerticalZoom(zoomLevel.value));
 
 watch(upsampleValue, () => {
   renderer?.changeUpsampling(upsampleValue.value);
