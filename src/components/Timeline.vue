@@ -15,6 +15,7 @@
 
 <script setup lang="ts">
 // defineProps<{}>();
+import { onKeyStroke, useKeyModifier } from "@vueuse/core";
 import { onMounted, ref, watch } from "vue";
 import { DynamicCanvas } from "~/logic/DynamicCanvas";
 import { TimelineRenderer } from "~/logic/TimelineRenderer";
@@ -25,6 +26,8 @@ let renderer: TimelineRenderer | undefined;
 const timeline = ref<HTMLCanvasElement | undefined>();
 const upsampleValue = ref(2);
 const verticalZoomLevel = ref(1 / 8);
+
+const crtl = useKeyModifier("Control");
 
 const addTrack = () => renderer?.addTrack();
 
@@ -43,6 +46,10 @@ onMounted(() => {
     lowShade: styles.getPropertyValue("--theme-300").trim(),
     gridColor: styles.getPropertyValue("--theme-100").trim(),
   });
+
+  onKeyStroke("1", () => crtl.value && renderer!.lowerSubBarDivision());
+  onKeyStroke("2", () => crtl.value && renderer!.raiseSubBarDivision());
+
   renderer.draw();
 });
 </script>

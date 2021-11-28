@@ -1,4 +1,3 @@
-import { onKeyStroke, useKeyModifier } from "@vueuse/core";
 import { DynamicCanvas } from "./DynamicCanvas";
 
 export interface ColorPalette {
@@ -17,9 +16,6 @@ export class TimelineRenderer extends DynamicCanvas {
   constructor(public output: HTMLCanvasElement, public palette: ColorPalette) {
     super(output);
     this.debug(palette);
-    const crtl = useKeyModifier("Control");
-    onKeyStroke("1", () => crtl.value && this.lowerSubBarDivision());
-    onKeyStroke("2", () => crtl.value && this.raiseSubBarDivision());
   }
 
   public setTrackCount(trackCount: number) {
