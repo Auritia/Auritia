@@ -96,12 +96,12 @@ export class TimelineRenderer extends DynamicCanvas {
    * Draws the sub division bars (beats) within a bar
    * @param barStart the horizontal pixel position of where the current bar starts
    * @param barWidth the total horizontal pixel width of the current bar
-   * @param subBarDivision the amount of sub division lines to draw within the bar
+   * @param subBars the amount of sub bars to draw within the bar
    */
-  private drawSubBar(barStart: number, barWidth: number, subBarDivision: number = 8 * this.subBarDivision) {
-    const subBarOffset = barWidth / subBarDivision;
+  private drawSubBar(barStart: number, barWidth: number, subBars: number = 8 * this.subBarDivision) {
+    const subBarOffset = barWidth / subBars;
 
-    for (let i = 0; i < subBarDivision; i++) {
+    for (let i = 0; i < subBars; i++) {
       this.ctx.beginPath();
       this.ctx.moveTo(barStart + i * subBarOffset, 0);
       this.ctx.lineTo(barStart + i * subBarOffset, this.output.height);
