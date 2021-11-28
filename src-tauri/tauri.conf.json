@@ -49,9 +49,9 @@
       {
         "title": "Auritia",
         "width": 800,
-        "height": 600,
+        "height": 400,
         "minWidth": 800,
-        "minHeight": 600,
+        "minHeight": 400,
         "center": true,
         "focus": true,
         "resizable": true,
