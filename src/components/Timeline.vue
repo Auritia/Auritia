@@ -3,8 +3,8 @@
     <div class="flex items-center gap-2 text-xs px-2 py-1">
       <input type="range" step="0.1" min="0.1" max="4" v-model="upsampleValue" />
       <span>Upsample: {{ upsampleValue }}</span>
-      <input type="range" step="0.01" :min="1 / 16" :max="1 / 4" v-model="zoomLevel" />
-      <span>Zoom: {{ zoomLevel }}</span>
+      <input type="range" step="0.01" :min="1 / 16" :max="1 / 4" v-model="verticalZoomLevel" />
+      <span>Vertical Zoom: {{ verticalZoomLevel }}</span>
       <div class="flex-1"></div>
       <Button @click="addTrack">Add Track</Button>
       <Button @click="deleteTrack">Delete Track</Button>
@@ -24,13 +24,13 @@ let renderer: TimelineRenderer | undefined;
 
 const timeline = ref<HTMLCanvasElement | undefined>();
 const upsampleValue = ref(2);
-const zoomLevel = ref(1 / 8);
+const verticalZoomLevel = ref(1 / 8);
 
 const addTrack = () => renderer?.addTrack();
 
 const deleteTrack = () => renderer?.deleteTrack();
 
-watch(zoomLevel, () => renderer?.setVerticalZoom(zoomLevel.value));
+watch(verticalZoomLevel, () => renderer?.setVerticalZoom(verticalZoomLevel.value));
 
 watch(upsampleValue, () => {
   renderer?.changeUpsampling(upsampleValue.value);

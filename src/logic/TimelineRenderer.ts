@@ -32,8 +32,8 @@ export class TimelineRenderer extends DynamicCanvas {
     this.setTrackCount(this.trackCount - 1);
   }
 
-  public setVerticalZoom(zoom: number) {
-    this.verticalZoom = zoom;
+  public setVerticalZoom(value: number) {
+    this.verticalZoom = value;
     this.draw();
   }
 
