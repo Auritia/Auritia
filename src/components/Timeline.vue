@@ -57,8 +57,8 @@ onKeyStroke("2", () => crtl.value && renderer!.raiseSubBarDivision());
 
 onMounted(() => {
   renderer = new TimelineRenderer(timeline.value!, {
-    highShade: rootHexColor("--theme-300"),
-    lowShade: rootHexColor("--theme-250"),
+    highShade: rootHexColor("--theme-250"),
+    lowShade: rootHexColor("--theme-200"),
     gridColor: rootHexColor("--theme-100"),
   });
 
