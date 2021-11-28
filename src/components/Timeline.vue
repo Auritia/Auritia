@@ -1,7 +1,7 @@
 <template>
-  <div class="w-full h-full bg-blue-500">
+  <div class="w-full h-full bg-theme-100">
     <div class="px-2 py-1">
-      <input type="range" step="0.1" min="0.1" max="4" v-model="upsampleValue" />
+      <input type="range" step="0.1" default="2" min="0.1" max="4" v-model="upsampleValue" />
       {{ upsampleValue }}
     </div>
     <canvas ref="timeline" class="w-full h-full transform origin-top-left"></canvas>
@@ -16,7 +16,7 @@ import { TimelineRenderer } from "~/logic/TimelineRenderer";
 
 let renderer: TimelineRenderer | undefined;
 const timeline = ref<HTMLCanvasElement | undefined>();
-const upsampleValue = ref(1);
+const upsampleValue = ref(2);
 
 watch(upsampleValue, () => {
   renderer?.changeUpsampling(upsampleValue.value);
