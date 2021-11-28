@@ -1,3 +1,9 @@
 {
-  "recommendations": ["johnsoncodehk.volar"]
+  "recommendations": [
+    "johnsoncodehk.volar",
+    "coenraads.bracket-pair-colorizer",
+    "esbenp.prettier-vscode",
+    "matklad.rust-analyzer",
+    "voorjaar.windicss-intellisense"
+  ]
 }
