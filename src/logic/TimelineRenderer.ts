@@ -81,13 +81,13 @@ export class TimelineRenderer extends DynamicCanvas {
   }
 
   /**
-   * Draws the background of a track
+   * Draws the background of a bar
    */
   private drawBarBackground() {
     const barWidth = this.output.width * this.horizontalZoom;
     for (let i = 0; i < 1 / this.horizontalZoom; i++) {
       const barStart = i * barWidth;
-      this.ctx.fillStyle = i % 2 == 0 ? this.palette.highShade : this.palette.lowShade; // Alternate track's shades
+      this.ctx.fillStyle = i % 2 == 0 ? this.palette.highShade : this.palette.lowShade; // Alternate bar's shades
       this.ctx.fillRect(barStart, 0, barStart + barWidth, this.output.height);
     }
   }
