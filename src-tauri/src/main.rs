@@ -26,9 +26,6 @@ struct Payload {
 }
 
 fn main() {
-  // Clear the terminal
-  print!("{}[2J", 27 as char);
-
   let panic_handler = arcmutex(PanicHandler::new());
 
   {
@@ -54,7 +51,7 @@ fn main() {
 
   let app = builder.handle();
   let resource_path = app.path_resolver().resource_dir().unwrap();
-  let fatal_log_path = app.path_resolver().resource_dir().unwrap().join("logs");
+  let fatal_log_path = resource_path.join("logs");
 
   panic_handler.lock().error_filepath = Some(fatal_log_path);
 
