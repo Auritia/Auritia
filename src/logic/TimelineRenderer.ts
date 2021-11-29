@@ -83,12 +83,12 @@ export class TimelineRenderer extends DynamicCanvas {
   /**
    * Draws the background of a track
    */
-  private drawTrackBackground() {
-    const trackHeightPx = this.output.height * this.verticalZoom;
-
-    for (let i = 0; i < this.trackCount; i++) {
+  private drawBarBackground() {
+    const barWidth = this.output.width * this.horizontalZoom;
+    for (let i = 0; i < 1 / this.horizontalZoom; i++) {
+      const barStart = i * barWidth;
       this.ctx.fillStyle = i % 2 == 0 ? this.palette.highShade : this.palette.lowShade; // Alternate track's shades
-      this.ctx.fillRect(0, i * trackHeightPx, this.output.width, trackHeightPx);
+      this.ctx.fillRect(barStart, 0, barStart + barWidth, this.output.height);
     }
   }
 
@@ -109,6 +109,18 @@ export class TimelineRenderer extends DynamicCanvas {
     }
   }
 
+  public drawTrackDivisions() {
+    const gridLineHeightPx = this.output.height * this.verticalZoom;
+
+    // Horizontal lines for each track
+    for (let i = 0; i < this.trackCount + 1; i++) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(0, i * gridLineHeightPx);
+      this.ctx.lineTo(this.output.width, i * gridLineHeightPx);
+      this.ctx.stroke();
+    }
+  }
+
   /**
    * Draws lines to signify where bars begin, end and their subdivisions
    * @param barsThickness the stroke width of the grid that split the bars
@@ -116,11 +128,10 @@ export class TimelineRenderer extends DynamicCanvas {
   private drawBars(barsThickness: number = 2) {
     const subBarThickness = barsThickness / 2;
 
-    const gridLineHeightPx = this.output.height * this.verticalZoom;
     const gridLineWidthPx = this.output.width * this.horizontalZoom;
     this.ctx.strokeStyle = this.palette.gridColor;
 
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 1 / this.horizontalZoom; i++) {
       this.ctx.lineWidth = this.px(barsThickness);
       this.ctx.fillStyle = i % 2 == 0 ? this.palette.highShade : this.palette.lowShade;
 
@@ -134,18 +145,13 @@ export class TimelineRenderer extends DynamicCanvas {
       this.ctx.lineWidth = this.px(subBarThickness);
       this.drawSubBar(i * gridLineWidthPx, gridLineWidthPx);
       this.ctx.lineWidth = this.px(barsThickness);
-
-      // Horizontal lines
-      this.ctx.beginPath();
-      this.ctx.moveTo(0, i * gridLineHeightPx);
-      this.ctx.lineTo(this.output.width, i * gridLineHeightPx);
-      this.ctx.stroke();
     }
   }
 
   public draw() {
     this.ctx.clearRect(0, 0, this.output.width, this.output.height);
-    this.drawTrackBackground();
+    this.drawBarBackground();
+    this.drawTrackDivisions();
     this.drawBars();
   }
 }
