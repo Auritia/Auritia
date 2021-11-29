@@ -65,6 +65,7 @@ name = "app"
 version = "0.1.0"
 dependencies = [
  "cascade",
+ "chrono",
  "crossbeam-channel 0.4.4",
  "kira",
  "lazy_static",

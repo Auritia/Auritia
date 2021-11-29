@@ -36,10 +36,10 @@ const MAXIMAL_V_ZOOM = 1 / 4;
 
 // Zoom handles
 const verticalZoomIn = () =>
-  (verticalZoomLevel.value = minmax(verticalZoomLevel.value + V_ZOOM_STEP, MINIMAL_V_ZOOM, MAXIMAL_V_ZOOM));
+  (verticalZoomLevel.value = minmax(+verticalZoomLevel.value + V_ZOOM_STEP, MINIMAL_V_ZOOM, MAXIMAL_V_ZOOM));
 
 const verticalZoomOut = () =>
-  (verticalZoomLevel.value = minmax(verticalZoomLevel.value - V_ZOOM_STEP, MINIMAL_V_ZOOM, MAXIMAL_V_ZOOM));
+  (verticalZoomLevel.value = minmax(+verticalZoomLevel.value - V_ZOOM_STEP, MINIMAL_V_ZOOM, MAXIMAL_V_ZOOM));
 
 const handleWheel = (e: WheelEvent) => shift.value && (e.deltaY < 0 ? verticalZoomIn() : verticalZoomOut());
 

@@ -12,8 +12,10 @@ use tauri::Manager;
 
 mod engine;
 mod metronome;
+mod panic_handler;
 
 use crate::engine::Engine;
+use crate::panic_handler::PanicHandler;
 #[macro_use]
 extern crate cascade;
 // the payload type must implement `Serialize`.
@@ -24,14 +26,36 @@ struct Payload {
 }
 
 fn main() {
+  let panic_handler = Arc::new(Mutex::new(PanicHandler::new()));
+
+  {
+    let panic_handler = panic_handler.clone();
+    std::panic::set_hook(Box::new(move |info| {
+      if let Err(err) = panic_handler.lock().handle_panic(info) {
+        eprintln!("failed to handle panic: {}", err);
+      }
+    }));
+  }
+
   let builder = tauri::Builder::default()
     .build(tauri::generate_context!())
     .expect("Failed to build");
 
   let app = builder.handle();
   let resource_path = app.path_resolver().resource_dir().unwrap();
+  let fatal_log_path = app
+    .path_resolver()
+    .resource_dir()
+    .unwrap()
+    .join("logs\\fatal");
+
+  panic_handler.lock().error_filepath = Some(fatal_log_path);
+
   let (s, r) = unbounded::<String>();
   let engine = Arc::new(Mutex::new(Engine::new(s, resource_path).unwrap()));
+
+  panic!("cum");
+
   {
     let app = app.clone();
 
