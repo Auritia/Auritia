@@ -28,41 +28,35 @@ export class State extends Store<IAppState> {
     this.reactive.hint = hint;
   }
 
-  public toggleMetronome() {
-    this.reactive.isMetronomeEnabled = !this.reactive.isMetronomeEnabled;
-    emit("set_metronome", JSON.stringify(this.reactive.isMetronomeEnabled));
+  public async toggleMetronome() {
+    this.reactive.isMetronomeEnabled = await invoke<boolean>("set_metronome", { value: !this.reactive.isMetronomeEnabled });
   }
 
-  public toggleLoopPreview() {
-    this.reactive.isLoopPreviewEnabled = !this.reactive.isLoopPreviewEnabled;
-    emit("set_loop_preview", JSON.stringify(this.reactive.isLoopPreviewEnabled));
+  public async toggleLoopPreview() {
+    this.reactive.isLoopPreviewEnabled = await invoke<boolean>("set_loop_preview", {
+      value: !this.reactive.isLoopPreviewEnabled,
+    });
   }
 
   public tapMetronome() {
-    emit("tap_metronome");
+    // emit("tap_metronome");
   }
 
   public toggleLoop() {
     this.reactive.isLoopEnabled = !this.reactive.isLoopEnabled;
-    emit("set_loop", JSON.stringify(this.reactive.isLoopEnabled));
+    // emit("set_loop", JSON.stringify(this.reactive.isLoopEnabled));
   }
 
-  public play() {
-    emit(
-      "play",
-      JSON.stringify({
-        pos: 0,
-      })
-    );
+  public async play() {
+    await invoke<boolean>("play");
     this.reactive.isPlaying = true;
   }
-  public pause() {
+  public async pause() {
     this.reactive.isPlaying = false;
   }
-  public stop() {
-    emit("stop");
+  public async stop() {
+    await invoke<boolean>("stop");
     this.reactive.isPlaying = false;
-    this.reactive.playheadPosition = 0;
   }
 }
 
@@ -80,10 +74,9 @@ export class Project {
     this.timeSignature = timeSignature;
   }
 
-  public setTempo(value: number) {
+  public async setTempo(value: number) {
     if (this.tempo !== value) {
-      this.tempo = value;
-      emit("set_bpm", JSON.stringify(this.tempo));
+      this.tempo = await invoke<number>("set_bpm", { value: value });
     }
   }
 

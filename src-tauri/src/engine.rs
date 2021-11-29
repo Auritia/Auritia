@@ -101,3 +101,36 @@ impl Engine {
     Ok(())
   }
 }
+
+#[tauri::command]
+pub fn set_metronome(engine: tauri::State<Arc<Mutex<Engine>>>, value: bool) -> bool {
+  engine.lock().set_metronome(value);
+  return value;
+}
+
+#[tauri::command]
+pub fn set_bpm(engine: tauri::State<Arc<Mutex<Engine>>>, value: f64) -> f64 {
+  engine.lock().set_tempo(value);
+  return value;
+}
+
+#[tauri::command]
+pub fn play(engine: tauri::State<Arc<Mutex<Engine>>>) {
+  engine.lock().clock.start();
+}
+
+#[tauri::command]
+pub fn stop(engine: tauri::State<Arc<Mutex<Engine>>>) {
+  engine.lock().clock.stop();
+}
+
+#[tauri::command]
+pub fn set_loop_preview(engine: tauri::State<Arc<Mutex<Engine>>>, value: bool) -> bool {
+  engine.lock().set_loop_preview(value);
+  return value;
+}
+
+#[tauri::command]
+pub fn preview_sample(engine: tauri::State<Arc<Mutex<Engine>>>, path: String) {
+  engine.lock().preview_sample(path);
+}
