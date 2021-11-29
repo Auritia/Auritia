@@ -47,7 +47,7 @@ fn main() {
     .path_resolver()
     .resource_dir()
     .unwrap()
-    .join("logs\\fatal");
+    .join("logs/fatal");
 
   panic_handler.lock().error_filepath = Some(fatal_log_path);
 
