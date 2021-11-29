@@ -1,15 +1,19 @@
 <template>
-  <div class="w-full h-full bg-theme-100">
-    <div class="flex items-center gap-2 text-xs px-2 py-1">
-      <input type="range" step="0.1" min="0.1" max="4" v-model="upsampleValue" />
-      <span>Upsample: {{ upsampleValue }}</span>
-      <input type="range" step="0.001" :min="MINIMAL_V_ZOOM" :max="MAXIMAL_V_ZOOM" v-model="verticalZoomLevel" />
-      <span>Vertical Zoom: {{ verticalZoomLevel }}</span>
-      <div class="flex-1"></div>
-      <Button @click="addTrack">Add Track</Button>
-      <Button @click="deleteTrack">Delete Track</Button>
+  <div class="w-full h-full flex">
+    <div class="h-full w-full flex flex-col">
+      <div class="flex bg-theme-100 items-center gap-2 text-xs px-2 py-1">
+        <input type="range" step="0.1" min="0.1" max="4" v-model="upsampleValue" />
+        <span>Upsample: {{ upsampleValue }}</span>
+        <input type="range" step="0.001" :min="MINIMAL_V_ZOOM" :max="MAXIMAL_V_ZOOM" v-model="verticalZoomLevel" />
+        <span>Vertical Zoom: {{ verticalZoomLevel }}</span>
+        <div class="flex-1"></div>
+        <Button @click="addTrack">Add Track</Button>
+        <Button @click="deleteTrack">Delete Track</Button>
+      </div>
+      <div class="w-full h-full bg-theme-100">
+        <canvas ref="timeline" @wheel="handleWheel" class="w-full h-full transform origin-top-left"></canvas>
+      </div>
     </div>
-    <canvas ref="timeline" @wheel="handleWheel" class="w-full h-full transform origin-top-left"></canvas>
   </div>
 </template>
 
@@ -45,7 +49,7 @@ const handleWheel = (e: WheelEvent) => shift.value && (e.deltaY < 0 ? verticalZo
 
 // Track handles
 const addTrack = () => renderer!.addTrack();
-const deleteTrack = () => renderer!.deleteTrack();
+const deleteTrack = () => renderer!.deleteTrack(1);
 
 // Rerender on value updates
 watch(verticalZoomLevel, () => renderer!.setVerticalZoom(verticalZoomLevel.value));
