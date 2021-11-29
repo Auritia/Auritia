@@ -18,6 +18,7 @@ use crate::engine::Engine;
 use crate::panic_handler::PanicHandler;
 #[macro_use]
 extern crate cascade;
+
 // the payload type must implement `Serialize`.
 // for global events, it also must implement `Clone`.
 #[derive(Clone, serde::Serialize)]
@@ -26,6 +27,9 @@ struct Payload {
 }
 
 fn main() {
+  // Clear the terminal
+  print!("{}[2J", 27 as char);
+
   let panic_handler = Arc::new(Mutex::new(PanicHandler::new()));
 
   {
@@ -43,18 +47,12 @@ fn main() {
 
   let app = builder.handle();
   let resource_path = app.path_resolver().resource_dir().unwrap();
-  let fatal_log_path = app
-    .path_resolver()
-    .resource_dir()
-    .unwrap()
-    .join("logs/fatal");
+  let fatal_log_path = app.path_resolver().resource_dir().unwrap().join("logs");
 
   panic_handler.lock().error_filepath = Some(fatal_log_path);
 
   let (s, r) = unbounded::<String>();
   let engine = Arc::new(Mutex::new(Engine::new(s, resource_path).unwrap()));
-
-  panic!("cum");
 
   {
     let app = app.clone();
