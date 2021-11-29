@@ -1,4 +1,5 @@
 use crate::metronome;
+use crate::util::arcmutex;
 use crossbeam_channel::Sender;
 use kira::instance::InstanceSettings;
 use kira::manager::{AudioManager, AudioManagerSettings};
@@ -30,9 +31,7 @@ impl Engine {
   pub fn new(tx: Sender<String>, resource_root: PathBuf) -> Result<Engine, Box<dyn Error>> {
     let resource_root = resource_root;
     let tx = tx.clone();
-    let mut audio_manager = Arc::new(parking_lot::Mutex::new(
-      AudioManager::new(AudioManagerSettings::default()).unwrap(),
-    ));
+    let mut audio_manager = arcmutex(AudioManager::new(AudioManagerSettings::default()).unwrap());
 
     let mut clock = audio_manager
       .lock()

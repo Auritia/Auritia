@@ -4,17 +4,17 @@
 )]
 
 use crossbeam_channel::unbounded;
-use parking_lot::Mutex;
-use std::sync::Arc;
 use std::thread::spawn;
 use tauri::Manager;
 
 mod engine;
 mod metronome;
 mod panic_handler;
+mod util;
 
 use crate::engine::*;
 use crate::panic_handler::PanicHandler;
+use crate::util::*;
 #[macro_use]
 extern crate cascade;
 
@@ -29,7 +29,7 @@ fn main() {
   // Clear the terminal
   print!("{}[2J", 27 as char);
 
-  let panic_handler = Arc::new(Mutex::new(PanicHandler::new()));
+  let panic_handler = arcmutex(PanicHandler::new());
 
   {
     let panic_handler = panic_handler.clone();
@@ -59,7 +59,7 @@ fn main() {
   panic_handler.lock().error_filepath = Some(fatal_log_path);
 
   let (s, r) = unbounded::<String>();
-  let engine = Arc::new(Mutex::new(Engine::new(s, resource_path).unwrap()));
+  let engine = arcmutex(Engine::new(s, resource_path).unwrap());
 
   {
     let engine = engine.clone();
