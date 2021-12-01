@@ -105,26 +105,26 @@ jobs:
     needs: [build-linux, build-windows, create-release]
     steps:
       # Download the artifacts
-      - name: 💎 Download linux.deb binaries
+      - name: 📥 Download linux.deb binaries
         uses: actions/download-artifact@v2
         with:
           name: auritia_compiled_linux.deb
           path: build
 
-      - name: 💎 Download linux.AppImage binaries
+      - name: 📥 Download linux.AppImage binaries
         uses: actions/download-artifact@v2
         with:
           name: auritia_compiled_linux.AppImage
           path: build
 
-      - name: 💎 Download win.msi binaries
+      - name: 📥 Download win.msi binaries
         uses: actions/download-artifact@v2
         with:
           name: auritia_compiled_win.msi
           path: build
 
       # Upload Release
-      - name: 💎 Upload linux.deb artifact
+      - name: 📤 Upload linux.deb artifact
         uses: actions/upload-release-asset@v1
         continue-on-error: true
         env:
@@ -135,7 +135,7 @@ jobs:
           asset_name: Auritia_v${{ needs.build-linux.outputs.version }}_linux.deb
           asset_content_type: application/octet-stream
           
-      - name: 💎 Upload linux.AppImage artifact
+      - name: 📤 Upload linux.AppImage artifact
         uses: actions/upload-release-asset@v1
         continue-on-error: true
         env:
@@ -146,7 +146,7 @@ jobs:
           asset_name: Auritia_v${{ needs.build-linux.outputs.version }}_linux.AppImage
           asset_content_type: application/octet-stream
 
-      - name: 💎 Upload win.msi artifact
+      - name: 📤 Upload win.msi artifact
         uses: actions/upload-release-asset@v1
         continue-on-error: true
         env:
