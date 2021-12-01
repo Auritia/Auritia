@@ -1,5 +1,6 @@
 use crate::metronome;
 use crate::util::arcmutex;
+use anyhow::Result;
 use crossbeam_channel::Sender;
 use kira::instance::InstanceSettings;
 use kira::manager::{AudioManager, AudioManagerSettings};
@@ -28,12 +29,12 @@ pub struct Engine {
 }
 
 impl Engine {
-  pub fn new(tx: Sender<String>, resource_root: PathBuf) -> Result<Engine, Box<dyn Error>> {
+  pub fn new(tx: Sender<String>, resource_root: PathBuf) -> Result<Engine> {
     let resource_root = resource_root;
     let tx = tx.clone();
-    let mut audio_manager = arcmutex(AudioManager::new(AudioManagerSettings::default()).unwrap());
+    let audio_manager = arcmutex(AudioManager::new(AudioManagerSettings::default())?);
 
-    let mut clock = audio_manager
+    let clock = audio_manager
       .lock()
       .add_metronome(MetronomeSettings::new().tempo(Tempo(120.0)))?;
 
@@ -54,7 +55,7 @@ impl Engine {
     });
   }
 
-  pub fn preview_sample(&self, sample_path: String) -> Result<(), Box<dyn Error>> {
+  pub fn preview_sample(&self, sample_path: String) -> Result<()> {
     let audio_manager = self.audio_manager.clone();
 
     let tx = self.tx.clone();
@@ -67,15 +68,16 @@ impl Engine {
         Ok(mut sound_handle) => {
           let play_result = sound_handle.play(InstanceSettings::default());
           if let Err(e) = play_result {
-            tx.send(e.to_string()).unwrap();
+            let _ = tx.send(e.to_string()); // we don't care if the channel fails to send (or rather, wtf do we do if it does)
           };
           sleep(sound_handle.duration());
-          audio_manager
-            .lock()
-            .remove_sound(sound_handle.id())
-            .unwrap();
+          if let Err(e) = audio_manager.lock().remove_sound(sound_handle.id()) {
+            let _ = tx.send(e.to_string());
+          };
         }
-        Err(e) => tx.send(e.to_string()).unwrap(),
+        Err(e) => {
+          let _ = tx.send(e.to_string());
+        }
       }
     });
 
@@ -90,7 +92,7 @@ impl Engine {
     self.loop_preview = state;
   }
 
-  pub fn set_metronome(&mut self, state: bool) -> Result<(), Box<dyn Error>> {
+  pub fn set_metronome(&mut self, state: bool) -> Result<()> {
     if state {
       let mut audio_manager = self.audio_manager.lock();
       self.metronome.start(&mut audio_manager, &mut self.clock)?;
@@ -102,25 +104,34 @@ impl Engine {
 }
 
 #[tauri::command]
-pub fn set_metronome(engine: tauri::State<Arc<Mutex<Engine>>>, value: bool) -> bool {
-  engine.lock().set_metronome(value);
-  return value;
+pub fn set_metronome(
+  engine: tauri::State<Arc<Mutex<Engine>>>,
+  value: bool,
+) -> Result<bool, String> {
+  engine
+    .lock()
+    .set_metronome(value)
+    .map(|_| value)
+    .map_err(|e| e.to_string())
 }
 
 #[tauri::command]
-pub fn set_bpm(engine: tauri::State<Arc<Mutex<Engine>>>, value: f64) -> f64 {
-  engine.lock().set_tempo(value);
-  return value;
+pub fn set_bpm(engine: tauri::State<Arc<Mutex<Engine>>>, value: f64) -> Result<f64, String> {
+  engine
+    .lock()
+    .set_tempo(value)
+    .map(|_| value)
+    .map_err(|err| err.to_string())
 }
 
 #[tauri::command]
-pub fn play(engine: tauri::State<Arc<Mutex<Engine>>>) {
-  engine.lock().clock.start();
+pub fn play(engine: tauri::State<Arc<Mutex<Engine>>>) -> Result<(), String> {
+  engine.lock().clock.start().map_err(|e| e.to_string())
 }
 
 #[tauri::command]
-pub fn stop(engine: tauri::State<Arc<Mutex<Engine>>>) {
-  engine.lock().clock.stop();
+pub fn stop(engine: tauri::State<Arc<Mutex<Engine>>>) -> Result<(), String> {
+  engine.lock().clock.stop().map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -130,6 +141,12 @@ pub fn set_loop_preview(engine: tauri::State<Arc<Mutex<Engine>>>, value: bool) -
 }
 
 #[tauri::command]
-pub fn preview_sample(engine: tauri::State<Arc<Mutex<Engine>>>, path: String) {
-  engine.lock().preview_sample(path);
+pub fn preview_sample(
+  engine: tauri::State<Arc<Mutex<Engine>>>,
+  path: String,
+) -> Result<(), String> {
+  engine
+    .lock()
+    .preview_sample(path)
+    .map_err(|e| e.to_string())
 }

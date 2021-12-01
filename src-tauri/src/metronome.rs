@@ -1,5 +1,4 @@
-use std::error::Error;
-
+use anyhow::Result;
 use kira::instance::InstanceSettings;
 use kira::manager::error::{LoadSoundError, StartSequenceError};
 use kira::manager::AudioManager;
@@ -8,10 +7,17 @@ use kira::sequence::handle::SequenceInstanceHandle;
 use kira::sequence::{Sequence, SequenceInstanceSettings, SequenceSettings};
 use kira::sound::handle::SoundHandle;
 use kira::sound::SoundSettings;
+use thiserror::Error;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum MetronomeEvent {
   Beat,
+}
+
+#[derive(Error, Debug)]
+enum MetronomeError {
+  #[error("Not started")]
+  NotStarted,
 }
 
 pub struct Metronome {
@@ -67,14 +73,13 @@ impl Metronome {
     Ok(())
   }
 
-  pub fn stop(&mut self) -> Result<(), Box<dyn Error>> {
-    match self.sequence_handle {
-      Some(ref mut handle) => {
-        handle.stop()?;
-        self.sequence_handle = None;
-        Ok(())
-      }
-      None => Err("the metronome hasn't started you dumb cunt".into()),
-    }
+  pub fn stop(&mut self) -> Result<()> {
+    let handle = self
+      .sequence_handle
+      .as_mut()
+      .ok_or(MetronomeError::NotStarted)?;
+    handle.stop()?;
+    self.sequence_handle = None;
+    Ok(())
   }
 }
