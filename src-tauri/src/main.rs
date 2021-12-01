@@ -65,7 +65,6 @@ fn main() -> Result<()> {
 
   let (s, r) = unbounded::<String>();
   let engine = arcmutex(Engine::new(s, resource_path)?);
-
   {
     let engine = engine.clone();
     builder.manage(engine);

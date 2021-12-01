@@ -9,6 +9,7 @@ use std::{
 use backtrace::Backtrace;
 
 use anyhow::Result;
+use native_dialog::{MessageDialog, MessageType};
 use once_cell::sync::OnceCell;
 use serde::Serialize;
 use serde_json::json;
@@ -54,6 +55,16 @@ impl PanicHandler {
       "PANIC: {:?}. Full log can be found at {:?}",
       panic_info, &error_filepath,
     );
+
+    MessageDialog::new()
+      .set_type(MessageType::Error)
+      .set_title("Auritia Panic")
+      .set_text(&format!(
+        "{:#?}\nView additional debug information at {:?}",
+        panic_info.to_string(),
+        &error_filepath
+      ))
+      .show_alert()?;
 
     std::process::abort();
   }
