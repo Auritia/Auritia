@@ -65,19 +65,13 @@ fn main() -> Result<()> {
 
   let (s, r) = unbounded::<String>();
   let engine = arcmutex(Engine::new(s, resource_path)?);
-  {
-    let engine = engine.clone();
-    builder.manage(engine);
-  }
+  builder.manage(engine);
 
-  {
-    let app = app.clone();
-    spawn(move || {
-      for value in r.iter() {
-        app.emit_all("error", &value).expect("failed to emit error");
-      }
-    });
-  }
+  spawn(move || {
+    for value in r.iter() {
+      app.emit_all("error", &value).expect("failed to emit error");
+    }
+  });
 
   builder.run(|_, _| ());
   Ok(())
