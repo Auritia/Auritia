@@ -1,53 +1,82 @@
 use std::{
-  error::Error,
-  fs::{self, OpenOptions},
+  fs::{self, File, OpenOptions},
   io::Write,
   panic::PanicInfo,
   path::PathBuf,
+  sync::Arc,
 };
 
 use backtrace::Backtrace;
 
+use anyhow::Result;
+use once_cell::sync::OnceCell;
 use serde::Serialize;
 use serde_json::json;
+use thiserror::Error;
 
-fn timestamp() -> i64 {
-  return chrono::offset::Local::now().timestamp_millis();
+use crate::util::timestamp;
+
+#[derive(Error, Debug)]
+pub enum PanicHandlerError {
+  #[error("Error file path not set")]
+  FilePathNotSet,
+  #[error("Error file has no parent")]
+  FileHasNoParent,
 }
 
 #[derive(Serialize)]
 struct SystemInfo {}
 
 pub struct PanicHandler {
-  pub error_filepath: Option<PathBuf>,
+  error_filepath: Arc<OnceCell<PathBuf>>,
 }
 
 impl PanicHandler {
-  pub fn new() -> Self {
+  pub fn new(path_cell: Arc<OnceCell<PathBuf>>) -> Self {
     Self {
-      error_filepath: None,
+      error_filepath: path_cell,
     }
   }
 
-  pub fn handle_panic(&self, panic_info: &PanicInfo) -> Result<(), Box<dyn Error>> {
+  pub fn handle_panic(&self, panic_info: &PanicInfo) -> Result<()> {
     let bt = Backtrace::new();
 
     let output = json!({
       "panic_message": panic_info.to_string(),
       "backtrace": format!("{:?}", &bt),
     });
+    let error_filepath = self.new_error_path()?;
+    self
+      .new_error_file(&error_filepath)?
+      .write_all(serde_json::to_string_pretty(&output)?.as_bytes())?;
 
-    if let Some(error_filepath) = &self.error_filepath {
-      let fatal_filename = error_filepath.join(format!("{}-fatal.json", timestamp()));
-      fs::create_dir_all(error_filepath)?;
-      let mut file = OpenOptions::new()
-        .write(true)
-        .read(true)
-        .create(true)
-        .create_new(true)
-        .open(fatal_filename)?;
-      file.write_all(serde_json::to_string_pretty(&output)?.as_bytes())?;
-    }
+    println!(
+      "PANIC: {:?}. Full log can be found at {:?}",
+      panic_info, &error_filepath,
+    );
+
     std::process::abort();
+  }
+
+  fn new_error_path(&self) -> Result<PathBuf> {
+    let error_dir = self
+      .error_filepath
+      .get()
+      .ok_or(PanicHandlerError::FilePathNotSet)?;
+
+    Ok(error_dir.join(format!("{}-fatal.json", timestamp())))
+  }
+
+  fn new_error_file(&self, path: &PathBuf) -> Result<File> {
+    fs::create_dir_all(path.parent().ok_or(PanicHandlerError::FileHasNoParent)?)?;
+
+    let file = OpenOptions::new()
+      .write(true)
+      .read(true)
+      .create(true)
+      .create_new(true)
+      .open(path)?;
+
+    Ok(file)
   }
 }

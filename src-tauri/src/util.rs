@@ -5,3 +5,7 @@ use std::sync::Arc;
 pub fn arcmutex<T>(item: T) -> Arc<Mutex<T>> {
   return Arc::new(Mutex::new(item));
 }
+
+pub fn timestamp() -> i64 {
+  return chrono::offset::Local::now().timestamp_millis();
+}

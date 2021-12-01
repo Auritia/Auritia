@@ -65,14 +65,15 @@ dependencies = [
 
 [[package]]
 name = "anyhow"
-version = "1.0.45"
+version = "1.0.51"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ee10e43ae4a853c0a3591d4e2ada1719e553be18199d9da9d4a83f5927c2f5c7"
+checksum = "8b26702f315f53b6071259e15dd9d64528213b44d61de1ec926eca7715d62203"
 
 [[package]]
 name = "app"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "backtrace",
  "cascade",
  "chrono",
@@ -80,6 +81,7 @@ dependencies = [
  "kira",
  "lazy_static",
  "num",
+ "once_cell",
  "parking_lot",
  "rand 0.8.4",
  "serde",
@@ -87,6 +89,7 @@ dependencies = [
  "sysinfo",
  "tauri",
  "tauri-build",
+ "thiserror",
 ]
 
 [[package]]
