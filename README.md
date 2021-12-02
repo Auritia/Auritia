@@ -1,6 +1,12 @@
-# ⚡ Introduction
 
-Auritia is a DAW coded in Rust and Vue in hopes of having cross platform compatability, while also providing enough features for anyone to use professionally
+
+# ⚡ Introduction
+<img align="left" src="https://media.discordapp.net/attachments/915542222680764426/916035335702585374/unknown.png?width=256&height=256">
+
+Auritia is a DAW inspired by [Ableton](https://ableton.com/) coded in [Rust](https://www.rust-lang.org/) and [Vue](https://vuejs.org/) in hopes of having cross platform compatability, while also providing enough features for anyone to use professionally
+<br>
+<br>
+The project right now is at a very early stage and theres no ability to drop files in the timeline due to a limitation of [winit](https://github.com/rust-windowing/winit) that [tauri](https://tauri.studio/) uses
 
 ![Auritia](https://cdn.discordapp.com/attachments/911762334979084368/914499510741381130/unknown.png)
 
@@ -16,7 +22,8 @@ Auritia is a DAW coded in Rust and Vue in hopes of having cross platform compata
 
 - `CTRL + ,` -> Preferences
 - `F11` -> Fullscreen
-- `F1` -> Open Samples Picker
+- `F1` -> Open Samples Picker![68747470733a2f2f6d656469612e646973636f72646170702e6e65742f6174746163686d656e74732f3931353534323232323638303736343432362f3931363033353333353730323538353337342f756e6b6e6f776e2e706e673f77696474683d323536266865696768743d323536](https://user-images.githubusercontent.com/34042825/144483601-7b80d79a-1693-4e8b-b20e-7b0615f8e192.png)
+
 - `F2` -> Open Plugins Picker
 - `Alt + Enter` -> Toggle Maximize
 - `Ctrl + M` -> Toggle Metronome
