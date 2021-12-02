@@ -1,7 +1,7 @@
 <template>
   <div data-tauri-drag-region class="bg-theme-100 text-xs flex justify-between items-center">
     <div class="flex gap-4 h-full items-center">
-      <img src="../assets/horizontal_logo.svg" class="ml-2" alt="" />
+      <img src="../assets/horizontal_logo.svg" class="ml-2 h-4" alt="" />
 
       <Menu title="File">
         <MenuOption
