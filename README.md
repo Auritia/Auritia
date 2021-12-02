@@ -24,8 +24,7 @@ So right now we are focusing on creating the UI and everything else around the D
 
 - `CTRL + ,` -> Preferences
 - `F11` -> Fullscreen
-- `F1` -> Open Samples Picker![68747470733a2f2f6d656469612e646973636f72646170702e6e65742f6174746163686d656e74732f3931353534323232323638303736343432362f3931363033353333353730323538353337342f756e6b6e6f776e2e706e673f77696474683d323536266865696768743d323536](https://user-images.githubusercontent.com/34042825/144483601-7b80d79a-1693-4e8b-b20e-7b0615f8e192.png)
-
+- `F1` -> Open Samples Picker
 - `F2` -> Open Plugins Picker
 - `Alt + Enter` -> Toggle Maximize
 - `Ctrl + M` -> Toggle Metronome
