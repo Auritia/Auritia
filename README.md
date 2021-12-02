@@ -8,6 +8,8 @@ Auritia is a DAW inspired by [Ableton](https://ableton.com/) coded in [Rust](htt
 <br>
 The project right now is at a very early stage and theres no ability to drop files in the timeline due to a limitation of [winit](https://github.com/rust-windowing/winit) that [tauri](https://tauri.studio/) uses
 
+So right now we are focusing on creating the UI and everything else around the DAW until the time comes that we can proceed with the audio engine
+
 ![Auritia](https://cdn.discordapp.com/attachments/911762334979084368/914499510741381130/unknown.png)
 
 # ✨ Installation & Contributing
