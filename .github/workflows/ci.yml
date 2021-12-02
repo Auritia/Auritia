@@ -17,7 +17,15 @@ jobs:
       uses: actions/checkout@v2
 
     - name: ⚡ Install Tauri
-      run: sudo apt install -y --no-install-recommends libwebkit2gtk-4.0-dev build-essential curl wget sudo libssl-dev libgtk-3-dev patchelf librsvg2-dev curl jq build-essential libssl-dev libffi-dev python3 python3-venv python3-dev python3-pip
+      run: sudo apt update && sudo apt install libwebkit2gtk-4.0-dev \
+        build-essential \
+        curl \
+        wget \
+        libssl-dev \
+        libgtk-3-dev \
+        libappindicator3-dev \
+        patchelf \
+        librsvg2-dev
     
     - name: ⚡ Install ALSA
       run: sudo apt install -y alsa-utils libasound2-dev
